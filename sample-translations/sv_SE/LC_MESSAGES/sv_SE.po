@@ -1,0 +1,498 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: texts-sv\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-06-12 10:54+0200\n"
+"PO-Revision-Date: 2015-06-12 11:15+0100\n"
+"Last-Translator: Johanna Julén <johanna.julen@loopia.se>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: sv_SE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.5\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: .\n"
+
+#: text.php:12 text.php:13
+msgid "here is some text"
+msgstr "här är lite text"
+
+#: text.php:17
+msgid "gettext is not installed"
+msgstr "gettext är inte installerat"
+
+#: text.php:20
+msgid "gettext is supported"
+msgstr "gettext stöds"
+
+#: content.php:36
+msgid "Unknown page"
+msgstr "Sidan kunde inte hittas."
+
+#: index.php:86
+msgid "Home"
+msgstr "Hem"
+
+#: index.php:88 sample-custom_content/globals.php:18
+msgid "About"
+msgstr "Om"
+
+#: index.php:90 functions/feedback/func.php:238
+msgid "Feedback"
+msgstr "Förbättringsförslag"
+
+#: index.php:116
+msgid "Select language:"
+msgstr "Välj språk:"
+
+#: sample-config.php:39 sample-custom_content/globals.php:6
+msgid "Welcome, new member!"
+msgstr "Välkommen som ny medlem!"
+
+#: sample-config.php:40
+msgid "Example template"
+msgstr "Exempelmall"
+
+#: sample-config.php:41
+msgid "Insert your selling text here.<br>It should be snappy."
+msgstr "Ange din säljande text här.<br>Den bör vara kort och medryckande!"
+
+#: functions/admin.php:30
+msgid "Admin tools"
+msgstr "Admin-verktyg"
+
+#: functions/admin.php:32
+msgid "Users"
+msgstr "Användare"
+
+#: functions/admin.php:33
+msgid "Version"
+msgstr "Version"
+
+#: functions/login.php:47
+msgid "Incorrect info"
+msgstr "Inkorrekt information"
+
+#: functions/login.php:63
+msgid "Login successfull"
+msgstr "Inloggning genomfördes med lyckat resultat!"
+
+#: functions/login.php:78
+msgid "Login fail"
+msgstr "Inloggning misslyckades"
+
+#: functions/login.php:172
+msgid "Settings"
+msgstr "Inställningar"
+
+#: functions/login.php:174
+msgid "Log out"
+msgstr "Logga ut"
+
+#: functions/login.php:199 functions/user.php:128 functions/user.php:129
+msgid "Username"
+msgstr "Användarnamn"
+
+#: functions/login.php:200
+msgid "password"
+msgstr "lösenord"
+
+#: functions/login.php:201 functions/login.php:432 functions/login.php:433
+msgid "Log in"
+msgstr "Logga in"
+
+#: functions/login.php:203
+msgid "Sign up"
+msgstr "Registrera dig"
+
+#: functions/login.php:204
+msgid "Recover password"
+msgstr "Återfå användaruppgifter"
+
+#: functions/login.php:250
+#, php-format
+msgid "[%s] - Password reset"
+msgstr "[%s] - Återställning av användaruppgifter"
+
+#: functions/login.php:251
+#, php-format
+msgid "Hi"
+msgstr "Hej"
+
+#: functions/login.php:251
+#, php-format
+msgid "We have received a request to reset your password."
+msgstr "Vi har mottagit en begäran om återställning av användaruppgifter."
+
+#: functions/login.php:252
+#, php-format
+msgid "Visit %s/?lostpassword&password_reset=%s to set your password."
+msgstr ""
+"Besök %s/?lostpassword&password_reset=%s för att sätta önskat lösenord."
+
+#: functions/login.php:253
+#, php-format
+msgid "Regards,"
+msgstr "Med vänliga hälsningar,"
+
+#: functions/login.php:253
+#, php-format
+msgid "The %s Team"
+msgstr "Gänget på %s"
+
+#: functions/login.php:261
+msgid "Message successfully sent!"
+msgstr "Meddelandet sändes med lyckat resultat!"
+
+#: functions/login.php:265
+#, php-format
+msgid ""
+"Message delivery failed. Please send an email to %s for further assistance! "
+"errorcode %d"
+msgstr ""
+"Meddelandet kunde inte skickas. Vänligen skicka ett e-postmeddelande till %s "
+"för hjälp i ärendet! Felkod %d"
+
+#: functions/user.php:123
+#, php-format
+msgid "Settings for %s"
+msgstr "Inställningar för %s"
+
+#: functions/user.php:133 functions/user.php:134
+#: functions/feedback/func.php:333
+msgid "Email"
+msgstr "E-post"
+
+#: functions/user.php:138 functions/user.php:139
+msgid "Password"
+msgstr "Lösenord"
+
+#: functions/user.php:143 functions/user.php:144
+msgid "Flattr id"
+msgstr "Flattr ID"
+
+#: functions/user.php:154 functions/user.php:163
+#, php-format
+msgid "Display Flattr-button on <strong>%s</strong>"
+msgstr "Visa Flattr-knapp på <strong>%s</strong>"
+
+#: functions/user.php:154
+msgid "comments"
+msgstr "kommentarer"
+
+#: functions/user.php:163
+msgid "feedbacks"
+msgstr "förbättringsförslag"
+
+#: functions/user.php:168
+msgid "Save"
+msgstr "Spara"
+
+#: functions/comment/func.php:32 functions/comment/func.php:160
+msgid "Send"
+msgstr "Skicka"
+
+#: functions/comment/func.php:251 functions/comment/func.php:282
+msgid "Do you really want to delete the comment? This cannot be undone."
+msgstr "Vill du verkligen ta bort kommentaren? Detta kan inte ångras."
+
+#: functions/comment/func.php:251 functions/comment/func.php:282
+msgid "Remove comment"
+msgstr "Ta bort kommentar"
+
+#: functions/comment/func.php:298 functions/comment/func.php:307
+msgid "Reply"
+msgstr "Svara"
+
+#: functions/comment/func.php:331
+msgid "Hide comments"
+msgstr "Göm kommentarer"
+
+#: functions/comment/func.php:333
+msgid "Add a comment:"
+msgstr "Kommentera:"
+
+#: functions/comment/func.php:335
+msgid "Show comments"
+msgstr "Visa kommentarer"
+
+#: functions/comment/func.php:477
+msgid "(Admin)"
+msgstr "(Admin)"
+
+#: functions/comment/func.php:482 functions/feedback/func.php:1416
+#, php-format
+msgid "Posted at <a href=\"%s\">%s</a>"
+msgstr "Postat <a href=\"%s\">%s</a>"
+
+#: functions/comment/func.php:484
+#, php-format
+msgid "Posted by %s%s at <a href=\"%s\">%s</a>"
+msgstr "Postat av %s%s vid tidpunkten <a href=\"%s\">%s</a>"
+
+#: functions/comment/func.php:486
+#, php-format
+msgid "Posted by <a href=\"%s\">%s</a>%s at <a href=\"%s\">%s</a>"
+msgstr "Postat av <a href=\"%s\">%s</a>%s vid tidpunkten <a href=\"%s\">%s</a>"
+
+#: functions/feedback/func.php:51
+msgid "You do not appear to be human. Feeling ok?"
+msgstr "Du verkar inte mänsklig. Hur mår du?"
+
+#: functions/feedback/func.php:239
+msgid "Suggestions for improvements, bufixes and ideas!"
+msgstr "Förslag för förbättringar, buggfixar och idéer!"
+
+#: functions/feedback/func.php:252
+msgid "Search results"
+msgstr "Sökresultat"
+
+#: functions/feedback/func.php:262
+msgid "Ongoing"
+msgstr "Pågående"
+
+#: functions/feedback/func.php:272
+msgid "Uncategorized"
+msgstr "Okategoriserade"
+
+#: functions/feedback/func.php:274
+msgid "Reported bugs"
+msgstr "Rapporterade buggar"
+
+#: functions/feedback/func.php:276 functions/feedback/func.php:684
+#: functions/feedback/func.php:686
+msgid "Required"
+msgstr "Nödvändig"
+
+#: functions/feedback/func.php:278
+msgid "Small improvements"
+msgstr "Små förbättringar"
+
+#: functions/feedback/func.php:280
+msgid "Big changes"
+msgstr "Stora förändringar"
+
+#: functions/feedback/func.php:282
+msgid "Resolved"
+msgstr "Klarmarkerad"
+
+#: functions/feedback/func.php:283
+msgid "Will not be done"
+msgstr "Utförs ej"
+
+#: functions/feedback/func.php:309
+msgid "Search existing feedbacks"
+msgstr "Sök i existerande förbättringsförslag"
+
+#: functions/feedback/func.php:314
+msgid "Search"
+msgstr "Sök"
+
+#: functions/feedback/func.php:326
+msgid "Add feedback"
+msgstr "Lägg till förbättringsförslag"
+
+#: functions/feedback/func.php:332
+msgid "Name"
+msgstr "Namn"
+
+#: functions/feedback/func.php:334
+msgid "Website"
+msgstr "Hemsida"
+
+#: functions/feedback/func.php:335
+msgid "Flattr ID"
+msgstr "Flattr ID"
+
+#: functions/feedback/func.php:337
+msgid "Subject"
+msgstr "Ämne"
+
+#: functions/feedback/func.php:338
+msgid "Your Feedback"
+msgstr "Förbättringsförslag"
+
+#: functions/feedback/func.php:347
+msgid "Tell us!"
+msgstr "Berätta"
+
+#: functions/feedback/func.php:609
+#, php-format
+msgid "Marked not implemented %s"
+msgstr "Markerad som utförs ej %s"
+
+#: functions/feedback/func.php:611
+#, php-format
+msgid "Resolved %s"
+msgstr "Klarmarkerad %s"
+
+#: functions/feedback/func.php:613
+#, php-format
+msgid "Accepted %s"
+msgstr "Accepterad %s"
+
+#: functions/feedback/func.php:624
+msgid "Unresolve"
+msgstr "Ej klar"
+
+#: functions/feedback/func.php:627
+msgid "Accept this task"
+msgstr "Acceptera denna uppgift"
+
+#: functions/feedback/func.php:634
+msgid "Done"
+msgstr "Klar"
+
+#: functions/feedback/func.php:636
+msgid "Unaccept"
+msgstr "Ångra acceptera"
+
+#: functions/feedback/func.php:638
+msgid "Will not be implemented"
+msgstr "Utförs ej"
+
+#: functions/feedback/func.php:677
+msgid "Size"
+msgstr "Storlek"
+
+#: functions/feedback/func.php:680 functions/feedback/func.php:682
+msgid "Bugfix"
+msgstr "Buggfix"
+
+#: functions/feedback/func.php:688 functions/feedback/func.php:690
+msgid "Small improvement"
+msgstr "Liten förbättring"
+
+#: functions/feedback/func.php:692 functions/feedback/func.php:694
+msgid "Big change"
+msgstr "Stor förändring"
+
+#: functions/feedback/func.php:1076
+#, php-format
+msgid "Merged with %s"
+msgstr "Kopplad till %s"
+
+#: functions/feedback/func.php:1077
+msgid "Detach"
+msgstr "Koppla ifrån"
+
+#: functions/feedback/func.php:1083
+msgid "Merge with"
+msgstr "Koppla med"
+
+#: functions/feedback/func.php:1084
+msgid "Merge"
+msgstr "Koppla"
+
+#: functions/feedback/func.php:1296
+msgid "Attached feedbacks"
+msgstr "Kopplade förbättringsförslag"
+
+#: functions/feedback/func.php:1418
+#, php-format
+msgid "Posted by %s at <a href=\"%s\">%s</a>"
+msgstr "Postat av %s vid tidpunkten <a href=\"%s\">%s</a>"
+
+#: functions/feedback/func.php:1420
+#, php-format
+msgid "Posted by <a href=\"%s\">%s</a> at <a href=\"%s\">%s</a>"
+msgstr "Postat av <a href=\"%s\">%s</a> vid tidpunkten <a href=\"%s\">%s</a>"
+
+#: functions/flattr.php:98
+msgid "New flattr choices set"
+msgstr "Nya Flattr-inställningar satta"
+
+#: functions/flattr.php:100
+#, php-format
+msgid "New flattr choices could not be set. Error: %s"
+msgstr "Nya Flattr-inställningar kunde inte sättas. Fel: %s"
+
+#: sample-custom_content/index.php:3
+#, php-format
+msgid "Welcome to %s"
+msgstr "Välkommen till %s"
+
+#: sample-custom_content/index.php:5
+#: sample-custom_content/functions/page.php:30
+msgid "This is more text"
+msgstr "Här är lite mer text"
+
+#: sample-custom_content/index.php:6
+#: sample-custom_content/functions/page.php:31
+msgid "It's just here for testing purposes."
+msgstr "Den är bara till för testning."
+
+#: sample-custom_content/index.php:15
+msgid "This is block two"
+msgstr "Det här är block två"
+
+#: sample-custom_content/index.php:16
+msgid ""
+"Write some interesting stuff here. Or some boring stuff. That should work "
+"too."
+msgstr ""
+"Skriv lite intressanta saker här. Eller lite tråkiga saker. Det borde också "
+"funka."
+
+#: sample-custom_content/index.php:37
+msgid "This is yet another a block"
+msgstr "Det här är ännu ett block"
+
+#: sample-custom_content/index.php:38
+msgid "This content is last on this page."
+msgstr "Det här innehållet är sist på den här sidan."
+
+#: sample-custom_content/globals.php:9
+msgid "Shell template"
+msgstr "Skalmall"
+
+#: sample-custom_content/globals.php:10
+msgid ""
+"Shell website for use as base when creating awesome stuff.<br />Download, "
+"upload and fill with awesomeness!"
+msgstr ""
+"Använd skalmallen när du skapar nya coola grejer!<br />Ladda ner, ladda upp "
+"och fyll med coolheter!"
+
+#: sample-custom_content/globals.php:19
+msgid "Things"
+msgstr "Saker"
+
+#: sample-custom_content/globals.php:20
+msgid "Things 1"
+msgstr "Saker 1"
+
+#: sample-custom_content/globals.php:21
+msgid "Things 2"
+msgstr "Saker 2"
+
+#: sample-custom_content/globals.php:24
+msgid "Stuff"
+msgstr "Grejer"
+
+#: sample-custom_content/globals.php:25
+msgid "Stuff 1"
+msgstr "Grejer 1"
+
+#: sample-custom_content/globals.php:26
+msgid "Stuff 2"
+msgstr "Grejer 2"
+
+#: sample-custom_content/globals.php:27
+msgid "Stuff 3"
+msgstr "Grejer 3"
+
+#: sample-custom_content/functions/page.php:28
+#, php-format
+msgid "About this site"
+msgstr "Om den här sidan"
+
+#~ msgid "Bug size"
+#~ msgstr "Storlek"

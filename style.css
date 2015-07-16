@@ -1,0 +1,162 @@
+body {
+
+  padding-top: 50px;
+}
+html, body {
+  height: 100%; /* needed for container min-height */
+}
+#main_container
+{
+	position: relative; /* needed for footer positioning*/
+	min-height: 100%; /* needed for container min-height */
+}
+
+#content{
+	margin-bottom: 50px;
+	min-height: 80%;
+}
+.clearer
+{
+	clear: both;
+}
+
+.right
+{
+	text-align: right;
+}
+.center
+{
+	text-align: center;
+}
+
+.row
+{
+	margin-top: 0.5em;
+}
+.start-container {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+.form-inline {
+margin-top: 10px;
+}
+
+.message_box
+{
+	margin-top: 1em;
+}
+.error
+{
+	color: red;
+}
+.author
+{
+	font-size: 80%;
+	float: right;
+}
+/*
+.feedback_list_line
+{
+	border-bottom: 1px dotted black;
+	clear: both;
+} */
+.feedback_author, .feedback_time
+{
+	text-align: right;
+}
+.feedback_accepted, .feedback_accepted .feedback_headline, .panel-heading.feedback_accepted
+{
+	background-color: #aaffaa;
+}
+.feedback_accepted a, .feedback_accepted .feedback_headline a, .panel-heading.feedback_accepted a
+{
+	color: #0E5611
+}
+.feedback_resolved, .feedback_resolved  .feedback_headline, .panel-heading.feedback_resolved
+{
+	background-color: #aaaaff;
+}
+.feedback_not_implemented, .feedback_not_implemented  .feedback_headline, .panel-heading.feedback_not_implemented
+{
+	background-color: #EA8969;
+}
+.feedback_not_implemented a, .feedback_not_implemented  .feedback_headline a, .panel-heading.feedback_not_implemented a
+{
+	color: #29080B
+}
+
+.comment
+{
+	padding: 0.5em 0.5em 0.5em 1em;
+	margin: 0.5em 0;
+}
+.comment .comment
+{
+	border-top: 1px dotted black;
+}
+.comment_head
+{
+	/* border-bottom: 1px dotted black; */
+	clear: both;
+	display: block;
+	height: 60px;
+}
+.comment_body
+{
+	padding-top: 0.5em;
+}
+
+.admin_comment
+{
+	background-color: #C2E1FF;
+}
+#footer {
+	padding-bottom: 1em;
+}
+
+/*
+  position: absolute;
+  bottom: 0;  stick to bottom
+  border: 1px solid black;
+}
+
+  clear:both;
+#footer .row {
+ position: absolute;
+}
+
+#footer .col-md-4
+{
+	clear: both;
+	display: inline;
+	position: relative;
+} */
+
+/****************************/
+/*		ONE PAGE THINGY		*/
+.one-page-block
+{
+    min-height: 100%;
+}
+/*
+.one-page-container
+{
+    display: inline-block;
+    position: relative;
+    width: 100%;
+}
+.dummy {
+    margin-top: 80%; /* this fixes the ratio	
+}
+.block-container
+{
+	position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+	min-height: 500px;
+}
+/*		/ONE PAGE THINGY		*/
+/****************************/
