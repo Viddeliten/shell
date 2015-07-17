@@ -354,7 +354,7 @@ function feedback_search($search_str, $from, $to)
 {
 	//hämtar sökresultat
 	$str="%".sql_safe(str_replace(" ","%",$search_str))."%";
-	$sql="SELECT  id, user, resolved, accepted, created, text, subject, plusones, nick, email, url, flattrID,
+	$sql="SELECT  id, user, resolved, accepted, not_implemented, created, text, subject, plusones, nick, email, url, flattrID,
 	".REL_STR." as rel
 	FROM ".PREFIX."feedback
 	WHERE (`text` LIKE '%$str%'	OR `subject` LIKE '%$str%')
@@ -532,7 +532,7 @@ function feedback_list_print($data)
 			echo '<div class="panel-heading ';
 				if($d['not_implemented']!=NULL)
 				{
-					//accepterat
+					//will not be implemented
 					echo "feedback_not_implemented\">";
 					// echo "<div class=\"comment\">";
 				}
