@@ -90,6 +90,7 @@
            <!-- <li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"about")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>?p=about" ><?php echo _("About"); ?></a></li> -->
 		   <?php display_custom_pages_menu(); ?>
             <li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"feedback")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>?p=feedback"><?php echo _("Feedback"); ?></a></li>
+			<li><?php flattr_button_show(SITE_OWNER_FLATTR_ID, SITE_URL, SITE_NAME, "", 'compact', "sv"); ?></li>
           </ul>
 		  <ul class="nav navbar-nav navbar-right">
 			<li><?php login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"'); ?></li>
@@ -150,6 +151,10 @@
     })();
 /* ]]> */</script>
 <!-- Slut Flattr-stuff -->
+
+<!-- Google Analytics -->
+<?php echo GoogleAnalyticsCode; ?>
+<!-- End Google Analytics -->
 	
 	<script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
 
