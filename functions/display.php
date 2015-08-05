@@ -9,7 +9,7 @@ function display_custom_pages_menu()
 	
 	foreach($custom_pages as $name => $content)
 	{
-		if(!isset($content['req_user_level']) || $content['req_user_level']<1 || $logged_in_level>=$content['req_user_level'])
+		if((!isset($content['req_user_level']) || $content['req_user_level']<1 || $logged_in_level>=$content['req_user_level']) && strcmp($content['slug'],"admin"))
 		{
 			if(!isset($content['subpages']) || empty($content['subpages']))
 			{
