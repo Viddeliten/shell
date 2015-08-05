@@ -1,15 +1,6 @@
 <?php
 
 /********************************/
-/*		Some strings			*/
-/********************************/
-define('FIRST_TIME_LOGIN_TEXT', _("Welcome, new member!"));
-
-//The following texts will only be used if there is no index.php in custom content folder
-define('SELLING_HEADLINE',_("Shell template"));
-define('SELLING_TEXT',_("Shell website for use as base when creating awesome stuff.<br />Download, upload and fill with awesomeness!"));
-
-/********************************/
 /*		Available pages			*/
 /********************************/
 //Slugs need to be untranslated or coder will have hell in case of many languages in translation!
