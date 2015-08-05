@@ -7,9 +7,9 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
-
 	<?php require_once("config.php"); ?>
+
+    <link rel="icon" href="<?php echo CUSTOM_CONTENT_PATH; ?>/favicon.ico">
 	
     <title><?php echo SITE_NAME; ?></title>
 
