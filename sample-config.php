@@ -64,4 +64,10 @@ if(file_exists("custom_content"))
 	define('CUSTOM_CONTENT_PATH',"custom_content");
 else
 	define('CUSTOM_CONTENT_PATH',"sample-custom_content");
+
+if(file_exists("translations"))
+	define('CUSTOM_TRANSLATION_PATH',"translations");
+else
+	define('CUSTOM_TRANSLATION_PATH',"sample-translations");
+
 ?>
