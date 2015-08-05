@@ -34,10 +34,17 @@ define("ReCaptcha_privatekey",""); // Secret key
 define("ReCaptcha_publickey",""); // Site key
 
 /********************************/
+/*			Flattr				*/
+/********************************/
+define('SITE_OWNER_FLATTR_ID', "");
+
+/********************************/
 /*		Google analytics		*/
 /********************************/
 //The code you get from Google Analytics to include in all pages ou want to track
 define("GoogleAnalyticsCode","");
+
+
 
 /********************************/
 /*		Some strings			*/
