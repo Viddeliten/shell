@@ -10,6 +10,17 @@ define('CUSTOM_PAGES_ARRAY',serialize(array(
 													"req_user_level"	=>	0 //If 1, only logged in users can see this. If >=2 only users with this admin level can see this link.
 																				//NOTE: This number only affects the visibility of the link. The contents has to be governed separately
 												),
+	_("Admin tools")					=>	array(	"slug"				=>	"admin", //This will only affect the admin-menu! Subpages will be added to the regular admin menu.
+																						// For this condition to be true, slug needs to be exactly "admin". req_user_level is not nessessary
+													"subpages"		=>	array(
+																				_("Things 1")	=>	array(	"slug"	=>	"things1",
+																											"req_user_level"	=>	5	//This will be seen by only highest level of admin
+																										),
+																				_("Things 2")	=>	array(	"slug"	=>	"things2",
+																											"req_user_level"	=>	2	//This will be seen by admins
+																										)
+																			)
+												),
 	_("Things")							=>	array(	"slug"	=>	"things",
 													"req_user_level"	=>	1,
 													"subpages"		=>	array(
