@@ -1,6 +1,6 @@
 <?php
 
-function display_messages_and_errors()
+function message_display_messages_and_errors()
 {
 	if(defined('MESS'))
 		echo "<div class=\"message_box well well-sm\">".MESS."</div>";

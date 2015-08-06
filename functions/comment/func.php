@@ -341,6 +341,8 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="wdgtlist")
 	//echo "<br />DEBUG1323: $sql";
 	if($cc=mysql_query($sql)) //Hämta bara de senaste
 	{
+		if(mysql_affected_rows()<1)
+			echo "<p>"._("No resent comments")."</p>";
 		echo "<ul class=\"".$ul_class."\">";
 		$first=1;
 		while($c = mysql_fetch_array($cc))

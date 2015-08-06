@@ -1,6 +1,6 @@
 <?php
 
-display_messages_and_errors();
+message_display_messages_and_errors();
 
 if(isset($_GET['reg']))
 {
