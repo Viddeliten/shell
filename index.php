@@ -48,6 +48,7 @@
   require_once("functions/display.php");
   require_once("functions/feedback/func.php");
   require_once("functions/comment/func.php");
+  require_once("functions/news.php");
   
   language_setup();
   
@@ -64,6 +65,7 @@
   comment_receive();
   user_receive();
   version_receive(); 
+  news_receive(); 
 
   if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
 	  require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");

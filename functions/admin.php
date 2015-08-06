@@ -12,11 +12,15 @@ function admin_display_contents()
 		{
 			admin_display_version();
 		}
+		else if(!strcmp($_GET['s'],"news"))
+		{
+			admin_display_news();
+		}
 		else
-			echo "<p>Unknown admin page</p>";
+			echo "<p>"._("Unknown admin page")."</p>";
 	}
 	else
-		echo "<p>No page selected</p>";
+		echo "<p>"._("No page selected")."</p>";
 }
 
 /*	Displays a dropdown in main menu if an admin is logged in	*/
@@ -33,7 +37,8 @@ function admin_menu_dropdown()
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'._("Admin tools").'<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="'.SITE_URL.'/?p=admin&amp;s=users">'._("Users").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=version">'._("Version").'</a></li>';
+            <li><a href="'.SITE_URL.'/?p=admin&amp;s=version">'._("Version").'</a></li>
+            <li><a href="'.SITE_URL.'/?p=admin&amp;s=news">'._("Publish site news").'</a></li>';
 
 		//Custom admin pages
 		foreach($custom_pages as $name => $content)
@@ -92,6 +97,12 @@ function admin_display_users()
 function admin_display_version()
 {
 	version_display_settings();
+}
+
+function admin_display_news()
+{
+	//Form for news input
+	news_form();
 }
 
 ?>
