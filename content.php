@@ -13,7 +13,11 @@ else if(isset($_GET['lostpassword']))
 }
 else if(isset($_GET['p']))
 {
-	if(!strcmp($_GET['p'],"feedback"))
+	if(custom_page_display())
+	{
+		//Do nothing else. =)
+	}
+	else if(!strcmp($_GET['p'],"feedback"))
 	{
 		feedback_show();
 	}
@@ -32,7 +36,7 @@ else if(isset($_GET['p']))
 	{
 		version_show_latest();
 	}
-	else if(!custom_page_display())
+	else 
 		echo "<p class=\"well message_box\">"._("Unknown page")."</p>";
 }
 else

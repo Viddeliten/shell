@@ -17,7 +17,8 @@ function admin_display_contents()
 			admin_display_news();
 		}
 		else
-			echo "<p>"._("Unknown admin page")."</p>";
+			echo "<div class=\"row\"><div class=\"well\"><p class=\"error\">"._("Unknown admin page")."</p></div></div>";
+			// add_error(_("Unknown admin page"));
 	}
 	else
 		echo "<p>"._("No page selected")."</p>";

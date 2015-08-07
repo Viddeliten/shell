@@ -57,7 +57,10 @@ function login_check()
 			{
 				//medlemmen har aldrig loggat in förr
 				//Ge medlemmen intro
-				add_message(FIRST_TIME_LOGIN_TEXT);
+				if(FIRST_TIME_LOGIN_TEXT!="")
+					add_message(FIRST_TIME_LOGIN_TEXT);
+				if(function_exists ( "custom_first_login" ))
+					custom_first_login($user['id']);
 			}
 			else
 				add_message(_("Login successfull"));

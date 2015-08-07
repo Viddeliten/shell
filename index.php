@@ -35,6 +35,10 @@
   <?php session_start(); ?>
    
   <?php
+  
+    if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
+	  require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
+
   require_once("functions/login.php");
   require_once("functions/db_connect.php");
   require_once("functions/string.php");
@@ -67,8 +71,6 @@
   version_receive(); 
   news_receive(); 
 
-  if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
-	  require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
   ?>
   
  

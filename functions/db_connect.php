@@ -15,4 +15,27 @@ function db_close($conn)
 {
 	mysql_close($conn);
 }
+
+function sql_print_results($alldata)
+{
+	//Prints sql results in a table
+
+	echo "<table class=\"small table table-striped\"><tr>";
+	for($i=0;$i<mysql_num_fields($alldata);$i++)
+	{
+		echo "<th>".mysql_field_name($alldata,$i)."</th>";
+	}
+	echo "</tr>";
+
+	while($rad=mysql_fetch_row($alldata))
+	{
+		echo "<tr>";
+		for($i=0;$i<mysql_num_fields($alldata);$i++)
+		{
+			echo "<td>".$rad[$i]."</td>";
+		}
+		echo "</tr>";
+	}
+	echo "</table>";
+}
 ?>
