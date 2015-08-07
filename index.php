@@ -53,8 +53,11 @@
   require_once("functions/feedback/func.php");
   require_once("functions/comment/func.php");
   require_once("functions/news.php");
+  require_once("functions/mailer.php");
   
   language_setup();
+
+  $connection=db_connect(db_host, db_name, db_user, db_pass);
   
   //Include custom content
   if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
@@ -62,8 +65,7 @@
   
 
   
-  ?>
-  <?php $connection=db_connect(db_host, db_name, db_user, db_pass);
+
   login_receive();
   feedback_recieve();
   comment_receive();

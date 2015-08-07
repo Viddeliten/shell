@@ -1,6 +1,6 @@
-function replace_html(div_id_to, path)
+function replace_html_div(div_id_to, path)
 {
-	if(path)
+	if(path !== undefined)
 	{
 		$.get( path, function( data ) {
 			$( '#' + div_id_to ).replaceWith( data );
