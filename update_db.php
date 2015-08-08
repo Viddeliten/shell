@@ -47,6 +47,15 @@ if($serialized_db!==FALSE)
 				//Remove first row of both, because it only contains create table, wich can't be different.
 				array_shift ( $shell_rows );
 				array_shift ( $current_rows );
+				
+				foreach($shell_rows as $key => $s)
+				{
+					$shell_rows[$key]=preg_replace("/AUTO_INCREMENT=\d/","", $s);
+				}
+				foreach($current_rows as $key => $s)
+				{
+					$current_rows[$key]=preg_replace("/AUTO_INCREMENT=\d/","", $s);
+				}
 
 				echo "shell_rows<pre>".print_r($shell_rows,1)."</pre>";
 				echo "current_rows<pre>".print_r($current_rows,1)."</pre>";
