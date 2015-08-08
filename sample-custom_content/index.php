@@ -24,7 +24,8 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="col-md-4 well">
-					<h3>Block</h3>
+					<h3><?php echo _("Diskussion"); ?></h3>
+					<?php comments_show_latest_short(5); ?>
 				</div>
 				<div class="col-md-4 well">
 					<h3>Block</h3>
