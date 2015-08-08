@@ -326,13 +326,27 @@ function comment_show_comments($id, $type)
 
 function comments_show_comments_and_replies($id, $type)
 {
-	//echo "<br />DEBUG: comments_show_comments_and_replies($id, $type)";
-	echo "<div id=\"comments".$id."\" style=\"display:none\">";
-	echo "<p><a class=\"comments".$id." commentclicker\" onClick=\"showhide('comments".$id."');showhide('".$type."comments".$id."');\" class=\"commentclicker\" href=\"#comment\">[-"._("Hide comments")."-]</a></p>"; //toggle-pryl! =)
-	$nrcomments=comment_show_comments($id, $type);
-	comment_form_show($id, $type, _("Add a comment:"));
+	if(isset($_GET['comment'])) //we are on a link to a specific comment
+		echo "<div id=\"comments".$id."\">";
+	else
+		echo "<div id=\"comments".$id."\" style=\"display:none\">";
+		
+		echo "<p><a class=\"comments".$id." commentclicker\" onClick=\"showhide('comments".$id."');showhide('".$type."comments".$id."');\" class=\"commentclicker\" href=\"#comment\">[-"._("Hide comments")."-]</a></p>"; //toggle-pryl! =)
+		$nrcomments=comment_show_comments($id, $type);
+		comment_form_show($id, $type, _("Add a comment:"));
 	echo "</div>";
-	echo "<p><a id=\"".$type."comments".$id."\" onClick=\"showhide('comments".$id."');showhide('".$type."comments".$id."');\" class=\"commentclicker\" href=\"#comment\">[-"._("Show comments")." ($nrcomments)-]</a></p>"; //gör den här till toggle-pryl sen!
+	echo "<p>";
+	if(isset($_GET['comment'])) //we are on a link to a specific comment
+		echo "
+		<a id=\"".$type."comments".$id."\" style=\"display:none\"";
+	else
+		echo "
+		<a id=\"".$type."comments".$id."\"";
+	echo " 
+			onClick=\"showhide('comments".$id."');showhide('".$type."comments".$id."');\" class=\"commentclicker\" href=\"#comment\">
+				[-"._("Show comments")." ($nrcomments)-]
+		</a>
+	</p>";
 }
 
 function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlist")
@@ -347,7 +361,7 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlis
 		$first=1;
 		while($c = mysql_fetch_array($cc))
 		{
-			// $comment_link=comment_get_link($c['id']);
+			$comment_link=comment_get_link($c['id']);
 			if($first)
 			{
 				echo "<li class=\"first\">";
@@ -429,8 +443,10 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlis
 	}
 }
 
-function comment_get_link($id)
+function comment_get_link($id, $link_id=NULL)
 {
+	if($link_id===NULL)
+		$link_id=$id;
 	$sql="SELECT id, comment_type, comment_on FROM ".PREFIX."comment WHERE id=".sql_safe($id).";";
 	// echo "<br />DEBUG2055: $sql";
 	if($cc=mysql_query($sql))
@@ -440,14 +456,14 @@ function comment_get_link($id)
 			// echo "<br />DEBUG2056: ".$c['comment_type'];
 			if(!strcmp($c['comment_type'],"comment"))
 			{
-				return comment_get_link($c['comment_on']);
+				return comment_get_link($c['comment_on'], $id);
 			}
 			else
 			{
 				if(!strcmp($c['comment_type'],"feedback"))
-					return SITE_URL."?p=feedback&amp;id=".$c['comment_on']."#comment_".$c['id'];
+					return SITE_URL."?comment&amp;p=feedback&amp;id=".$c['comment_on']."#comment_".$link_id;
 				else if(!strcmp($c['comment_type'],"user"))
-					return SITE_URL."?p=user&amp;user=".$c['comment_on']."#comment_".$c['id'];
+					return SITE_URL."?comment&amp;p=user&amp;user=".$c['comment_on']."#comment_".$link_id;
 			}
 		}
 	}
