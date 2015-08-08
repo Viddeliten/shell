@@ -29,6 +29,16 @@ html, body {
 	text-align: center;
 }
 
+.leftfloat
+{
+	float: left;
+}
+
+img.leftfloat
+{
+	margin-right: 0.5em;
+}
+
 .navbar-nav li iframe {
     margin-top: 15px;
     margin-bottom: 15px;
@@ -45,6 +55,22 @@ html, body {
 
 .form-inline {
 margin-top: 10px;
+}
+
+.date {
+	font-size: 90%;
+}
+
+ul.commentlist
+{
+	list-style-type: none;
+	padding: 0;
+}
+
+.commentlist li:not(.first)
+{
+	border-top: 1px solid black;
+	padding-top: 1em;
 }
 
 .message_box

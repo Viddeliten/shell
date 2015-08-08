@@ -335,7 +335,7 @@ function comments_show_comments_and_replies($id, $type)
 	echo "<p><a id=\"".$type."comments".$id."\" onClick=\"showhide('comments".$id."');showhide('".$type."comments".$id."');\" class=\"commentclicker\" href=\"#comment\">[-"._("Show comments")." ($nrcomments)-]</a></p>"; //gör den här till toggle-pryl sen!
 }
 
-function comments_show_latest_short($antal=3, $length=150, $ul_class="wdgtlist")
+function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlist")
 {
 	$sql="SELECT id, comment_type, user, nick, email, url, flattrID, added, SUBSTRING(`comment`, 1, ".sql_safe( $length).") AS comment FROM ".PREFIX."comment WHERE is_spam<1 ORDER BY added DESC LIMIT 0,".sql_safe($antal).";";
 	//echo "<br />DEBUG1323: $sql";
@@ -369,13 +369,13 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="wdgtlist")
 							if($im=mysql_fetch_array($ii))
 							{	
 								if($im['img_thumb']!=NULL)
-									echo "<div class=\"left_avatar left\"><img src=\"".USER_IMG_URL.$im['img_thumb']."\" /></div>" ;
+									echo "<div class=\"left_avatar leftfloat\"><img src=\"".USER_IMG_URL.$im['img_thumb']."\" /></div>" ;
 							}
 						}
 							
 						if(!isset($im) || $im['img_thumb']==NULL)
 						{
-							echo "<div class=\"left_avatar\"><img src=\"http://www.gravatar.com/avatar/".md5( strtolower( trim( user_get_email($c['user']) ) ) )."?s=60\" /></div>" ;
+							echo "<img class=\"left_avatar leftfloat\"  src=\"http://www.gravatar.com/avatar/".md5( strtolower( trim( user_get_email($c['user']) ) ) )."?s=60\" />" ;
 						}
 						// echo "<div class=\"date\">Posted by <a href=\"?page=user&amp;user=".$c['user']."\"><strong>".user_get_name($c['user'])."</strong></a> at ";
 					}
@@ -384,7 +384,7 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="wdgtlist")
 						//Kolla om vi har en gravatar
 						if($c['email']!=NULL)
 						{
-							echo "<img class=\"left_avatar\"  src=\"http://www.gravatar.com/avatar/".md5( strtolower( trim( $c['email'] ) ) )."?s=60\" />" ;
+							echo "<img class=\"left_avatar leftfloat\"  src=\"http://www.gravatar.com/avatar/".md5( strtolower( trim( $c['email'] ) ) )."?s=60\" />" ;
 						}
 
 						// if($c['url']!=NULL)
