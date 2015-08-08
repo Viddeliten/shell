@@ -13,7 +13,6 @@ if($serialized_db!==FALSE)
 	//First, just create the db's
 	for($i=0; $i<count($create); $i++)
 	{
-		echo PREFIX;
 		$create[$i]['Create Table']=str_replace("CREATE TABLE IF NOT EXISTS `".$create[$i]['Table']."`","CREATE TABLE IF NOT EXISTS `".PREFIX.$create[$i]['Table']."`",$create[$i]['Create Table']);
 		echo "<pre>".$create[$i]['Create Table']."</pre>";
 		//create the table if it doesn't exist
@@ -56,6 +55,9 @@ if($serialized_db!==FALSE)
 				{
 					$current_rows[$key]=preg_replace("/AUTO_INCREMENT=\d/","", $s);
 				}
+				
+				//sort shell_rows so that keys comes before the other stuff
+				sort($shell_rows, SORT_STRING);
 
 				echo "shell_rows<pre>".print_r($shell_rows,1)."</pre>";
 				echo "current_rows<pre>".print_r($current_rows,1)."</pre>";
@@ -66,6 +68,7 @@ if($serialized_db!==FALSE)
 					if(!in_array($s,$current_rows))
 					{
 						echo "<br />This does not exist: $s";
+						
 					}
 				}
 				
