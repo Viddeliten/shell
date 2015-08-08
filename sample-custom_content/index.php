@@ -6,7 +6,12 @@
 		<p><?php echo _("It's just here for testing purposes."); ?></p>
 	</div>
 </div>
-<!--<div class="one-page-container"> -->
+<div class="row" id="news">
+	<div class="col-md-12">
+		<?php news_show(1, _("Latest news"),2); ?>
+		<?php news_show_latest_short(3, 150, 0, 3, 1, _("More news"), 2); ?>
+	</div>
+</div>
 <div class="row">
 	<div class="col-md-12">
 
