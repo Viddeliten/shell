@@ -14,7 +14,6 @@ if($serialized_db!==FALSE)
 	for($i=0; $i<count($create); $i++)
 	{
 		$create[$i]['Create Table']=str_replace("CREATE TABLE IF NOT EXISTS `".$create[$i]['Table']."`","CREATE TABLE IF NOT EXISTS `".PREFIX.$create[$i]['Table']."`",$create[$i]['Create Table']);
-		echo "<pre>".$create[$i]['Create Table']."</pre>";
 		//create the table if it doesn't exist
 		if($cr=mysql_query($create[$i]['Create Table']))
 		{
@@ -30,6 +29,7 @@ if($serialized_db!==FALSE)
 	//Check that all columns are the same types and stuff
 	
 	//Look for differences:
+	$suggested_sql=array();
 	for($i=0; $i<count($create); $i++)
 	{
 		echo "<h2>".PREFIX.$create[$i]['Table']."</h2>";
@@ -47,13 +47,16 @@ if($serialized_db!==FALSE)
 				array_shift ( $shell_rows );
 				array_shift ( $current_rows );
 				
+				//remove auto increment and trailing commas
 				foreach($shell_rows as $key => $s)
 				{
-					$shell_rows[$key]=preg_replace("/AUTO_INCREMENT=\d/","", $s);
+					$shell_rows[$key] = rtrim($s, ',');
+					$shell_rows[$key]=preg_replace("/AUTO_INCREMENT=\d*/","", $s);
 				}
 				foreach($current_rows as $key => $s)
 				{
-					$current_rows[$key]=preg_replace("/AUTO_INCREMENT=\d/","", $s);
+					$current_rows[$key] = rtrim($s, ',');
+					$current_rows[$key]=preg_replace("/AUTO_INCREMENT=\d*/","", $s);
 				}
 				
 				//sort shell_rows so that keys comes before the other stuff
@@ -63,51 +66,53 @@ if($serialized_db!==FALSE)
 				echo "current_rows<pre>".print_r($current_rows,1)."</pre>";
 				
 				//For each of $shell rows, check that the row exists in $current row
-				foreach($shell_rows as $s)
+				foreach($shell_rows as $k => $s)
 				{
 					if(!in_array($s,$current_rows))
 					{
-						echo "<br />This does not exist: $s";
+						echo "<br />This exists in shell but not in current table: '$s'";
 						
+						if (strpos($s,'KEY') !== false)
+						{
+							$suggested_sql[]="ALTER TABLE ".PREFIX.$create[$i]['Table']." ADD ".$s.";";
+						}
+						else if(preg_match("/`[a-z0-9]*`/", $s, $matches)) //This should mean we are dealing with a column
+						{
+							//Check if $matches[0] exists in any of the rows in $current_rows
+							$column_name = $matches[0];
+							$alter=0;
+							foreach($current_rows as $cr)
+							{
+								if(preg_match("/$column_name/", $cr))
+									$alter=1;
+							}
+							if($alter)
+							{
+								//column exists in current table, so we should just alter it.
+								$suggested_sql[]="ALTER TABLE ".PREFIX.$create[$i]['Table']." MODIFY ".$s.";";
+							}
+							else
+							{
+								//column DOES NOT exists in current table, so we should add it.
+								$suggested_sql[]="ALTER TABLE ".PREFIX.$create[$i]['Table']." ADD ".$s.";";
+							}
+						}
+						else if ($k==count($shell_rows)-1)
+						{
+							$s=str_replace(")", "", $s);
+							$suggested_sql[]="ALTER TABLE ".PREFIX.$create[$i]['Table']." ".$s;
+						}
 					}
 				}
 				
 			}
 		}
-		
-		
-		
-		
-		//CREATE [TEMPORARY] TABLE [IF NOT EXISTS] tbl_name
-		//Create temporary table
-		/*
-		echo "<h2>".PREFIX.$create[$i]['Table']."</h2>";
-		$sql=str_replace("CREATE TABLE IF NOT EXISTS `", "CREATE TEMPORARY TABLE `temp_", $create[$i]['Create Table']);
-		if(mysql_query($sql))
-		{
-			//Compare
-			$sql="SELECT column_name,ordinal_position,data_type,column_type FROM
-			(
-				SELECT
-					column_name,ordinal_position,
-					data_type,column_type,COUNT(1) rowcount
-				FROM information_schema.columns
-				WHERE table_schema=DATABASE()
-				AND table_name IN ('".PREFIX.$create[$i]['Table']."','temp_".PREFIX.$create[$i]['Table']."')
-				GROUP BY
-					column_name,ordinal_position,
-					data_type,column_type
-				HAVING COUNT(1)=1
-			) A;";
-			if($dd=mysql_query($sql))
-			{
-				while($d=mysql_fetch_assoc($dd))
-				{
-					echo "<pre>".print_r($d,1)."</pre>";
-				}
-			}
-		} */
 	}
+	
+	echo "<h2>Suggested changes</h2>";
+	foreach($suggested_sql as $s)
+		echo "<br />$s";
+	// echo "<pre>".print_r($suggested_sql,1)."</pre>";
 }
 
 db_close($connection);
