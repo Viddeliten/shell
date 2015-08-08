@@ -100,7 +100,7 @@ if($serialized_db!==FALSE)
 						else if ($k==count($shell_rows)-1)
 						{
 							$s=str_replace(")", "", $s);
-							$suggested_sql[]="ALTER TABLE ".PREFIX.$create[$i]['Table']." ".$s;
+							$suggested_sql[]="ALTER TABLE ".PREFIX.$create[$i]['Table']." ".$s.";";
 						}
 					}
 				}
