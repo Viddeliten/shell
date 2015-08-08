@@ -51,12 +51,12 @@ if($serialized_db!==FALSE)
 				foreach($shell_rows as $key => $s)
 				{
 					$shell_rows[$key] = rtrim($s, ',');
-					$shell_rows[$key]=preg_replace("/AUTO_INCREMENT=\d*/","", $s);
+					$shell_rows[$key]=preg_replace("/AUTO_INCREMENT=\d*/","", $shell_rows[$key]);
 				}
 				foreach($current_rows as $key => $s)
 				{
 					$current_rows[$key] = rtrim($s, ',');
-					$current_rows[$key]=preg_replace("/AUTO_INCREMENT=\d*/","", $s);
+					$current_rows[$key]=preg_replace("/AUTO_INCREMENT=\d*/","", $shell_rows[$key]);
 				}
 				
 				//sort shell_rows so that keys comes before the other stuff
