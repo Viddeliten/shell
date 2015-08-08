@@ -56,7 +56,7 @@ if($serialized_db!==FALSE)
 				foreach($current_rows as $key => $s)
 				{
 					$current_rows[$key] = rtrim($s, ',');
-					$current_rows[$key]=preg_replace("/AUTO_INCREMENT=\d*/","", $shell_rows[$key]);
+					$current_rows[$key]=preg_replace("/AUTO_INCREMENT=\d*/","", $current_rows[$key]);
 				}
 				
 				//sort shell_rows so that keys comes before the other stuff
