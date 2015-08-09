@@ -44,7 +44,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `size` smallint(6) NOT NULL DEFAULT '0' COMMENT '1=bugfix, 2=small improvement, 3=big thing, 0=unset',
   `merged_with` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:3;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:330:"CREATE TABLE IF NOT EXISTS `flattr` (
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:3;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:330:"CREATE TABLE IF NOT EXISTS `flattr` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `flattrID` varchar(128) COLLATE utf8_bin DEFAULT NULL,
@@ -64,14 +64,14 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `activated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `DH_mess_event_active` (`event`,`activated`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:5;a:2:{s:5:"Table";s:22:"messages_to_users_sent";s:12:"Create Table";s:441:"CREATE TABLE IF NOT EXISTS `messages_to_users_sent` (
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:5;a:2:{s:5:"Table";s:22:"messages_to_users_sent";s:12:"Create Table";s:441:"CREATE TABLE IF NOT EXISTS `messages_to_users_sent` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `message_event` varchar(64) CHARACTER SET latin1 NOT NULL,
   `user` int(11) NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `adress` varchar(128) CHARACTER SET latin1 DEFAULT NULL COMMENT 'what email adress it went to, or ''ingame''',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:6;a:2:{s:5:"Table";s:4:"news";s:12:"Create Table";s:425:"CREATE TABLE IF NOT EXISTS `news` (
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:6;a:2:{s:5:"Table";s:4:"news";s:12:"Create Table";s:425:"CREATE TABLE IF NOT EXISTS `news` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `headline` text CHARACTER SET latin1 NOT NULL,
   `time` datetime NOT NULL,
@@ -88,7 +88,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `message` text COLLATE utf8_bin,
   `closed` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:8;a:2:{s:5:"Table";s:7:"plusone";s:12:"Create Table";s:407:"CREATE TABLE IF NOT EXISTS `plusone` (
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:8;a:2:{s:5:"Table";s:7:"plusone";s:12:"Create Table";s:407:"CREATE TABLE IF NOT EXISTS `plusone` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `typ` varchar(64) CHARACTER SET latin1 DEFAULT NULL,
   `plus_for` int(11) NOT NULL COMMENT 'id på det som plussats',
@@ -96,7 +96,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:9;a:2:{s:5:"Table";s:8:"privmess";s:12:"Create Table";s:398:"CREATE TABLE IF NOT EXISTS `privmess` (
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:9;a:2:{s:5:"Table";s:8:"privmess";s:12:"Create Table";s:434:"CREATE TABLE IF NOT EXISTS `privmess` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sender` int(11) NOT NULL,
   `reciever` int(11) NOT NULL,
@@ -104,8 +104,9 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `subject` text CHARACTER SET latin1,
   `message` text CHARACTER SET latin1,
   `opened` datetime DEFAULT NULL,
+  `deleted` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:10;a:2:{s:5:"Table";s:4:"user";s:12:"Create Table";s:548:"CREATE TABLE IF NOT EXISTS `user` (
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:10;a:2:{s:5:"Table";s:4:"user";s:12:"Create Table";s:548:"CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lastlogin` datetime DEFAULT NULL,
