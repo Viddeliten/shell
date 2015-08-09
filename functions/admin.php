@@ -16,6 +16,10 @@ function admin_display_contents()
 		{
 			admin_display_news();
 		}
+		else if(!strcmp($_GET['s'],"mess"))
+		{
+			admin_display_messages();
+		}
 		else
 			echo "<div class=\"row\"><div class=\"well\"><p class=\"error\">"._("Unknown admin page")."</p></div></div>";
 			// add_error(_("Unknown admin page"));
@@ -39,7 +43,8 @@ function admin_menu_dropdown()
           <ul class="dropdown-menu" role="menu">
             <li><a href="'.SITE_URL.'/?p=admin&amp;s=users">'._("Users").'</a></li>
             <li><a href="'.SITE_URL.'/?p=admin&amp;s=version">'._("Version").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=news">'._("Publish site news").'</a></li>';
+            <li><a href="'.SITE_URL.'/?p=admin&amp;s=news">'._("Site news").'</a></li>
+            <li><a href="'.SITE_URL.'/?p=admin&amp;s=mess">'._("Messages").'</a></li>';
 
 		//Custom admin pages
 		foreach($custom_pages as $name => $content)
@@ -104,6 +109,26 @@ function admin_display_news()
 {
 	//Form for news input
 	news_form();
+}
+
+function admin_display_messages()
+{
+	// usermessage_receive();
+	
+	echo "<h2>"._("Message administration")."</h2>";
+	
+	usermessage_admin_show_selecter_form();
+	//Hämta alla typer av meddelanden som finns
+	
+	
+	if(isset($_POST['edit_message']) && isset($_POST['event']) && $_POST['event']!="")
+	{
+		usermessage_admin_show_editer_form($_POST['event']);
+	}
+	else if(isset($_POST['add_message']))
+	{
+		usermessage_admin_show_form($_POST);
+	}
 }
 
 ?>

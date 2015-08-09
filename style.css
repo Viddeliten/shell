@@ -33,6 +33,10 @@ html, body {
 {
 	float: left;
 }
+.rightfloat
+{
+	float: right;
+}
 
 img.leftfloat
 {
@@ -48,6 +52,12 @@ img.leftfloat
 {
 	margin-top: 0.5em;
 }
+
+.notice
+{
+	margin-top: 1em;
+}
+
 .start-container {
   padding: 40px 15px;
   text-align: center;
@@ -77,10 +87,7 @@ ul.commentlist
 {
 	margin-top: 1em;
 }
-.error
-{
-	color: red;
-}
+
 .author
 {
 	font-size: 80%;
@@ -142,6 +149,92 @@ ul.commentlist
 {
 	background-color: #C2E1FF;
 }
+
+/************************************/
+/*		For notices and such		*/
+/************************************/
+.notice .panel-heading {
+	padding: 15px 15px;
+}
+.notice .panel-heading h3
+{
+	font-weight: bold;
+}
+.notice .close-button {
+	margin-top: -8px;
+}
+
+.information, .information .panel-heading {
+	border-color: #00529B;
+}
+.information .panel-heading {
+	background-color: #73BCDE;
+	color: #00284D;
+}
+.information {
+	background-color: #BDE5F8;
+	color: #00529B;
+}
+
+.success, .success .panel-heading {
+	border-color: #4F8A10;
+}
+.success .panel-heading {
+	background-color: #B4DE6C;
+	color: #224200;
+}
+.success {
+	background-color: #DFF2BF;
+	color: #4F8A10;
+}
+
+.warning, .warning .panel-heading {
+	border-color: #9F6000;
+}
+.warning .panel-heading {
+	background-color: #EDCE50;
+	color: #3C2400;
+}
+.warning {
+	background-color: #FEEFB3;
+	color: #9F6000;
+}
+
+.error, .error .panel-heading {
+	border-color: #D8000C;
+}
+.error .panel-heading {
+	background-color: #ED7C7C;
+	color: #570005;
+}
+.error {
+	background-color: #FFBABA;
+	color: #D8000C;
+}
+
+.close-button {
+  background: #fac5cf;
+  background-image: -webkit-linear-gradient(top, #fac5cf, #9c1a1a);
+  background-image: -moz-linear-gradient(top, #fac5cf, #9c1a1a);
+  background-image: -ms-linear-gradient(top, #fac5cf, #9c1a1a);
+  background-image: -o-linear-gradient(top, #fac5cf, #9c1a1a);
+  background-image: linear-gradient(to bottom, #fac5cf, #9c1a1a);
+  -webkit-border-radius: 26;
+  -moz-border-radius: 26;
+  border-radius: 26px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 0px 10px 1px 10px;
+  border: solid #520808 2px;
+  text-decoration: none;
+}
+
+.close-button:hover {
+  background: #911a1a;
+  text-decoration: none;
+}
+
 #footer {
 	padding-bottom: 1em;
 }

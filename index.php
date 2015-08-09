@@ -54,6 +54,9 @@
   require_once("functions/comment/func.php");
   require_once("functions/news.php");
   require_once("functions/mailer.php");
+  require_once("functions/usermessage.php");
+  require_once("functions/privmess.php");
+  require_once("functions/notice.php");
   
   language_setup();
 
@@ -72,6 +75,11 @@
   user_receive();
   version_receive(); 
   news_receive(); 
+  usermessage_receive();
+  notice_receive();
+  
+  if(isset($_SESSION[PREFIX.'user_id']))
+	usermessage_check_messages($_SESSION[PREFIX.'user_id']);
 
   ?>
   

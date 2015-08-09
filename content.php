@@ -1,6 +1,8 @@
 <?php
 
 message_display_messages_and_errors();
+if(login_check_logged_in_mini()>0)
+	notice_display_notices($_SESSION[PREFIX.'user_id']);
 
 if(isset($_GET['reg']))
 {
