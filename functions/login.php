@@ -168,16 +168,6 @@ function login_logout()
 	}
 }
 
-function login_display_user_dropdown()
-{
-	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.$_SESSION[PREFIX."username"].' <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="'.SITE_URL.'/?p=usersettings">'._("Settings").'</a></li>
-            <li class="divider"></li>
-            <li><a href="'.SITE_URL.'/?logout">'._("Log out").'</a></li>
-          </ul>';
-}
-
 function login_form_login_in_navbar()
 {
 	login_check_logged_in_mini();
@@ -185,7 +175,7 @@ function login_form_login_in_navbar()
 	{
 		//User dropdown menu
 		echo '<li class="dropdown">';
-			login_display_user_dropdown();
+			user_display_dropdown();
         echo '</li>';
 	}
 	else
@@ -426,7 +416,7 @@ function login_display_link($a_text="")
 	if(isset($_SESSION[PREFIX."username"]))
 	{
 		//User dropdown menu
-		login_display_user_dropdown();
+		user_display_dropdown();
 	}
 	else
 	{

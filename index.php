@@ -77,6 +77,7 @@
   news_receive(); 
   usermessage_receive();
   notice_receive();
+  privmess_receive();
   
   if(isset($_SESSION[PREFIX.'user_id']))
 	usermessage_check_messages($_SESSION[PREFIX.'user_id']);

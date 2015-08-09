@@ -23,7 +23,12 @@ else if(isset($_GET['p']))
 	{
 		feedback_show();
 	}
-	else if(!strcmp($_GET['p'],"usersettings"))
+	else if(!strcmp($_GET['p'],"user") && isset($_GET['s']) && !strcmp($_GET['s'],"privmess"))
+	{
+		privmess_display();
+	}
+	// else if(!strcmp($_GET['p'],"usersettings"))
+	else if(!strcmp($_GET['p'],"user") && isset($_GET['s']) && !strcmp($_GET['s'],"settings"))
 	{
 		user_display_settings();
 	}

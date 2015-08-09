@@ -47,7 +47,14 @@ img.leftfloat
     margin-top: 15px;
     margin-bottom: 15px;
 }
+.badge {
+	background-color: #C94F4F;
+}
 
+tr.active td
+{
+	font-weight: bold;
+}
 .row
 {
 	margin-top: 0.5em;
@@ -92,6 +99,11 @@ ul.commentlist
 {
 	font-size: 80%;
 	float: right;
+}
+
+h1.panel-title
+{
+	font-size: 180%;
 }
 /*
 .feedback_list_line
