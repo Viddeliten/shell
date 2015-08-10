@@ -21,8 +21,7 @@ function admin_display_contents()
 			admin_display_messages();
 		}
 		else
-			echo "<div class=\"row\"><div class=\"well\"><p class=\"error\">"._("Unknown admin page")."</p></div></div>";
-			// add_error(_("Unknown admin page"));
+			echo "<div class=\"message_box error well\">"._("Unknown admin page")."</div>";
 	}
 	else
 		echo "<p>"._("No page selected")."</p>";

@@ -3,17 +3,17 @@
 function message_display_messages_and_errors()
 {
 	if(defined('MESS'))
-		echo "<div class=\"message_box well well-sm\">".MESS."</div>";
+		echo "<div class=\"message_box well\">".MESS."</div>";
 	for($i=0;defined('MESS'.$i);$i++)
 	{
-		echo "<div class=\"message_box well well-sm\">".constant('MESS'.$i)."</div>";
+		echo "<div class=\"message_box well\">".constant('MESS'.$i)."</div>";
 	}
 		
 	if(defined('ERROR'))
-		echo "<div class=\"message_box error well well-sm\">".ERROR."</div>";
+		echo "<div class=\"message_box error well\">".ERROR."</div>";
 	for($i=0;defined('ERROR'.$i);$i++)
 	{
-		echo "<div class=\"message_box error well well-sm\">".constant('ERROR'.$i)."</div>";
+		echo "<div class=\"message_box error well\">".constant('ERROR'.$i)."</div>";
 	}
 }
 

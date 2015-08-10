@@ -66,7 +66,8 @@
   if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
 	  require_once(CUSTOM_CONTENT_PATH."/globals.php");
   
-
+  if(file_exists(CUSTOM_CONTENT_PATH."/receive.php"))
+	  require_once(CUSTOM_CONTENT_PATH."/receive.php");
   
 
   login_receive();
