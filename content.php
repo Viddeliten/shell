@@ -23,6 +23,18 @@ else if(isset($_GET['p']))
 	{
 		feedback_show();
 	}
+	else if(!strcmp($_GET['p'],"user") && isset($_GET['s']) && !strcmp($_GET['s'],"profile"))
+	{
+		if(isset($_GET['user']))
+			$user=$_GET['user'];
+		else if(isset($_SESSION[PREFIX.'user_id']))
+			$user=$_SESSION[PREFIX.'user_id'];
+		else
+			echo "<p class=\"well message_box\">"._("Missing user id")."</p>";
+		
+		if(isset($user))
+			user_display_profile($user);
+	}
 	else if(!strcmp($_GET['p'],"user") && isset($_GET['s']) && !strcmp($_GET['s'],"privmess"))
 	{
 		privmess_display();

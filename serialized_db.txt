@@ -44,7 +44,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `size` smallint(6) NOT NULL DEFAULT '0' COMMENT '1=bugfix, 2=small improvement, 3=big thing, 0=unset',
   `merged_with` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:3;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:330:"CREATE TABLE IF NOT EXISTS `flattr` (
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:3;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:330:"CREATE TABLE IF NOT EXISTS `flattr` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `flattrID` varchar(128) COLLATE utf8_bin DEFAULT NULL,
@@ -106,12 +106,13 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `opened` datetime DEFAULT NULL,
   `deleted` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:10;a:2:{s:5:"Table";s:4:"user";s:12:"Create Table";s:548:"CREATE TABLE IF NOT EXISTS `user` (
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:10;a:2:{s:5:"Table";s:4:"user";s:12:"Create Table";s:640:"CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lastlogin` datetime DEFAULT NULL,
   `username` varchar(16) COLLATE utf8_bin DEFAULT NULL,
   `password` text COLLATE utf8_bin,
+  `description` text COLLATE utf8_bin COMMENT 'user defined text for presentation/profile',
   `email` varchar(128) COLLATE utf8_bin NOT NULL,
   `level` int(11) NOT NULL DEFAULT '1' COMMENT 'vilka rättigheter användaren har beror på denna siffra',
   `inactive` datetime DEFAULT NULL,

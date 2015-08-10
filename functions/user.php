@@ -45,6 +45,14 @@ function user_receive()
 			flattr_set_flattr_choice($user_id, $_POST['flattr_choice']);
 		}
 	}
+	else if(isset($_POST['profile_save']))
+	{
+		$sql="UPDATE ".PREFIX."user SET description='".sql_safe($_POST['description'])."' WHERE id=".sql_safe($_SESSION[PREFIX.'user_id']).";";
+		if(mysql_query($sql))
+			add_message(_("Profile updated"));
+		else
+			add_error(sprintf(_("Profile update fail<br />SQL: %s<br />ERROR: %s"),$sql,mysql_error()));
+	}
 }
 
 function user_display_dropdown()
@@ -66,6 +74,7 @@ function user_display_dropdown()
 				echo ' <span class="badge">'.$privmessnr.'</span>';
 			}
 			echo '</a></li>
+            <li><a href="'.SITE_URL.'/?p=user&amp;s=profile">'._("Profile").'</a></li>
             <li><a href="'.SITE_URL.'/?p=user&amp;s=settings">'._("Settings").'</a></li>
             <li class="divider"></li>
             <li><a href="'.SITE_URL.'/?logout">'._("Log out").'</a></li>
@@ -80,6 +89,22 @@ function user_get_name($id)
 		if($h=@mysql_fetch_array($hh))
 			return $h['username'];
 	return NULL;
+}
+function user_get_description($id)
+{
+	$sql="SELECT description FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
+	if($hh=mysql_query($sql))
+		if($h=@mysql_fetch_array($hh))
+			return $h['description'];
+	return NULL;
+}
+function user_get_avatar_path($user_id)
+{
+	//Check if user has an image
+	if(file_exists("img/avatars/".$user_id.".png"))
+		return "img/avatars/".$user_id.".png";
+	else
+		return "img/no_avatar.png";
 }
 function user_get_email($id)
 {
@@ -134,6 +159,54 @@ function user_get_id_from_username($username)
 		if($h=@mysql_fetch_array($hh))
 			return $h['id'];
 	return NULL;
+}
+
+function user_display_profile($user_id)
+{
+	echo '<h1>'.user_get_name($user_id).'</h1>';
+
+	$user_description=user_get_description($user_id);
+	$user_image=user_get_avatar_path($user_id);
+	
+	if(login_check_logged_in_mini()>0 && isset($_POST['profile_edit']) && $user_id==$_SESSION[PREFIX.'user_id'])
+	{
+		//Show edit form
+		
+		//TODO: Image
+		
+		echo '<form method="post">
+			<div class="form-group">
+				<label for="description_text">'._("Profile text").'</label>
+				<textarea class="form-control" id="description_text" name="description"></textarea>
+			</div>
+			<input type="submit" class="btn btn-success" name="profile_save" value="'._("Save").'">
+		</form>';
+	}
+	else
+	{
+		echo '
+		<div class="row profile">
+			<div class="col-md-2">
+				<img class="avatar" src="'.$user_image.'">
+			</div>
+			<div class="col-md-10">
+				<p>'.$user_description.'</p>
+			</div>
+		</div>';
+		if(login_check_logged_in_mini()>0 && $user_id==$_SESSION[PREFIX.'user_id'])
+		{
+			//edit button
+			echo '
+			<div class="row">
+				<div class="center">
+					<form method="post">
+						<input type="submit" class="btn btn-default" name="profile_edit" value="'._("Edit profile").'">
+					</form>
+				</div>
+			</div>
+			';
+		}
+	}
 }
 
 function user_display_settings()
