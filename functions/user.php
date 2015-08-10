@@ -149,7 +149,7 @@ function user_get_admin($id)
 
 function user_get_link($user_id)
 {
-	return "<a href=\"".SITE_URL."?p=user&amp;user=".$user_id."\">".user_get_name($user_id)."</a>";
+	return "<a href=\"".SITE_URL."?p=user&amp;s=profile&amp;user=".$user_id."\">".user_get_name($user_id)."</a>";
 }
 
 function user_get_id_from_username($username)
