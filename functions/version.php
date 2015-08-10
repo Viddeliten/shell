@@ -32,16 +32,15 @@ function version_increase($amount)
 {
 	// echo "<br />DEBUG1337: Ny version $amount!";
 	/************************************/
-	/*	Ta reda pÂ nytt versionsnummer	*/
+	/*	Ta reda p√• nytt versionsnummer	*/
 	/************************************/
-	//Ta reda pÂ nyvarande versionsnummer
+	//Ta reda p√• nyvarande versionsnummer
 	$sql="SELECT version, time FROM ".PREFIX."version ORDER BY id DESC LIMIT 0,1";
-	// echo "<br />DEBUG1342: $sql";
 	if($vv=mysql_query($sql))
 	{
 		if($v=mysql_fetch_array($vv))
 		{
-			//R‰kna ut nytt v‰rde
+			//R√§kna ut nytt v√§rde
 			if(!strcmp($amount,"next"))
 			{
 				$new_version=(int)($v['version']+1);
@@ -54,15 +53,15 @@ function version_increase($amount)
 		else
 			$new_version=$amount; //current version is 0
 		
-		// echo "<br />DEBUG1341: Next version: $new_version";
-		//S‰tt in en ny version med det nya versionsnumret
-		$sql="INSERT INTO ".PREFIX."version SET version=$new_version;";
+		$new_version=number_format($new_version,3,".","");
+		//S√§tt in en ny version med det nya versionsnumret
+		$sql="INSERT INTO ".PREFIX."version SET version='".$new_version."';";
 		if(mysql_query($sql))
 		{
 			$id=mysql_insert_id();
-			//L‰gg in alla feedbacks som ‰r f‰rdiga och inte redan finns i version_done
+			//L√§gg in alla feedbacks som √§r f√§rdiga och inte redan finns i version_done
 			version_add_unlinked_feedbacks_to_latest($v['time']);
-			//S‰tt in id fˆr den nya versionen till alla som har version=NULL i version_done
+			//S√§tt in id f√∂r den nya versionen till alla som har version=NULL i version_done
 			$sql="UPDATE ".PREFIX."version_done SET version=$id WHERE version IS NULL;";
 			if(mysql_query($sql))
 			{
@@ -72,7 +71,9 @@ function version_increase($amount)
 				add_error("There was a problem with version_done!");
 		}
 		else
-			add_error("There was a problem with the version!");
+			add_error(sprintf(_("There was a problem with the version!
+						<br />SQL: %s
+						<br />ERROR: %s"),$sql, mysql_error()));
 	}
 	else
 		add_error("There was a problem with the database!");
@@ -93,7 +94,7 @@ function version_add_unlinked_feedbacks_to_latest($time)
 			mysql_query($sql);
 			if(mysql_affected_rows()<1)
 			{
-				//Den fanns inte, vi behˆver l‰gga in
+				//Den fanns inte, vi beh√∂ver l√§gga in
 				$sql="INSERT INTO ".PREFIX."version_done SET done_id=".$f['id'].", done_type='feedback', time='".$f['resolved']."';";
 				// echo "<br />DEBUG1353: $sql";
 				mysql_query($sql);
@@ -104,7 +105,7 @@ function version_add_unlinked_feedbacks_to_latest($time)
 
 function version_show_linked_number($before_str, $link_class="")
 {
-	//Ta reda pÂ nyvarande versionsnummer
+	//Ta reda p√• nyvarande versionsnummer
 	$sql="SELECT version FROM ".PREFIX."version ORDER BY id DESC LIMIT 0,1";
 	// echo "<br />DEBUG1342: $sql";
 	if($vv=mysql_query($sql))
@@ -130,7 +131,7 @@ function version_show_latest($nr=10)
 {
 	echo "<h3>"._("Changelog")."</h3>";
 	
-	//Om man ‰r admin vill man se vad som ‰r f‰rdigt, men inte tillagt i en version
+	//Om man √§r admin vill man se vad som √§r f√§rdigt, men inte tillagt i en version
 	$logged_in_level=login_check();
 	if($logged_in_level>1) //login_check()>1)
 	{
@@ -143,7 +144,7 @@ function version_show_latest($nr=10)
 			{
 				if(!strcmp($d['done_type'],"feedback"))
 				{
-					//H‰mta rubrik och text frÂn feedback sÂ vi kan skriva ut en gullig l‰nk
+					//H√§mta rubrik och text fr√•n feedback s√• vi kan skriva ut en gullig l√§nk
 					$sql="SELECT id, subject, text FROM ".PREFIX."feedback WHERE id=".sql_safe($d['done_id']).";";
 					if($ff=mysql_query($sql))
 					{
@@ -174,7 +175,7 @@ function version_show_latest($nr=10)
 		while($v=mysql_fetch_array($vv))
 		{
 			echo "<h4>".round($v['version'], 2)."</h4>";
-			//H‰mta allt frÂn version_done fˆr denna version
+			//H√§mta allt fr√•n version_done f√∂r denna version
 			$sql="SELECT version, done_id, done_type, time FROM ".PREFIX."version_done WHERE version=".sql_safe($v['id'])." ORDER BY time DESC;";
 			if($dd=mysql_query($sql))
 			{
@@ -182,7 +183,7 @@ function version_show_latest($nr=10)
 				{
 					if(!strcmp($d['done_type'],"feedback"))
 					{
-						//H‰mta rubrik och text frÂn feedback sÂ vi kan skriva ut en gullig l‰nk
+						//H√§mta rubrik och text fr√•n feedback s√• vi kan skriva ut en gullig l√§nk
 						$sql="SELECT id, subject, text FROM ".PREFIX."feedback WHERE id=".sql_safe($d['done_id']).";";
 						if($ff=mysql_query($sql))
 						{

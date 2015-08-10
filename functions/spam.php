@@ -8,8 +8,8 @@ function spam_receive()
 	
 	if(isset($_POST['this_is_spam']))
 	{
-		//KOlla om det ‰r admin som s‰ger
-		if(isset($_SESSION[PREFIX."User"]) && user_get_admin($_SESSION[PREFIX."User"])>1)
+		//KOlla om det √§r admin som s√§ger
+		if(isset($_SESSION[PREFIX.'user_id']) && user_get_admin($_SESSION[PREFIX.'user_id'])>1)
 		{
 			foreach($_POST['id'] as $s_id)
 			{
@@ -26,9 +26,9 @@ function spam_receive()
 		else
 		{
 			$sql="INSERT INTO ".PREFIX."spam SET type='".sql_safe($_POST['type'])."', spam_id=".sql_safe($_POST['id']).", ";
-			//Om man ‰r inloggad
-			if(isset($_SESSION[PREFIX."User"]))
-				$sql.="user=".sql_safe($_SESSION[PREFIX."User"]).";";
+			//Om man √§r inloggad
+			if(isset($_SESSION[PREFIX.'user_id']))
+				$sql.="user=".sql_safe($_SESSION[PREFIX.'user_id']).";";
 			//Annars, kolla mot IP
 			else
 				$sql.="IP='".sql_safe($_SERVER['REMOTE_ADDR'])."';";
@@ -44,8 +44,8 @@ function spam_receive()
 	
 	if(isset($_POST['this_is_not_spam']))
 	{
-		//KOlla om det ‰r admin som s‰ger
-		if(isset($_SESSION[PREFIX."User"]) && user_get_admin($_SESSION[PREFIX."User"])>1)
+		//KOlla om det √§r admin som s√§ger
+		if(isset($_SESSION[PREFIX.'user_id']) && user_get_admin($_SESSION[PREFIX.'user_id'])>1)
 		{
 			foreach($_POST['id'] as $s_id)
 			{
@@ -62,9 +62,9 @@ function spam_receive()
 		else
 		{
 			$sql="DELETE FROM ".PREFIX."spam WHERE type='".sql_safe($_POST['type'])."' AND spam_id=".sql_safe($_POST['id'])." AND ";
-			//Om man ‰r inloggad
-			if(isset($_SESSION[PREFIX."User"]))
-				$sql.="user=".sql_safe($_SESSION[PREFIX."User"]).";";
+			//Om man √§r inloggad
+			if(isset($_SESSION[PREFIX.'user_id']))
+				$sql.="user=".sql_safe($_SESSION[PREFIX.'user_id']).";";
 			//Annars, kolla mot IP
 			else
 				$sql.="IP='".sql_safe($_SERVER['REMOTE_ADDR'])."';";
@@ -80,13 +80,13 @@ function spam_receive()
 
 function spam_show_clicker($id, $type)
 {
-	//KOlla om anv‰ndaren redan rapporterat
+	//KOlla om anv√§ndaren redan rapporterat
 	$current_reported=0;
-	//Om man ‰r inloggad
-	if(isset($_SESSION[PREFIX."User"]) && user_get_admin($_SESSION[PREFIX."User"])<2)
-		$sql="SELECT id FROM ".PREFIX."spam WHERE type='".sql_safe($type)."' AND spam_id=".sql_safe($id)." AND user=".sql_safe($_SESSION[PREFIX."User"]).";";
-	//Om man ‰r admin
-	else if(isset($_SESSION[PREFIX."User"]) && user_get_admin($_SESSION[PREFIX."User"])>1)
+	//Om man √§r inloggad
+	if(isset($_SESSION[PREFIX.'user_id']) && user_get_admin($_SESSION[PREFIX.'user_id'])<2)
+		$sql="SELECT id FROM ".PREFIX."spam WHERE type='".sql_safe($type)."' AND spam_id=".sql_safe($id)." AND user=".sql_safe($_SESSION[PREFIX.'user_id']).";";
+	//Om man √§r admin
+	else if(isset($_SESSION[PREFIX.'user_id']) && user_get_admin($_SESSION[PREFIX.'user_id'])>1)
 	{
 		$sql="SELECT COUNT(id) as nr FROM ".PREFIX."spam WHERE type='".sql_safe($type)."' AND spam_id=".sql_safe($id).";";
 		// echo "<br />DEBUG0949: $sql";
@@ -110,10 +110,10 @@ function spam_show_clicker($id, $type)
 	
 	echo "<form method=\"post\">
 	<input type=\"hidden\" name=\"type\" value=\"$type\">";
-	if(isset($_SESSION[PREFIX."User"]) && user_get_admin($_SESSION[PREFIX."User"])>1)
+	if(isset($_SESSION[PREFIX.'user_id']) && user_get_admin($_SESSION[PREFIX.'user_id'])>1)
 	{
 		echo "<input type=\"hidden\" name=\"id[]\" value=\"$id\">";
-		if(isset($current_reported_admin) && $current_reported_admin>0) //Den h‰r har markerats som spam av andra
+		if(isset($current_reported_admin) && $current_reported_admin>0) //Den h√§r har markerats som spam av andra
 			echo "<input type=\"submit\" class=\"spambutton red\" name=\"this_is_spam\" value=\"Mark as spam ($current_reported_admin)\">";
 		else
 			echo "<input type=\"submit\" class=\"spambutton\" name=\"this_is_spam\" value=\"Mark as spam\">";
@@ -138,7 +138,7 @@ function spam_admin_list($nr=20)
 	spam_remove_old("feedback", "1 year");
 	spam_remove_old("FAQ", "1 year");
 	
-	//Visa en lista pÂ kommentarer med l‰gst po‰ng
+	//Visa en lista p√• kommentarer med l√§gst po√§ng
 	echo "<h2>Comments</h2>";
 	$sql="SELECT id, spam_score, is_spam, comment FROM ".PREFIX."comment WHERE is_spam>-02 AND is_spam<2 ORDER BY spam_score ASC, added ASC LIMIT 0,".sql_safe($nr).";";
 	// echo "<br />DEBUG1018: $sql";
@@ -157,7 +157,7 @@ function spam_admin_list($nr=20)
 		echo "</form>";
 	}
 	
-	//Visa en lista pÂ feedback med l‰gst po‰ng
+	//Visa en lista p√• feedback med l√§gst po√§ng
 	echo "<h2>feedback</h2>";
 	$sql="SELECT id, spam_score, is_spam, subject, text FROM ".PREFIX."feedback WHERE is_spam>-02 AND is_spam<2 ORDER BY spam_score ASC, created ASC LIMIT 0,".sql_safe($nr).";";
 	// echo "<br />DEBUG1018: $sql";
@@ -177,7 +177,7 @@ function spam_admin_list($nr=20)
 		echo "<input type=\"submit\" name=\"this_is_not_spam\" value=\"Mark as not spam\">";
 		echo "</form>";
 	}
-	//Visa en lista pÂ FAQ med l‰gst po‰ng
+	//Visa en lista p√• FAQ med l√§gst po√§ng
 	echo "<h2>Help!</h2>";
 	$sql="SELECT id, spam_score, is_spam, subject, text FROM ".PREFIX."FAQ WHERE is_spam>-02 AND is_spam<2 ORDER BY spam_score ASC, created ASC LIMIT 0,".sql_safe($nr).";";
 	// echo "<br />DEBUG1018: $sql";
@@ -201,9 +201,9 @@ function spam_admin_list($nr=20)
 
 function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 {
-	//R‰kna po‰ng fˆr kommentarer
+	//R√§kna po√§ng f√∂r kommentarer
 	
-	//$nr med hˆgst spam_score
+	//$nr med h√∂gst spam_score
 	
 	//Kommentarer
 	if($specific_id!=NULL && !strcmp($type, "comment"))
@@ -221,8 +221,8 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 		{
 			if($output)
 				echo "<p><strong>\"".$c['text']."\"</strong></p>";
-			//r‰kna ut ny score
-			//r‰kna hur mÂnga m‰nniskor som tycker det ‰r spam
+			//r√§kna ut ny score
+			//r√§kna hur m√•nga m√§nniskor som tycker det √§r spam
 			$sql="SELECT count(id) as nr FROM ".PREFIX."spam WHERE spam_id=".$c['id']." AND type='".sql_safe($type)."';";
 			$spam_clicks=0;
 			if($ss=mysql_query($sql))
@@ -231,7 +231,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 			if($output)
 				echo "<p>$spam_clicks users consider this as spam</p>";
 				
-			//Kolla hur mÂnga andra frÂn samma anv‰ndare eller IP som ‰r klassade som spam redan
+			//Kolla hur m√•nga andra fr√•n samma anv√§ndare eller IP som √§r klassade som spam redan
 			if($c['user']!=NULL)
 				$sql="SELECT SUM(is_spam) as nr FROM ".PREFIX.sql_safe($type)." WHERE user='".$c['user']."' AND id!=".$c['id'].";";
 			else
@@ -249,7 +249,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 					echo "<p>$previous_spam other spam from this IP ('".$c['IP']."')</p>";
 			}
 			
-			//Kolla om det finns l‰nkar eller dumma ord
+			//Kolla om det finns l√§nkar eller dumma ord
 			$words = 0;  
 			$text = strtolower($c['text']); // lowercase it to speed up the loop
 			$myDict = array("http","<",">","://","penis","pill","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription"); 
@@ -265,7 +265,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 			if($output)
 				echo "<p>Points: $points";
 			
-			//Best‰m om det ‰r spam eller inte
+			//Best√§m om det √§r spam eller inte
 			if($points>SPAM_POINTS)
 				$is_spam=1;
 			else
@@ -288,7 +288,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 				
 			if($output && $specific_id!=NULL)
 			{
-				//Knapp fˆr att ‰ndra
+				//Knapp f√∂r att √§ndra
 				echo "<form method=\"post\">";
 				echo "<input type=\"hidden\" name=\"type\" value=\"$type\">";
 				echo "<input type=\"hidden\" name=\"id[]\" value=\"".$specific_id."\">";
