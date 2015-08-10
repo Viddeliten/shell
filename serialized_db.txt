@@ -44,7 +44,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `size` smallint(6) NOT NULL DEFAULT '0' COMMENT '1=bugfix, 2=small improvement, 3=big thing, 0=unset',
   `merged_with` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:3;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:330:"CREATE TABLE IF NOT EXISTS `flattr` (
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:3;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:330:"CREATE TABLE IF NOT EXISTS `flattr` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `flattrID` varchar(128) COLLATE utf8_bin DEFAULT NULL,
