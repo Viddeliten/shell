@@ -33,24 +33,34 @@ function curPageURL() {
  return $pageURL;
 }
 
-function add_get_to_URL($get_name, $value)
+function add_get_to_URL($get_name, $value, $url=NULL)
 {
-	$pageURL = 'http';
-	 if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
-		$pageURL .= "s";
+	if($url===NULL)
+	{
+		$pageURL = 'http';
+		if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on")
+		{
+			$pageURL .= "s";
+		}
+		$pageURL .= "://";
+		if ($_SERVER["SERVER_PORT"] != "80")
+		{
+			$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"];
+		}
+		else
+		{
+			$pageURL .= $_SERVER["SERVER_NAME"];
+		}
+		$trailing_1=stristr($_SERVER["REQUEST_URI"],"/?",true);
+		$trailing_2=stristr($_SERVER["REQUEST_URI"],"/?",false);
 	}
-	 $pageURL .= "://";
-	 if ($_SERVER["SERVER_PORT"] != "80") {
-	  $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"];
-	 } else {
-	  $pageURL .= $_SERVER["SERVER_NAME"];
-	 }
+	else
+	{
+		$t_url=explode("?",$url);
+		$pageURL=rtrim($t_url[0], '/');
+		$trailing_2=str_replace("&amp;","&",$t_url[1]);
+	}
  
-	$trailing_1=stristr($_SERVER["REQUEST_URI"],"/?",true);
-	$trailing_2=stristr($_SERVER["REQUEST_URI"],"/?",false);
-	// echo "<pre>".print_r($trailing_1,1)."</pre>";
-	// echo "<pre>".print_r($trailing_2,1)."</pre>";
-	
 	if($trailing_2=="")
 	{	
 		$pageURL .= "/?".$get_name."=".$value;
@@ -69,8 +79,6 @@ function add_get_to_URL($get_name, $value)
 		$pageURL .= "/?".implode("&amp;",$add)."&amp;".$get_name."=".$value;
 	}
 	
-	
-	// echo "<pre>".print_r($pageURL,1)."</pre>";
 	return $pageURL;
 }
 
@@ -97,6 +105,11 @@ function string_slugify($text)
   }
 
   return $text;
+}
+
+function prestr($value)
+{
+	return "<pre>".print_r($value,1)."</pre>";
 }
 
 ?>

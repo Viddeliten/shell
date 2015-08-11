@@ -430,4 +430,76 @@ function user_email_exists($email)
 	return false;
 }
 
+function user_display_active_users() 
+{
+	//ta emot sortering
+	if(isset($_GET['sortby']))
+	{
+		if(!strcmp($_GET['sortby'],"name"))
+		{
+			$sort="username";
+		}
+		else if(!strcmp($_GET['sortby'],"registered"))
+		{
+			$sort="regdate";
+		}
+		else if(!strcmp($_GET['sortby'],"lastlogin"))
+		{
+			$sort="lastlogin";
+		}
+		else if(!strcmp($_GET['sortby'],"reputation"))
+		{
+			$sort="reputation";
+		}
+	}
+	if(!isset($sort))
+	{
+		$sort="reputation";
+	}
+	
+	//Sort order
+	if(isset($_GET['sortorder']))
+	{
+		if(!strcmp($_GET['sortorder'],"asc"))
+			$sort_order="asc";
+		else
+			$sort_order="desc";
+	}
+	if(!isset($sort_order))
+	{
+		$sort_order="desc";
+	}
+	
+	if($sort_order=="asc")
+		$other_sort_order="desc";
+	else
+		$other_sort_order="asc";
+	
+	//Visa användarna
+	$sql="select id, username, regdate, lastlogin, reputation from ".PREFIX."user WHERE active>0 order by ".$sort." ".$sort_order.";";
+	// echo "<br />$sql";
+	$users=mysql_query($sql);
+	echo "<table class=\"table table-striped\">";
+	//Rubriker
+	echo "<tr>
+			<th></th>
+			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"username") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "name"))."\">"._("Name")."</a></th>
+			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"reputation") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "reputation"))."\">"._("Reputation points")."</a></th>
+			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"regdate") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "registered"))."\">"._("Registered")."</a></th>
+			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"lastlogin") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "lastlogin"))."\">"._("Last logged in")."</a></th>
+	</tr>";
+	
+	for($i=1;$u=mysql_fetch_array($users);$i++)
+	{
+		echo "<tr>
+				<td>$i</td>
+				<td>".user_get_link($u['id'])."</td>
+				<td>$u[reputation]</td>
+				<td>$u[regdate]</td>
+				<td>$u[lastlogin]</td>
+			</tr>";
+	}
+	echo "</table>";
+}
+
 ?>
