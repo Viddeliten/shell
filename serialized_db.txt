@@ -15,7 +15,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   PRIMARY KEY (`id`),
   KEY `comment_user` (`user`),
   KEY `DH_comment_on_type` (`comment_on`,`comment_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:1;a:2:{s:5:"Table";s:8:"criteria";s:12:"Create Table";s:481:"CREATE TABLE IF NOT EXISTS `criteria` (
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:1;a:2:{s:5:"Table";s:8:"criteria";s:12:"Create Table";s:481:"CREATE TABLE IF NOT EXISTS `criteria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) COLLATE utf8_bin NOT NULL,
   `table_name` varchar(64) COLLATE utf8_bin DEFAULT NULL,
@@ -44,7 +44,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `size` smallint(6) NOT NULL DEFAULT '0' COMMENT '1=bugfix, 2=small improvement, 3=big thing, 0=unset',
   `merged_with` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:3;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:330:"CREATE TABLE IF NOT EXISTS `flattr` (
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:3;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:330:"CREATE TABLE IF NOT EXISTS `flattr` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `flattrID` varchar(128) COLLATE utf8_bin DEFAULT NULL,
@@ -106,7 +106,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `opened` datetime DEFAULT NULL,
   `deleted` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:10;a:2:{s:5:"Table";s:4:"user";s:12:"Create Table";s:640:"CREATE TABLE IF NOT EXISTS `user` (
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:10;a:2:{s:5:"Table";s:4:"user";s:12:"Create Table";s:729:"CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lastlogin` datetime DEFAULT NULL,
@@ -115,6 +115,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `description` text COLLATE utf8_bin COMMENT 'user defined text for presentation/profile',
   `email` varchar(128) COLLATE utf8_bin NOT NULL,
   `level` int(11) NOT NULL DEFAULT '1' COMMENT 'vilka rättigheter användaren har beror på denna siffra',
+  `reputation` int(11) NOT NULL DEFAULT '0' COMMENT 'Used by some sites to value users',
   `inactive` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:11;a:2:{s:5:"Table";s:15:"user_reset_code";s:12:"Create Table";s:377:"CREATE TABLE IF NOT EXISTS `user_reset_code` (
@@ -130,7 +131,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `version` float DEFAULT NULL COMMENT 'version',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'när det blev denna version',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:13;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:541:"CREATE TABLE IF NOT EXISTS `version_done` (
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:13;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:541:"CREATE TABLE IF NOT EXISTS `version_done` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` int(11) DEFAULT NULL COMMENT 'om null så är saken färdig, men version har inte ökat sen dess',
   `done_id` int(11) NOT NULL,
@@ -138,4 +139,4 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `DH_version_done_id` (`done_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Vad som färdigställts till varje version'";}}
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Vad som färdigställts till varje version'";}}

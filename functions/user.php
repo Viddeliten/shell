@@ -430,7 +430,7 @@ function user_email_exists($email)
 	return false;
 }
 
-function user_display_active_users() 
+function user_display_active_users($include_reputation=TRUE) 
 {
 	//ta emot sortering
 	if(isset($_GET['sortby']))
@@ -476,15 +476,18 @@ function user_display_active_users()
 		$other_sort_order="asc";
 	
 	//Visa användarna
-	$sql="select id, username, regdate, lastlogin, reputation from ".PREFIX."user WHERE active>0 order by ".$sort." ".$sort_order.";";
+	$sql="select id, username, regdate, lastlogin, reputation from ".PREFIX."user WHERE inactive IS NULL order by ".$sort." ".$sort_order.";";
 	// echo "<br />$sql";
 	$users=mysql_query($sql);
 	echo "<table class=\"table table-striped\">";
 	//Rubriker
 	echo "<tr>
 			<th></th>
-			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"username") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "name"))."\">"._("Name")."</a></th>
-			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"reputation") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "reputation"))."\">"._("Reputation points")."</a></th>
+			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"username") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "name"))."\">"._("Name")."</a></th>"; 
+	if($include_reputation)
+	echo "
+			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"reputation") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "reputation"))."\">"._("Reputation points")."</a></th>";
+	echo "
 			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"regdate") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "registered"))."\">"._("Registered")."</a></th>
 			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"lastlogin") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "lastlogin"))."\">"._("Last logged in")."</a></th>
 	</tr>";
@@ -493,10 +496,13 @@ function user_display_active_users()
 	{
 		echo "<tr>
 				<td>$i</td>
-				<td>".user_get_link($u['id'])."</td>
-				<td>$u[reputation]</td>
-				<td>$u[regdate]</td>
-				<td>$u[lastlogin]</td>
+				<td>".user_get_link($u['id'])."</td>";
+		if($include_reputation)
+			echo "
+				<td>$u[reputation]</td>";
+		echo "
+				<td>".date("Y-m-d H:i",strtotime($u['regdate']))."</td>
+				<td>".date("Y-m-d H:i",strtotime($u['lastlogin']))."</td>
 			</tr>";
 	}
 	echo "</table>";

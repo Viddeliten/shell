@@ -9,11 +9,16 @@ function custom_page_display()
 			page_display_about();
 			return TRUE;
 		}
-		else if(!strcmp($_GET['p'],"things"))
+		else if(!strcmp($_GET['p'],"stuff"))
 		{
 			if(isset($_GET['s']))
 			{
-				
+				if(!strcmp($_GET['s'],"users"))
+				{
+					echo "<h1>"._("Active users")."</h1>";
+					user_display_active_users(FALSE);
+					return TRUE;
+				}
 			}
 		}
 	}
