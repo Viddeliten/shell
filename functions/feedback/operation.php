@@ -23,7 +23,7 @@ language_setup();
 //Connecta till databasen
 $conn=db_connect(db_host, db_name, db_user, db_pass);
 // echo $_GET['operation']." - ".$_GET['id'];
-if(isset($_SESSION[PREFIX."user_id"]) && isset($_SESSION[PREFIX."inloggad"]) && $_SESSION[PREFIX."inloggad"]>=3)
+if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && $_SESSION[PREFIX."inloggad"]>=3)
 {
 	if(isset($_GET['operation']) && isset($_GET['id']))
 	{
@@ -94,13 +94,19 @@ if(isset($_SESSION[PREFIX."user_id"]) && isset($_SESSION[PREFIX."inloggad"]) && 
 
 if(isset($_GET['operation']) && isset($_GET['id']))
 {
+	if(isset($_GET['parent']))
+		$parent=$_GET['parent'];
+	else
+		$parent=NULL;
+
 	if($_GET['operation']=="expand")
 	{
-		feedback_display_specific_headline($_GET['id'], $_GET['parent'], TRUE);
+
+		feedback_display_specific_headline($_GET['id'], $parent, TRUE);
 	}
 	else if($_GET['operation']=="colapse")
 	{
-		feedback_display_specific_headline($_GET['id'], $_GET['parent'], FALSE);
+		feedback_display_specific_headline($_GET['id'], $parent, FALSE);
 	}
 }
 

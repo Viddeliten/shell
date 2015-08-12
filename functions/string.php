@@ -106,7 +106,10 @@ function string_slugify($text)
 
   return $text;
 }
-
+function preprint($value)
+{
+	return prestr($value);
+}
 function prestr($value)
 {
 	return "<pre>".print_r($value,1)."</pre>";

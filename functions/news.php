@@ -127,12 +127,10 @@ function news_show($max_nr=10, $extra_headline="", $extra_headline_size=2)
 		// echo "<br />DEBUG1422: $sql";
 		if($nn=mysql_query($sql)) 
 		{
-			if(mysql_affected_rows()>0 && $extra_headline!="")
-				echo "<h$extra_headline_size>$extra_headline</h$extra_headline_size>";
 			while($news = mysql_fetch_array($nn))
 			{
 				echo "<div class=\"news_post\">";
-				echo "<h2>$news[headline]</h2>";
+				echo "<h$extra_headline_size>$news[headline]</h$extra_headline_size>";
 				if($news['author']!=NULL)
 					echo "<p class=\"date\">".sprintf(_("Posted by %s at %s"),user_get_name($news['author']) ,date("Y-m-d H:i",strtotime($news['time'])))."</p>";
 				else
@@ -154,11 +152,14 @@ function news_show($max_nr=10, $extra_headline="", $extra_headline_size=2)
 		// echo "<br />DEBUG1423: $sql";
 		if($nn=mysql_query($sql)) //Hämta bara de senaste
 		{
+			if(mysql_affected_rows()>0 && $extra_headline!="")
+				echo "<h$extra_headline_size>$extra_headline</h$extra_headline_size>";
+	
 			//Hämta de senaste nyheterna
 			while($news = mysql_fetch_array($nn))
 			{
 				echo "<div class=\"news_post\">";
-				echo "<h2><a href=\"".SITE_URL."?page=DHPost&amp;side=news&amp;id=".$news['id']."\">$news[headline]</a></h2>";
+				echo "<h".($extra_headline_size+1)."><a href=\"".news_get_link_url($news['id'])."\">$news[headline]</a></h".($extra_headline_size+1).">";
 				if($news['author']!=NULL)
 					echo "<p class=\"date\">".sprintf(_("Posted by %s at %s"),user_get_name($news['author']) ,date("Y-m-d H:i",strtotime($news['time'])))."</p>";
 				else
@@ -172,6 +173,11 @@ function news_show($max_nr=10, $extra_headline="", $extra_headline_size=2)
 			}
 		}
 	}
+}
+
+function news_get_link_url($id)
+{
+	return SITE_URL."?p=news&amp;id=".$id;
 }
 
 ?>

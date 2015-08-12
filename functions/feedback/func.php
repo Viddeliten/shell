@@ -112,7 +112,7 @@ function feedback_recieve()
 		{
 			// echo "<br />DEBUG1938: plusone on ".$_POST['id'];
 			//Kolla så att man inte försöker plussa sina egna
-			if($_SESSION[PREFIX."user_id"]==feedback_get_user($_POST['id']))
+			if($_SESSION[PREFIX.'user_id']==feedback_get_user($_POST['id']))
 			{
 				define("ERROR", "You cannot +1 on your own feedback, allthough we are sure it is nice.");
 			}
@@ -120,7 +120,7 @@ function feedback_recieve()
 			{
 				//echo "<br />DEBUG: ".$_SESSION[SESSION_user_id]."!=".feedback_get_user($_GET['id']);
 				//Kolla om denna user redan har plussat denna
-				$sql="SELECT * FROM ".PREFIX."plusone WHERE typ='feedback' AND user=".$_SESSION[PREFIX."user_id"]." AND plus_for=".sql_safe($_POST['id']).";";
+				$sql="SELECT * FROM ".PREFIX."plusone WHERE typ='feedback' AND user=".$_SESSION[PREFIX.'user_id']." AND plus_for=".sql_safe($_POST['id']).";";
 				// echo "<br />DEBUG1639: $sql";
 				mysql_query($sql);
 				$nr_previous=mysql_affected_rows();
@@ -129,7 +129,7 @@ function feedback_recieve()
 				{
 					$sql="INSERT INTO ".PREFIX."plusone SET 
 						typ='feedback', 
-						user=".$_SESSION[PREFIX."user_id"].",
+						user=".$_SESSION[PREFIX.'user_id'].",
 						plus_for=".sql_safe($_POST['id']).";";
 					// echo "<br />DEBUG2014: $sql";
 					mysql_query($sql);
@@ -206,7 +206,7 @@ function feedback_recieve()
 		if(isset($_POST['feedback_size_change']))
 		{
 			$id=$_POST['id'];
-			if($_SESSION[PREFIX."user_id"]==feedback_get_user($id) || $_SESSION[PREFIX."inloggad"]>=3)
+			if($_SESSION[PREFIX.'user_id']==feedback_get_user($id) || $_SESSION[PREFIX."inloggad"]>=3)
 			{
 				if($_POST['feedback_size_change']=="bugfix")
 				{
@@ -290,11 +290,11 @@ function feedback_show()
 		//Visa inmatningsformulär
 		feedback_form_show();
 		//Visa användarens feedbacks
-		if(isset($_SESSION[PREFIX."user_id"]))
+		if(isset($_SESSION[PREFIX.'user_id']))
 		{
 			echo '<div class="row">';
 			echo '<div class="col-lg-12 well">';
-			feedback_list_user_feedback($_SESSION[PREFIX."user_id"], "Your suggestions",3);
+			feedback_list_user_feedback($_SESSION[PREFIX.'user_id'], "Your suggestions",3);
 			echo '</div>';
 			echo '</div>';
 		}
@@ -656,7 +656,7 @@ function feedback_display_size_buttons($id, $div_id="", $before_text="", $after_
 	// echo "<p>feedback_display_size_buttons</p>";
 	
 	
-	// if(isset($_SESSION[PREFIX."user_id"]) && ($_SESSION[PREFIX."user_id"]==feedback_get_user($id) || $_SESSION[PREFIX."inloggad"]>=3))
+	// if(isset($_SESSION[PREFIX.'user_id']) && ($_SESSION[PREFIX.'user_id']==feedback_get_user($id) || $_SESSION[PREFIX."inloggad"]>=3))
 	if(login_check_logged_in_mini()>1)
 		$is_show=true;
 	else
@@ -1067,7 +1067,7 @@ function feedback_display_merge_form($id, $div_id="", $before_text="", $after_te
 	// echo "<p>feedback_display_merge_form</p>";
 	$m_id=feedback_is_merged($id);
 	
-	if(isset($_SESSION[PREFIX."user_id"]) && isset($_SESSION[PREFIX."inloggad"]) && $_SESSION[PREFIX."inloggad"]>=3)
+	if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && $_SESSION[PREFIX."inloggad"]>=3)
 	{
 		echo $before_text;
 		if($div_id=="")
@@ -1363,7 +1363,7 @@ function feedback_display_body($id, $hidden=FALSE)
 					echo "</div>";
 					echo "<div class=\"col-lg-12\">";
 						//Kolla om det är användarens feedback.
-						if($d['user']==NULL || (isset($_SESSION[PREFIX."user_id"]) && strcmp($d['user'],$_SESSION[PREFIX."user_id"])))
+						if($d['user']==NULL || (isset($_SESSION[PREFIX.'user_id']) && strcmp($d['user'],$_SESSION[PREFIX.'user_id'])))
 							spam_show_clicker($d['id'], "feedback");
 					echo "</div>";
 				echo "</div>";

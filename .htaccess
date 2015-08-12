@@ -1,0 +1,9 @@
+#RewriteEngine on
+#RewriteBase /
+#RewriteCond %{REQUEST_FILENAME} !-f 
+#RewriteCond favicon.ico 
+#RewriteRule .* custom_content/favicon.ico [L]
+
+RewriteEngine On 
+Options +FollowSymLinks
+RewriteRule ^favicon.ico custom_content/favicon.ico [L]
