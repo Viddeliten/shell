@@ -23,6 +23,10 @@ else if(isset($_GET['p']))
 	{
 		feedback_show();
 	}
+	else if(!strcmp($_GET['p'],"news"))
+	{
+		news_show();
+	}
 	else if(!strcmp($_GET['p'],"user") && isset($_GET['s']) && !strcmp($_GET['s'],"profile"))
 	{
 		if(isset($_GET['user']))

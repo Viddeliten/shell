@@ -178,6 +178,42 @@ h1.panel-title
 	background-color: #C2E1FF;
 }
 
+#news
+{
+	border-color: #8C8C8C;
+}
+
+#news a.page-link
+{
+	font-weight: bold;
+	font-size: 160%;
+	height: 50px;
+}
+
+.latest-post
+{
+	border-right: 1px solid #8C8C8C;
+}
+
+.news_post .date
+{
+	border-bottom: 1px solid #8C8C8C;
+	font-size: 80%;
+}
+.news_post .commentclicker
+{
+	font-size: 80%;
+}
+
+.news_post h1, .news_post h2, .news_post h3, .news_post h4
+{
+	font-weight: bold;
+}
+
+.news_post p
+{
+	font-size: 115%;
+}
 /************************************/
 /*		For notices and such		*/
 /************************************/

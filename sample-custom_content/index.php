@@ -6,10 +6,16 @@
 		<p><?php echo _("It's just here for testing purposes."); ?></p>
 	</div>
 </div>
-<div class="row" id="news">
-	<div class="col-md-12">
-		<?php news_show(1, _("Latest news"),2); ?>
-		<?php news_show_latest_short(3, 150, 0, 3, 1, _("More news"), 2); ?>
+<div class="row well" id="news">
+	<h2><?php echo sprintf(_("%s news"),SITE_NAME); ?></h2>
+	<div class="col-md-4 latest-post">
+		<?php news_show(1, "",2); ?>
+	</div>
+	<div class="col-md-8 latest-stream">
+		<?php news_show_latest_short(2, 80, 0, 3, 1, "", 2); ?>
+	</div>
+	<div class="col-lg-12 center">
+		<p><a class="btn btn-default page-link form-control" href="<?php echo news_get_link_url(); ?>"><?php echo _("All news"); ?></a></p>
 	</div>
 </div>
 <div class="row">
