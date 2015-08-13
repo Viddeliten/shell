@@ -21,6 +21,11 @@ body {
 html, body {
   height: 100%; /* needed for container min-height */
 }
+
+img{
+	max-width: 100%;
+}
+
 #main_container
 {
 	position: relative; /* needed for footer positioning*/

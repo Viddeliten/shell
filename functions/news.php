@@ -128,7 +128,7 @@ function news_display_post($id, $headline, $published, $author, $text, $headline
 	else
 		echo "<h$headline_size>$headline</h$headline_size>";
 	if($author!=NULL)
-		echo "<p class=\"date\">".sprintf(_("Posted by %s at %s"),user_get_link($author) ,date("Y-m-d H:i",strtotime($published)))."</p>";
+		echo "<p class=\"date\">".sprintf(_("Published by %s at %s"),user_get_link($author) ,date("Y-m-d H:i",strtotime($published)))."</p>";
 	else
 		echo "<p class=\"date\">$published</p>";
 	$text=str_replace("\n","<br />",$text);

@@ -464,6 +464,8 @@ function comment_get_link($id, $link_id=NULL)
 					return SITE_URL."?comment&amp;p=feedback&amp;id=".$c['comment_on']."#comment_".$link_id;
 				else if(!strcmp($c['comment_type'],"user"))
 					return SITE_URL."?comment&amp;p=user&amp;user=".$c['comment_on']."#comment_".$link_id;
+				else if(!strcmp($c['comment_type'],"news"))
+					return news_get_link_url($c['comment_on'])."#comment_".$link_id;
 			}
 		}
 	}
