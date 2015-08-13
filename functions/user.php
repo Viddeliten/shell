@@ -90,6 +90,22 @@ function user_get_name($id)
 			return $h['username'];
 	return NULL;
 }
+function user_get_regdate($id)
+{
+	$sql="SELECT regdate FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
+	if($hh=mysql_query($sql))
+		if($h=@mysql_fetch_array($hh))
+			return $h['regdate'];
+	return NULL;
+}
+function user_get_lastlogin($id)
+{
+	$sql="SELECT lastlogin FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
+	if($hh=mysql_query($sql))
+		if($h=@mysql_fetch_array($hh))
+			return $h['lastlogin'];
+	return NULL;
+}
 function user_get_description($id)
 {
 	$sql="SELECT description FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
@@ -205,6 +221,11 @@ function user_display_profile($user_id)
 				</div>
 			</div>
 			';
+		}
+		
+		if (function_exists ( 'user_profile_custom_content' ))
+		{
+			user_profile_custom_content($user_id);
 		}
 	}
 }

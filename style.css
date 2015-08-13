@@ -26,6 +26,10 @@ img{
 	max-width: 100%;
 }
 
+th
+{
+}
+
 #main_container
 {
 	position: relative; /* needed for footer positioning*/
