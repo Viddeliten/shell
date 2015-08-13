@@ -90,6 +90,14 @@ function user_get_name($id)
 			return $h['username'];
 	return NULL;
 }
+function user_get_level($id)
+{
+	$sql="SELECT level FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
+	if($hh=mysql_query($sql))
+		if($h=@mysql_fetch_array($hh))
+			return $h['level'];
+	return NULL;
+}
 function user_get_regdate($id)
 {
 	$sql="SELECT regdate FROM ".PREFIX."user WHERE id=".sql_safe($id).";";

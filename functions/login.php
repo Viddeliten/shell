@@ -83,36 +83,41 @@ function login_check()
 	else
 	{
 		//Kolla om användaren är inloggad och allt stämmer
-		if(isset($_SESSION[PREFIX.'inloggad']) && $_SESSION[PREFIX.'inloggad']>0)
+		if(isset($_SESSION[PREFIX.'user_id']) && $_SESSION[PREFIX.'user_id']>0)
 		{
-			if($uu=mysql_query("SELECT id, password, level, email FROM ".PREFIX."user WHERE id='".$_SESSION[PREFIX.'user_id']."';"))
+			if(isset($_SESSION[PREFIX.'inloggad']) && $_SESSION[PREFIX.'inloggad']>0)
 			{
-				if($u=mysql_fetch_array($uu))
+				if($uu=mysql_query("SELECT id, password, level, email FROM ".PREFIX."user WHERE id='".$_SESSION[PREFIX.'user_id']."';"))
 				{
-					// if(md5($_SESSION['".PREFIX."password'])==$u['password'])
-					if(crypt($_SESSION[PREFIX.'password'], $u['id'].$u['email'])==$u['password'])
+					if($u=mysql_fetch_array($uu))
 					{
-						if($_SESSION[PREFIX."HTTP_USER_AGENT"] ==md5($_SERVER['HTTP_USER_AGENT']))
+						// if(md5($_SESSION['".PREFIX."password'])==$u['password'])
+						if(crypt($_SESSION[PREFIX.'password'], $u['id'].$u['email'])==$u['password'])
 						{
-							$_SESSION[PREFIX.'inloggad']=$u['level'];
-							setcookie("login",md5($_SESSION[PREFIX.'user_id']),time()+(60*15));
-							mysql_query("UPDATE ".PREFIX."user set lastlogin='".date("YmdHis")."', active=1 WHERE id='".$u['id']."'");
-							return $_SESSION[PREFIX.'inloggad'];
+							if($_SESSION[PREFIX."HTTP_USER_AGENT"] ==md5($_SERVER['HTTP_USER_AGENT']))
+							{
+								$_SESSION[PREFIX.'inloggad']=$u['level'];
+								setcookie("login",md5($_SESSION[PREFIX.'user_id']),time()+(60*15));
+								mysql_query("UPDATE ".PREFIX."user set lastlogin='".date("YmdHis")."', active=1 WHERE id='".$u['id']."'");
+								return $_SESSION[PREFIX.'inloggad'];
+							}
+							else
+								$_SESSION[PREFIX.'inloggad']=-1;
 						}
 						else
-							$_SESSION[PREFIX.'inloggad']=-1;
+							$_SESSION[PREFIX.'inloggad']=-2;
 					}
 					else
-						$_SESSION[PREFIX.'inloggad']=-2;
+						$_SESSION[PREFIX.'inloggad']=-3;
 				}
 				else
-					$_SESSION[PREFIX.'inloggad']=-3;
+					$_SESSION[PREFIX.'inloggad']=-4;
 			}
 			else
-				$_SESSION[PREFIX.'inloggad']=-4;
+				$_SESSION[PREFIX.'inloggad']=-5;
 		}
 		else
-			$_SESSION[PREFIX.'inloggad']=-5;
+			$_SESSION[PREFIX.'inloggad']=-6;
 			
 		if($_SESSION[PREFIX.'inloggad']<1)
 		{
@@ -126,7 +131,7 @@ function login_check()
 function login_check_logged_in_mini()
 {
 	// echo "<br />Inloggad: ".$_SESSION["".PREFIX."inloggad"];
-	if(isset($_SESSION[PREFIX.'inloggad']))
+	if(isset($_SESSION[PREFIX.'inloggad']) && isset($_SESSION[PREFIX.'user_id']))
 	{
 		if($_SESSION["".PREFIX."inloggad"]>0)
 		{
@@ -146,7 +151,7 @@ function login_check_logged_in_mini()
 		else
 			$_SESSION["".PREFIX."inloggad"]=-8;
 		
-		// echo "<br />FEL: ".$_SESSION["".PREFIX."inloggad"];
+		echo "<br />FEL: ".$_SESSION["".PREFIX."inloggad"];
 		login_logout();
 		return $_SESSION["".PREFIX."inloggad"];
 	}
