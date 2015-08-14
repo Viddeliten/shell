@@ -178,6 +178,9 @@ function comment_show_comments($id, $type)
 				//Kolla om författaren är admin
 				$admin=user_get_admin($c['user']);
 				
+				//skriv ut en anchor-pryl
+				echo '<span class="anchor" id="anchor_comment_'.$c['id'].'"></span>';
+				
 				//Skriv ut kommentar
 				if($admin<2)
 					echo "<div class=\"comment\" id=\"comment_".$c['id']."\">";
@@ -461,11 +464,16 @@ function comment_get_link($id, $link_id=NULL)
 			else
 			{
 				if(!strcmp($c['comment_type'],"feedback"))
-					return SITE_URL."?comment&amp;p=feedback&amp;id=".$c['comment_on']."#comment_".$link_id;
+					return SITE_URL."?comment&amp;p=feedback&amp;id=".$c['comment_on']."#anchor_comment_".$link_id;
 				else if(!strcmp($c['comment_type'],"user"))
-					return SITE_URL."?comment&amp;p=user&amp;user=".$c['comment_on']."#comment_".$link_id;
+					// return SITE_URL."?comment&amp;p=user&amp;user=".$c['comment_on']."#anchor_comment_".$link_id;
+					return user_get_link_url($c['comment_on'])."&amp;comment#anchor_comment_".$link_id;
 				else if(!strcmp($c['comment_type'],"news"))
-					return news_get_link_url($c['comment_on'])."#comment_".$link_id;
+					return news_get_link_url($c['comment_on'])."#anchor_comment_".$link_id;
+				else if(!strcmp($c['comment_type'],"stable"))
+					return stable_get_link_url($c['comment_on'])."&amp;comment#anchor_comment_".$link_id;
+				else
+					return SITE_URL."?p=".$c['comment_type']."&amp;".$c['comment_type']."=".$c['comment_on']."&amp;comment#anchor_comment_".$link_id;
 			}
 		}
 	}

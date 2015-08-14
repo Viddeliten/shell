@@ -171,9 +171,13 @@ function user_get_admin($id)
 	return NULL;
 }
 
+function user_get_link_url($user_id)
+{
+	return SITE_URL."?p=user&amp;s=profile&amp;user=".$user_id;
+}
 function user_get_link($user_id)
 {
-	return "<a href=\"".SITE_URL."?p=user&amp;s=profile&amp;user=".$user_id."\">".user_get_name($user_id)."</a>";
+	return "<a href=\"".user_get_link_url($user_id)."\">".user_get_name($user_id)."</a>";
 }
 
 function user_get_id_from_username($username)
@@ -236,6 +240,7 @@ function user_display_profile($user_id)
 			user_profile_custom_content($user_id);
 		}
 	}
+	comments_show_comments_and_replies($user_id, "user");
 }
 
 function user_display_settings()
