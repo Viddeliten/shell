@@ -21,10 +21,14 @@ function language_setup()
 		{
 			ini_set('default_socket_timeout', 1);
 			$l=unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip='.$_SERVER['REMOTE_ADDR']));
+			ini_set('default_socket_timeout', 30);
 			// echo "<pre>".print_r($l,1)."</pre>";
 			if(empty($l))
 			{
-				$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+				if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+					$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+				else
+					$lang = "";
 				switch ($lang){
 					case "sv":
 					case "no":

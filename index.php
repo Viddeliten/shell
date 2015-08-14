@@ -189,5 +189,9 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="bootstrap-3.3.4-dist/js/ie10-viewport-bug-workaround.js"></script>
 
+<?php
+ //Clearfix just in case
+	echo '<div class="clearfix"></div>';
+?>
 </body>
 </html>

@@ -27,6 +27,10 @@ function add_error($error_mess)
 		define('ERROR'.$i, $error_mess);
 	}
 }
+function add_error_mysql($error_code,$sql, $mysql_error)
+{
+	add_error(sprintf(_("Error code %s<br />SQL: %s<br />ERROR: %s"),$error_code, $sql, $mysql_error));
+}
 function add_message($message)
 {
 	if(!defined('MESS'))
