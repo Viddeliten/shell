@@ -386,7 +386,16 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlis
 							if($im=mysql_fetch_array($ii))
 							{	
 								if($im['img_thumb']!=NULL)
-									echo "<div class=\"left_avatar leftfloat\"><img src=\"".USER_IMG_URL.$im['img_thumb']."\" /></div>" ;
+								{
+									if(file_exists(USER_IMG_URL.$im['img_thumb']))
+										echo "<div class=\"left_avatar left\"><img src=\"".USER_IMG_URL.$im['img_thumb']."\" /></div>" ;
+									else
+									{
+										$sql="UPDATE ".PREFIX."userimage SET img_thumb=NULL WHERE user='".sql_safe($c['user'])."';";
+										mysql_query($sql);
+										$im['img_thumb']=NULL;
+									}
+								}
 							}
 						}
 							
