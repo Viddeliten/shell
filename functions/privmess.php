@@ -49,9 +49,11 @@ function privmess_send($sender, $reciever, $subject, $message, $display_sucess_m
 	{
 		if($display_sucess_message)
 			add_message(_("Message sent"));
+		return mysql_insert_id();
 	}
 	else
 		add_error(sprintf(_("Message could not be sent. Error: %s"),mysql_error()));
+	return NULL;
 }
 
 function privmess_get_unread_nr($receiver_id)

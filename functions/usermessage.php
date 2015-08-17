@@ -461,12 +461,12 @@ function usermessage_check_criteria($user, $message_event)
 			foreach($criteria as $c)
 			{
 				$where=$c['table_where'];
-				$sql="SELECT COUNT(id) as nr FROM ".sql_safe($c['table_name'])." 
-					WHERE ".sql_safe($c['user_column'])."=".sql_safe($user).";";
+				$sql="SELECT COUNT(*) as nr FROM ".sql_safe($c['table_name'])." 
+					WHERE ".sql_safe($c['user_column'])."=".sql_safe($user);
 				if($where!="")
 					$sql.=" AND (".$where.");";
-				echo "<br />DEBUG1310: $sql";
-				preprint($sql);
+				// echo "<br />DEBUG1310: $sql";
+				// preprint($sql);
 				if($tt=mysql_query($sql))
 				{
 					if($t=mysql_fetch_assoc($tt))
@@ -497,7 +497,7 @@ function usermessage_send_to_user($user, $message_event)
 			if(in_array("insite_privmess", $sendby))
 			{
 				//Skicka ett ingame-meddelande till användaren med meddelandet
-				privmess_send(0, $user, $m['subject'], $m['message'], FALSE);
+				$privmess_id=privmess_send(0, $user, $m['subject'], $m['message'], FALSE);
 				$adress.="insite_privmess";
 			}
 			if(in_array("insite_notice", $sendby))
@@ -522,7 +522,10 @@ function usermessage_send_to_user($user, $message_event)
 				$sql="INSERT INTO ".PREFIX."messages_to_users_sent SET
 				user='".sql_safe($user)."', 
 				message_event='".sql_safe($message_event)."',
-				adress='".$adress."';";
+				adress='".$adress."'";
+				if(isset($privmess_id))
+				$sql.=", privmess_id=".sql_safe($privmess_id);
+				$sql.=";";
 				// echo "<br />DEBUG1753: $sql"; 
 				mysql_query($sql);
 		}
