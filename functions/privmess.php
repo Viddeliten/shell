@@ -38,7 +38,7 @@ function privmess_receive()
 	}
 }
 
-function privmess_send($sender, $reciever, $subject, $message)
+function privmess_send($sender, $reciever, $subject, $message, $display_sucess_message=TRUE)
 {
 	$sql="INSERT INTO ".PREFIX."privmess SET 
 	sender='".sql_safe($sender)."',
@@ -46,7 +46,10 @@ function privmess_send($sender, $reciever, $subject, $message)
 	subject='".sql_safe($subject)."',
 	message='".sql_safe($message)."';";
 	if(mysql_query($sql))
-		add_message(_("Message sent"));
+	{
+		if($display_sucess_message)
+			add_message(_("Message sent"));
+	}
 	else
 		add_error(sprintf(_("Message could not be sent. Error: %s"),mysql_error()));
 }

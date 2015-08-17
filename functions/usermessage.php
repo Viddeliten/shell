@@ -79,8 +79,9 @@ function usermessage_receive()
 							WHERE name='".sql_safe($criteria_name)."'
 							AND table_name='".sql_safe($c['table_name'])."'
 							AND user_column='".sql_safe($c['user_column'])."'
-							AND column_name='".sql_safe($c['column_name'])."'
-							AND column_value='".sql_safe($c['column_value'])."'";
+							AND table_where='".sql_safe($c['table_where'])."'";
+						 // echo "<br />DEBUG1021:";
+						 // echo preprint($sql);
 						if($dd=mysql_query($sql))
 						{
 							if(mysql_affected_rows()<1)
@@ -89,32 +90,32 @@ function usermessage_receive()
 								name='".sql_safe($criteria_name)."',
 								 table_name='".sql_safe($c['table_name'])."',
 								 user_column='".sql_safe($c['user_column'])."',
-								 column_name='".sql_safe($c['column_name'])."',
-								 column_value='".sql_safe($c['column_value'])."'";
-								 // echo "<br />$sql";
+								 table_where='".sql_safe($c['table_where'])."'";
+								 // echo "<br />DEBUG1022: $sql";
+								 // preprint($sql);
 								 if(!mysql_query($sql))
 								{
 									add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
 								}
 							}
 						}
-						$checkarr[]=sql_safe($c['table_name']).",".sql_safe($c['user_column']).",".sql_safe($c['column_name']).",".sql_safe($c['column_value']);
+						$checkarr[]=$c['table_name'].",".$c['user_column'].",".$c['table_where'];
 					}
 				}
 				
 				// echo "<br />checkarr:<pre>".print_r($checkarr,1)."</pre>";
 				
 				//Kolla att alla i databasen ska vara där
-				$sql="SELECT id, table_name, user_column, column_name, column_value FROM  ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."';";
+				$sql="SELECT id, table_name, user_column, table_where FROM  ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."';";
 				if($cc=mysql_query($sql))
 				{
 					while($c=mysql_fetch_array($cc))
 					{
-						if(!in_array($c['table_name'].",".$c['user_column'].",".$c['column_name'].",".$c['column_value'], $checkarr))
+						if(!in_array($c['table_name'].",".$c['user_column'].",".$c['table_where'], $checkarr))
 						{
 							$sql="DELETE FROM ".PREFIX."criteria WHERE id=".$c['id'].";";
 							// echo "<br />$sql
-							// <br />!in_array(".$c['table_name'].",".$c['user_column'].",".$c['column_name'].",".$c['column_value'].", ".$checkarr."))";
+							// <br />!in_array(".$c['table_name'].",".$c['user_column'].",".$c['table_where'].", ".print_r($checkarr,1)."))";
 							mysql_query($sql);
 						}
 					}
@@ -262,7 +263,7 @@ function usermessage_criterias_form($nr_id, $criteria_name=NULL)
 	$criterias=array();
 	if($criteria_name!=NULL && $criteria_name!="")
 	{
-		$sql="SELECT table_name,user_column,column_name, column_value FROM ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."'";
+		$sql="SELECT table_name,user_column,table_where FROM ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."'";
 		if($cc=mysql_query($sql))
 		{
 			while($c=mysql_fetch_assoc($cc))
@@ -283,7 +284,7 @@ function usermessage_criterias_form($nr_id, $criteria_name=NULL)
 	?>
 	<div id="condition_add">
 		<button class="btn btn-default" 
-				<?php $path=SITE_URL.'/'.CUSTOM_CONTENT_PATH.'/pages/condition_form.php/?1='.($next_id); ?>
+				<?php $path=SITE_URL.'/operation/condition_form.php/?1='.($next_id); ?>
 				onclick="replace_html_div('condition_add', '<?php echo $path; ?>'); return false;">
 			Add condition
 		</button>
@@ -305,12 +306,8 @@ function usermessage_criterias_form_row($nr_id, $c=NULL)
 			<input id="criteria_user_column_<?php echo $nr_id; ?>" class="form-control" type="text" value="<?php if(isset($c['user_column'])) echo $c['user_column']; ?>" name="criteria[<?php echo $nr_id; ?>][user_column]">
 		</div>
 		<div class="form-group">
-			<label for="criteria_column_name_<?php echo $nr_id; ?>"><?php echo _("Column name:"); ?></label>
-			<input id="criteria_column_name_<?php echo $nr_id; ?>" class="form-control" type="text" value="<?php if(isset($c['column_name'])) echo $c['column_name']; ?>" name="criteria[<?php echo $nr_id; ?>][column_name]">
-		</div>
-		<div class="form-group">
-			<label for="criteria_column_value_<?php echo $nr_id; ?>"><?php echo _("Column value:"); ?></label>
-			<textarea id="criteria_column_value_<?php echo $nr_id; ?>" class="form-control" name="criteria[<?php echo $nr_id; ?>][column_value]"><?php if(isset($c['column_value'])) echo $c['column_value']; ?></textarea>
+			<label for="where_value_<?php echo $nr_id; ?>"><?php echo _("WHERE:"); ?></label>
+			<textarea id="where_value_<?php echo $nr_id; ?>" class="form-control" name="criteria[<?php echo $nr_id; ?>][table_where]"><?php if(isset($c['table_where'])) echo $c['table_where']; ?></textarea>
 		</div>
 	</div>
 	<?php
@@ -463,10 +460,12 @@ function usermessage_check_criteria($user, $message_event)
 			//KOlla alla kriterier
 			foreach($criteria as $c)
 			{
+				$where=$c['table_where'];
 				$sql="SELECT COUNT(id) as nr FROM ".sql_safe($c['table_name'])." 
 					WHERE ".sql_safe($c['user_column'])."=".sql_safe($user)."
-					AND ".sql_safe($c['column_name'])." ".sql_safe($c['column_value']).";";
-				// echo "<br />DEBUG1310: $sql";
+					AND (".$where.");";
+				echo "<br />DEBUG1310: $sql";
+				preprint($sql);
 				if($tt=mysql_query($sql))
 				{
 					if($t=mysql_fetch_assoc($tt))
@@ -497,7 +496,7 @@ function usermessage_send_to_user($user, $message_event)
 			if(in_array("insite_privmess", $sendby))
 			{
 				//Skicka ett ingame-meddelande till användaren med meddelandet
-				privmess_send(0, $user, $m['subject'], $m['message']);
+				privmess_send(0, $user, $m['subject'], $m['message'], FALSE);
 				$adress.="insite_privmess";
 			}
 			if(in_array("insite_notice", $sendby))
