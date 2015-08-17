@@ -91,8 +91,8 @@ function usermessage_receive()
 								 table_name='".sql_safe($c['table_name'])."',
 								 user_column='".sql_safe($c['user_column'])."',
 								 table_where='".sql_safe($c['table_where'])."'";
-								 // echo "<br />DEBUG1022: $sql";
-								 // preprint($sql);
+								 // echo "<br />DEBUG1022:";
+								 // echo preprint($sql);
 								 if(!mysql_query($sql))
 								{
 									add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
@@ -462,8 +462,9 @@ function usermessage_check_criteria($user, $message_event)
 			{
 				$where=$c['table_where'];
 				$sql="SELECT COUNT(id) as nr FROM ".sql_safe($c['table_name'])." 
-					WHERE ".sql_safe($c['user_column'])."=".sql_safe($user)."
-					AND (".$where.");";
+					WHERE ".sql_safe($c['user_column'])."=".sql_safe($user).";";
+				if($where!="")
+					$sql.=" AND (".$where.");";
 				echo "<br />DEBUG1310: $sql";
 				preprint($sql);
 				if($tt=mysql_query($sql))
