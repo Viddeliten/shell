@@ -283,7 +283,7 @@ function usermessage_criterias_form($nr_id, $criteria_name=NULL)
 	?>
 	<div id="condition_add">
 		<button class="btn btn-default" 
-				<?php $path=SITE_URL.'/'.CUSTOM_CONTENT_PATH.'/pages/condition_form.php/?1='.($next_id); ?>
+				<?php $path=SITE_URL.'/operation/condition_form.php/?1='.($next_id); ?>
 				onclick="replace_html_div('condition_add', '<?php echo $path; ?>'); return false;">
 			Add condition
 		</button>
