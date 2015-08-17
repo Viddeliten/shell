@@ -106,6 +106,15 @@ function user_get_regdate($id)
 			return $h['regdate'];
 	return NULL;
 }
+function user_get_reputation($id)
+{
+	$sql="SELECT reputation FROM ".PREFIX."user WHERE id='".sql_safe($id)."';";
+	//echo "<br />$sql";
+	if($hh=mysql_query($sql))
+		if($h=@mysql_fetch_array($hh))
+			return $h['reputation'];
+	return NULL;
+}
 function user_get_lastlogin($id)
 {
 	$sql="SELECT lastlogin FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
@@ -177,7 +186,10 @@ function user_get_link_url($user_id)
 }
 function user_get_link($user_id)
 {
-	return "<a href=\"".user_get_link_url($user_id)."\">".user_get_name($user_id)."</a>";
+	if($user_id==0)
+		return SITE_NAME;
+	else
+		return "<a href=\"".user_get_link_url($user_id)."\">".user_get_name($user_id)."</a>";
 }
 
 function user_get_id_from_username($username)
