@@ -29,11 +29,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 	
-  </head>
-
-  <body>
-  
-  <?php session_start(); ?>
+	  <?php session_start(); ?>
    
   <?php
   
@@ -60,8 +56,10 @@
   require_once("functions/notice.php");
   
   language_setup();
-
   $connection=db_connect(db_host, db_name, db_user, db_pass);
+
+  login_receive();
+  
   
   //Include custom content
   if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
@@ -70,8 +68,6 @@
   if(file_exists(CUSTOM_CONTENT_PATH."/receive.php"))
 	  require_once(CUSTOM_CONTENT_PATH."/receive.php");
   
-
-  login_receive();
   feedback_recieve();
   comment_receive();
   user_receive();
@@ -84,10 +80,11 @@
   if(isset($_SESSION[PREFIX.'user_id']))
 	usermessage_check_messages($_SESSION[PREFIX.'user_id']);
 
-  ?>
-  
- 
+?>
+	
+  </head>
 
+  <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
