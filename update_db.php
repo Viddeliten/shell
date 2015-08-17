@@ -76,7 +76,7 @@ if($serialized_db!==FALSE)
 						{
 							$suggested_sql[]="ALTER TABLE ".PREFIX.$create[$i]['Table']." ADD ".$s.";";
 						}
-						else if(preg_match("/`[a-z0-9]*`/", $s, $matches)) //This should mean we are dealing with a column
+						else if(preg_match("/`[A-Za-z0-9_]*`/", $s, $matches)) //This should mean we are dealing with a column
 						{
 							//Check if $matches[0] exists in any of the rows in $current_rows
 							$column_name = $matches[0];
@@ -102,6 +102,8 @@ if($serialized_db!==FALSE)
 							$s=str_replace(")", "", $s);
 							$suggested_sql[]="ALTER TABLE ".PREFIX.$create[$i]['Table']." ".$s.";";
 						}
+						else 
+							echo "<br />NO suggestion";
 					}
 				}
 				
