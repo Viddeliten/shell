@@ -15,11 +15,11 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   PRIMARY KEY (`id`),
   KEY `comment_user` (`user`),
   KEY `DH_comment_on_type` (`comment_on`,`comment_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:1;a:2:{s:5:"Table";s:8:"criteria";s:12:"Create Table";s:421:"CREATE TABLE IF NOT EXISTS `criteria` (
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:1;a:2:{s:5:"Table";s:8:"criteria";s:12:"Create Table";s:422:"CREATE TABLE IF NOT EXISTS `criteria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) COLLATE utf8_bin NOT NULL,
-  `table_name` varchar(64) COLLATE utf8_bin DEFAULT NULL,
-  `user_column` varchar(32) COLLATE utf8_bin NOT NULL COMMENT 'Name of the column wich identifies user',
+  `table_name` varchar(128) COLLATE utf8_bin DEFAULT NULL,
+  `user_column` varchar(62) COLLATE utf8_bin NOT NULL COMMENT 'Name of the column wich identifies user',
   `table_where` text COLLATE utf8_bin,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:2;a:2:{s:5:"Table";s:8:"feedback";s:12:"Create Table";s:1327:"CREATE TABLE IF NOT EXISTS `feedback` (
@@ -43,7 +43,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:872:"CREATE TABLE
   `size` smallint(6) NOT NULL DEFAULT '0' COMMENT '1=bugfix, 2=small improvement, 3=big thing, 0=unset',
   `merged_with` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:3;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:330:"CREATE TABLE IF NOT EXISTS `flattr` (
+) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:3;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:330:"CREATE TABLE IF NOT EXISTS `flattr` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `flattrID` varchar(128) COLLATE utf8_bin DEFAULT NULL,
