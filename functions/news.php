@@ -200,6 +200,9 @@ function news_show($max_nr=10, $extra_headline="", $extra_headline_size=2)
 				// echo "</div>";
 			}
 		}
+		
+		//RSS-link
+		echo '<a href="'.SITE_URL.'/operation/rss_news.php">rss</a>';
 	}
 }
 

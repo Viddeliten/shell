@@ -10,18 +10,16 @@ require_once(ROOT_PATH."functions/string.php");
 require_once(ROOT_PATH."functions/message.php");
 require_once(ROOT_PATH."functions/usermessage.php");
 require_once(ROOT_PATH."functions/language.php");
+require_once(ROOT_PATH."functions/news.php");
+require_once(ROOT_PATH."functions/rss_class.php");
 
-if(file_exists(ROOT_PATH."custom_content"))
-	define('CUSTOM_CONTENT_PATH',ROOT_PATH."custom_content");
-else
-	define('CUSTOM_CONTENT_PATH',ROOT_PATH."sample-custom_content");
+require_once(ROOT_PATH."config.php");
 
 if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
 	require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
 if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
 	require_once(CUSTOM_CONTENT_PATH."/globals.php");
 
-require_once(ROOT_PATH."config.php");
 language_setup();
   
 ?>
