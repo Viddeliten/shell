@@ -14,6 +14,7 @@ define('REL_STR',
 -IFNULL((TIMESTAMPDIFF(DAY,resolved,CURDATE())/365),0)
 -IFNULL((TIMESTAMPDIFF(DAY,not_implemented,CURDATE())/365),0)
 +(comments/10)
++(children/5)
 +(1-size/4)*3"
 );
 
@@ -233,6 +234,9 @@ function feedback_recieve()
 
 function feedback_show()
 {
+	feedback_count_children();
+	feedback_count_comments();
+	
 	echo '<div class="row">
 		<div class="col-lg-8">';
 	echo '<h1>'._("Feedback").'</h1>
@@ -740,6 +744,70 @@ function feedback_count_plusone()
 			}while(!$parent_done);
 			if($id_to_add!==NULL)
 				mysql_query("UPDATE ".PREFIX."feedback SET plusones=plusones+".$f['plus']." WHERE id=".$id_to_add.";");
+		}
+	}
+}
+
+function feedback_count_comments()
+{
+	//Man får ju börja med att sätta allt till noll...
+	mysql_query("UPDATE ".PREFIX."feedback SET comments=0;");
+	
+	$sql="SELECT id FROM ".PREFIX."feedback WHERE resolved IS NULL AND not_implemented IS NULL;";
+	 // echo "<br />DEBUG2309: $sql";
+	if($cc=mysql_query($sql))
+	{
+		while($c=mysql_fetch_array($cc))
+		{
+			$nr_comments=comment_count("feedback", $c['id']);
+			feedback_add_comments_and_parents($c['id'], $nr_comments);
+		}
+	}
+}
+function feedback_add_comments_and_parents($id, $add)
+{
+	//Add to this and all parents
+	$sql="UPDATE ".PREFIX."feedback SET comments=comments+".sql_safe($add)." WHERE id=".sql_safe($id).";";
+	mysql_query($sql);
+	$sql="SELECT id FROM ".PREFIX."feedback WHERE merged_with=".sql_safe($id).";";
+	if($ff=mysql_query($sql))
+	{
+		while($f=mysql_fetch_assoc($ff))
+		{
+			feedback_add_comments_and_parents($f['id'], $add);
+		}
+	}
+}
+
+function feedback_count_children()
+{
+	//Man får ju börja med att sätta allt till noll...
+	mysql_query("UPDATE ".PREFIX."feedback SET children=0;");
+	
+	//Get all merged. Add one to all the parents
+	$sql="SELECT id, merged_with FROM ".PREFIX."feedback WHERE merged_with IS NOT NULL AND resolved IS NULL AND not_implemented IS NULL;";
+	if($ff=mysql_query($sql))
+	{
+		while($f=mysql_fetch_assoc($ff))
+		{
+			feedback_add_children_to_parents($f['merged_with']);
+		}
+	}
+	
+}
+
+function feedback_add_children_to_parents($id)
+{
+	//Add one to children
+	$sql="UPDATE ".PREFIX."feedback SET children=children+1 WHERE id=".sql_safe($id).";";
+	mysql_query($sql);
+	//add to all parents too.
+	$sql="SELECT merged_with FROM ".PREFIX."feedback WHERE id=".sql_safe($id)." AND merged_with IS NOT NULL;";
+	if($ff=mysql_query($sql))
+	{
+		if($f=mysql_fetch_assoc($ff))
+		{
+			feedback_add_children_to_parents($f['merged_with']);
 		}
 	}
 }

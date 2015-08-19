@@ -522,4 +522,19 @@ function comment_display_author_text($comment_user_id, $comment_user_nick, $comm
 	else
 		echo sprintf(_("Posted by <a href=\"%s\">%s</a>%s at <a href=\"%s\">%s</a>"), $user_link, $user_name, $admin, $comment_link, $comment_time);
 }
+
+function comment_count($type, $id)
+{
+	$sql="SELECT id FROM ".PREFIX."comment WHERE comment_type='".$type."' AND comment_on='".$id."';";
+	$return=0;
+	if($cc=mysql_query($sql))
+	{
+		while($c=mysql_fetch_assoc($cc))
+		{
+			$return++;
+			$return+=comment_count('comment', $c['id']);
+		}
+	}
+	return $return;
+}
 ?>
