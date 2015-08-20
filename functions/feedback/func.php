@@ -1062,6 +1062,7 @@ function feedback_display_list($size, $nr, $headline, $headlinesize)
 	$sql="SELECT id, ".REL_STR." as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
+	AND merged_with IS NULL
 	";
 	if($size!=-1)
 		$sql.="AND size=".sql_safe($size);
