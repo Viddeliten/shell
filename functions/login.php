@@ -59,8 +59,8 @@ function login_check()
 				//Ge medlemmen intro
 				if(FIRST_TIME_LOGIN_TEXT!="")
 					add_message(FIRST_TIME_LOGIN_TEXT);
-				if(function_exists ( "custom_first_login" ))
-					custom_first_login($user['id']);
+				if(function_exists ( "login_custom_first_login" ))
+					login_custom_first_login($user['id']);
 			}
 			else
 				add_message(_("Login successfull"));

@@ -36,6 +36,9 @@
     if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
 	  require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
 
+  if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
+	  require_once(CUSTOM_CONTENT_PATH."/globals.php");
+  
   require_once("functions/login.php");
   require_once("functions/db_connect.php");
   require_once("functions/string.php");
@@ -62,8 +65,7 @@
   
   
   //Include custom content
-  if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
-	  require_once(CUSTOM_CONTENT_PATH."/globals.php");
+
   
   if(file_exists(CUSTOM_CONTENT_PATH."/receive.php"))
 	  require_once(CUSTOM_CONTENT_PATH."/receive.php");
