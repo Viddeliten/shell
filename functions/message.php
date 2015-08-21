@@ -27,6 +27,19 @@ function add_error($error_mess)
 		define('ERROR'.$i, $error_mess);
 	}
 }
+function message_try_mysql($sql,$error_code, $success_message)
+{
+	if(mysql_query($sql))
+	{
+		add_message($success_message);
+		return TRUE;
+	}
+	else
+	{
+		add_error_mysql($error_code,$sql, mysql_error());
+		return FALSE;
+	}
+}
 function add_error_mysql($error_code,$sql, $mysql_error)
 {
 	add_error(sprintf(_("Error code %s<br />SQL: %s<br />ERROR: %s"),$error_code, $sql, $mysql_error));
