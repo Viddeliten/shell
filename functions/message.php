@@ -27,11 +27,12 @@ function add_error($error_mess)
 		define('ERROR'.$i, $error_mess);
 	}
 }
-function message_try_mysql($sql,$error_code, $success_message)
+function message_try_mysql($sql,$error_code, $success_message=NULL)
 {
 	if(mysql_query($sql))
 	{
-		add_message($success_message);
+		if($success_message!=NULL)
+			add_message($success_message);
 		return TRUE;
 	}
 	else
