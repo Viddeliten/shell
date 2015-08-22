@@ -252,7 +252,9 @@ function user_display_profile($user_id)
 			user_profile_custom_content($user_id);
 		}
 	}
+	echo '<div class="col-lg-12">';
 	comments_show_comments_and_replies($user_id, "user");
+	echo "</div>";
 }
 
 function user_display_settings()
