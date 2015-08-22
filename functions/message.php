@@ -36,17 +36,25 @@ function add_error($error_mess)
 		define('ERROR'.$i, $error_mess);
 	}
 }
-function message_try_mysql($sql,$error_code, $success_message=NULL)
+function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=FALSE)
 {
 	if(mysql_query($sql))
 	{
 		if($success_message!=NULL)
-			add_message($success_message);
+		{
+			if($print_now)
+				message_print_message($success_message);
+			else
+				add_message($success_message);
+		}
 		return TRUE;
 	}
 	else
 	{
-		add_error_mysql($error_code,$sql, mysql_error());
+		if($print_now)
+				message_print_error(sprintf(_("Error code %s<br />SQL: %s<br />ERROR: %s"),$error_code, $sql, mysql_error()));
+			else
+				add_error_mysql($error_code,$sql, mysql_error());
 		return FALSE;
 	}
 }
