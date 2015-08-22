@@ -114,8 +114,6 @@
         </div><!--/.nav-collapse -->
       </div>
     </nav>
-	
-    
 	<div class="container" id="main_container">
 		<div id="content">
 		<?php 
