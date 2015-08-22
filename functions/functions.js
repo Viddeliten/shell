@@ -1,6 +1,5 @@
 function replace_html_div(div_id_to, path)
 {
-		alert(path);
 	if(path !== undefined)
 	{
 		$.get( path, function( data ) {
