@@ -500,12 +500,12 @@ function comment_display_author_text($comment_user_id, $comment_user_nick, $comm
 	if($comment_user_id!=NULL)
 	{
 		$user_name=user_get_name($comment_user_id);
-		$user_link=SITE_URL."/?p=user&amp;user=".$comment_user_id;
+		$user_link=user_get_link($comment_user_id);
 	}
 	else if($comment_user_nick!=NULL)
 	{
 		$user_name=$comment_user_nick;
-		$user_link=$comment_user_url;
+		$user_link="<a href=\"".$comment_user_url."\">".$user_name."</a>";
 	}
 	
 	//Kolla om författaren är admin
@@ -520,7 +520,7 @@ function comment_display_author_text($comment_user_id, $comment_user_nick, $comm
 	else if($user_link==NULL)
 		echo sprintf(_("Posted by %s%s at <a href=\"%s\">%s</a>"), $user_name, $admin, $comment_link,$comment_time);
 	else
-		echo sprintf(_("Posted by <a href=\"%s\">%s</a>%s at <a href=\"%s\">%s</a>"), $user_link, $user_name, $admin, $comment_link, $comment_time);
+		echo sprintf(_("Posted by %s%s at <a href=\"%s\">%s</a>"), $user_link, $admin, $comment_link, $comment_time);
 }
 
 function comment_count($type, $id)
