@@ -688,7 +688,7 @@ function feedback_status_show($id, $accepted=NULL, $checked_in=NULL, $resolved=N
 	
 	if($inloggad>=5) //...men för att bestämma att saker inte ska göras, eller att de är klara
 	{
-		if($checked_in==NULL)
+		if($checked_in==NULL && $resolved==NULL)
 		{
  			echo "<button class=\"form-control btn-info\" id=\"feedback_checked_in_".$id."\" onclick=\"feedback_operation('feedback_check_in',".$id.", '".$parent_div."'); return false;\">"._("Solution is checked in")."</button>";
 		}
