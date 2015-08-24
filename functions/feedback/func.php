@@ -661,10 +661,10 @@ function feedback_status_show($id, $accepted=NULL, $checked_in=NULL, $resolved=N
 	// echo '<p>';
 	if($not_implemented!=NULL)
 		echo "[".sprintf(_("Marked not implemented %s"),date("y-m-d",strtotime($not_implemented)))."]";
-	else if($checked_in!=NULL)
-		echo "[".sprintf(_("Solution checked in %s"),date("y-m-d",strtotime($resolved)))."]";
 	else if($resolved!=NULL)
 		echo "[".sprintf(_("Solution live %s"),date("y-m-d",strtotime($resolved)))."]";
+	else if($checked_in!=NULL)
+		echo "[".sprintf(_("Solution checked in %s"),date("y-m-d",strtotime($resolved)))."]";
 	else if($accepted!=NULL)
 		echo "[".sprintf(_("Accepted %s"),date("y-m-d",strtotime($accepted)))."]";
 	echo '</p>';
