@@ -11,14 +11,15 @@ define('REL_STR',
 "plusones
 +IFNULL((TIMESTAMPDIFF(DAY,created,CURDATE())/365),0)
 +IFNULL((TIMESTAMPDIFF(DAY,accepted,CURDATE())/365),0)
+-IFNULL((TIMESTAMPDIFF(DAY,checked_in,CURDATE())/365),0)
 -IFNULL((TIMESTAMPDIFF(DAY,resolved,CURDATE())/365),0)
 -IFNULL((TIMESTAMPDIFF(DAY,not_implemented,CURDATE())/365),0)
 +(comments/10)
-+(children/5)
++IF(children && children_rel,((children_rel/children)*(children/5)),0)
 +(1-size/4)*3"
 );
 
-define('ORDER_STR', "IF(not_implemented,1,0) ASC, IF(resolved,resolved,30000101000000) DESC, IF(accepted,1,0) DESC, rel DESC");
+define('ORDER_STR', "IF(not_implemented,1,0) ASC, IF(resolved,resolved,30000101000000) DESC, IF(checked_in,checked_in,30000101000000) DESC, IF(accepted,1,0) DESC, rel DESC");
 
 function feedback_recieve()
 {
@@ -109,6 +110,13 @@ function feedback_recieve()
 		
 	if(login_check_logged_in_mini()>0)
 	{
+		if(user_get_level($_SESSION[PREFIX.'user_id'])>=3)
+		{
+			if(isset($_POST['feedback_checked_in_is_live']))
+			{
+				feedback_set_all_checked_in_as_resolved();
+			}
+		}
 		if(isset($_POST['feedback_plusone']))
 		{
 			// echo "<br />DEBUG1938: plusone on ".$_POST['id'];
@@ -168,7 +176,7 @@ function feedback_recieve()
 		{	
 			if($_SESSION[SESSION_user_logged_in]>=5)
 			{
-				$sql="UPDATE ".PREFIX."feedback SET accepted=NULL WHERE id=".sql_safe($_POST['id']).";";
+				$sql="UPDATE ".PREFIX."feedback SET accepted=NULL, resolved=NULL, checked_in=NULL WHERE id=".sql_safe($_POST['id']).";";
 				if(mysql_query($sql))
 				{
 					define('MESS', "Task id ".$_POST['id']." unaccepted"); // ($sql)");
@@ -241,6 +249,22 @@ function feedback_show()
 		<div class="col-lg-8">';
 	echo '<h1>'._("Feedback").'</h1>
 			<p>'._("Suggestions for improvements, bufixes and ideas!").'</p>';
+			
+	$checked_in=feedback_get_checked_in();
+	$nr_checked_in=count($checked_in);
+	if($nr_checked_in>0 && login_check_logged_in_mini()>0 && user_get_level($_SESSION[PREFIX.'user_id']))
+	{
+		echo '<p>'.$nr_checked_in.' feedbacks checked in but not yet live</p>';
+		echo '<form method="post">
+			<input 
+				type="submit"
+				class="btn btn-primary" 
+				name="feedback_checked_in_is_live" 
+				value="Mark all cecked in as live"
+				onclick="return confirm(\''._("Are you sure you want to set ALL feedbacks that are currently checked in to live?").'\');"
+			>
+		</form>';
+	}
 
 	if(isset($_GET['id']))
 	{
@@ -266,7 +290,7 @@ function feedback_show()
 				echo "<h2>"._("Ongoing")."</h2>";
 				feedback_display_accepted(3);
 			}
-			else
+			else if(login_check_logged_in_mini()>0 && user_get_level($_SESSION[PREFIX.'user_id'])>1)
 			{
 				//Visa några föreslagna
 				feedback_display_list(-1, 3, _("Suggested"), 2);
@@ -358,7 +382,7 @@ function feedback_search($search_str, $from, $to)
 {
 	//hämtar sökresultat
 	$str="%".sql_safe(str_replace(" ","%",$search_str))."%";
-	$sql="SELECT  id, user, resolved, accepted, not_implemented, created, text, subject, plusones, nick, email, url, flattrID,
+	$sql="SELECT  id, user, checked_in, resolved, accepted, not_implemented, created, text, subject, plusones, nick, email, url, flattrID,
 	".REL_STR." as rel
 	FROM ".PREFIX."feedback
 	WHERE (`text` LIKE '%$str%'	OR `subject` LIKE '%$str%')
@@ -373,7 +397,7 @@ function feedback_search($search_str, $from, $to)
 function feedback_get_list_resolved($from, $to)
 {
 	//Visar de 20 mest "upptummade" feedback-texterna
-	$sql="SELECT  id, user, resolved, accepted, not_implemented, created, subject, text, subject, plusones, nick, email, url, flattrID
+	$sql="SELECT  id, user, checked_in, resolved, accepted, not_implemented, created, subject, text, subject, plusones, nick, email, url, flattrID
 	FROM ".PREFIX."feedback
 	WHERE resolved IS NOT NULL
 	AND is_spam<1
@@ -410,7 +434,7 @@ function feedback_get_list_specific($id)
 	//Formel= plusones + dagar sedan accepterad
 	//ta inte med resolvade
 	//Visar de 20 mest "upptummade" feedback-texterna
-	$sql="SELECT id, user, resolved, accepted, not_implemented, created, text, subject, plusones, nick, email, url, flattrID
+	$sql="SELECT id, user, checked_in, resolved, accepted, not_implemented, created, text, subject, plusones, nick, email, url, flattrID
 	FROM ".PREFIX."feedback
 	WHERE id=".sql_safe($id).";";
 	//echo "<br />DEBUG: $sql";
@@ -509,6 +533,22 @@ function feedback_get_is_not_implemented($id)
 	}
 	return NULL;
 }
+function feedback_get_is_checked_in($id)
+{
+	$sql="SELECT checked_in
+	FROM ".PREFIX."feedback
+	WHERE id=".sql_safe($id).";";
+	// echo $sql;
+	if($ff=mysql_query($sql))
+	{
+		if($f=mysql_fetch_array($ff))
+		{
+			return $f['checked_in'];
+		}
+		
+	}
+	return NULL;
+}
 function feedback_get_is_resolved($id)
 {
 	$sql="SELECT resolved
@@ -526,13 +566,15 @@ function feedback_get_is_resolved($id)
 	return NULL;
 }
 
-function feedback_list_print($data)
+function feedback_list_print($data, $id_expanded=NULL)
 {
 	$inloggad=login_check_logged_in_mini();
 	
 	while($d=mysql_fetch_array($data)) 
 	{
-		echo "<div class=\"panel feedback panel-default\" id=\"feedback_big_".$d['id']."\">";
+		$div_id="feedback_big_".$d['id'];
+		
+			echo "<div class=\"panel feedback panel-default\" id=\"".$div_id."\">";
 			echo '<div class="panel-heading ';
 				if($d['not_implemented']!=NULL)
 				{
@@ -544,6 +586,11 @@ function feedback_list_print($data)
 				{
 					//färdigt
 					echo "feedback_resolved\">";
+				}
+				else if($d['checked_in']!=NULL)
+				{
+					//färdigt
+					echo "feedback_checked_in\">";
 				}
 				else if($d['accepted']!=NULL)
 				{
@@ -575,7 +622,7 @@ function feedback_list_print($data)
 				
 			echo '</div><!-- panel-body -->';
 			//Visa status och sådär
-			feedback_display_bottom($d['id'], "feedback_big_".$d['id']);
+			feedback_display_bottom($d['id'], $div_id, $id_expanded);
 			
 			//Bottom with comments
 			echo '<div class="panel-footer">';
@@ -585,13 +632,16 @@ function feedback_list_print($data)
 	}
 }
 
-function feedback_status_show($id, $accepted=NULL, $resolved=NULL, $inloggad=NULL, $div_id, $parent_div=NULL, $before_text="", $after_text="")
+function feedback_status_show($id, $accepted=NULL, $checked_in=NULL, $resolved=NULL, $inloggad=NULL, $div_id, $parent_div=NULL, $before_text="", $after_text="")
 {
+	// echo "<br />feedback_status_show($id, $accepted, $checked_in, $resolved, $inloggad, $div_id, $parent_div";
 	if($parent_div==NULL)
 		$parent_div=$div_id;
 	
 	if($accepted==NULL)
 		$accepted=feedback_get_is_accepted($id);
+	if($checked_in==NULL)
+		$checked_in=feedback_get_is_checked_in($id);
 	if($resolved==NULL)
 		$resolved=feedback_get_is_resolved($id);
 	if($inloggad==NULL)
@@ -611,8 +661,10 @@ function feedback_status_show($id, $accepted=NULL, $resolved=NULL, $inloggad=NUL
 	// echo '<p>';
 	if($not_implemented!=NULL)
 		echo "[".sprintf(_("Marked not implemented %s"),date("y-m-d",strtotime($not_implemented)))."]";
+	else if($checked_in!=NULL)
+		echo "[".sprintf(_("Solution checked in %s"),date("y-m-d",strtotime($resolved)))."]";
 	else if($resolved!=NULL)
-		echo "[".sprintf(_("Resolved %s"),date("y-m-d",strtotime($resolved)))."]";
+		echo "[".sprintf(_("Solution live %s"),date("y-m-d",strtotime($resolved)))."]";
 	else if($accepted!=NULL)
 		echo "[".sprintf(_("Accepted %s"),date("y-m-d",strtotime($accepted)))."]";
 	echo '</p>';
@@ -623,19 +675,29 @@ function feedback_status_show($id, $accepted=NULL, $resolved=NULL, $inloggad=NUL
 		// echo '<div class="row">
 		// <div class="col-lg-12">
 		echo '<div class="form-group">';
+		//Button for not checked in
+		if($checked_in!=NULL)
+			echo "<button class=\"form-control btn-warning\" id=\"uncheckin_".$id."\" onclick=\"feedback_operation('uncheckin',".$id.", '".$parent_div."'); return false;\">"._("Checked in solution does not work")."</button>";
 		//Button for unresolve
-		if($resolved!=NULL)
+		else if($resolved!=NULL)
 			echo "<button class=\"form-control\" id=\"unresolve_".$id."\" onclick=\"feedback_operation('unresolve',".$id.", '".$parent_div."'); return false;\">"._("Unresolve")."</button>";
 		//acceptknapp
-		if($accepted==NULL && $resolved==NULL)
+		else if($accepted==NULL)
 			echo "<button class=\"form-control btn-success\" id=\"feedback_accept_".$id."\" onclick=\"feedback_operation('feedback_accept',".$id.", '".$parent_div."'); return false;\">"._("Accept this task")."</button>";
 	}
 	
 	if($inloggad>=5) //...men för att bestämma att saker inte ska göras, eller att de är klara
 	{
-		if($resolved==NULL)
+		if($checked_in==NULL)
 		{
- 			echo "<button class=\"form-control btn-primary\" id=\"feedback_resolve_".$id."\" onclick=\"feedback_operation('feedback_resolve',".$id.", '".$parent_div."'); return false;\">"._("Done")."</button>";
+ 			echo "<button class=\"form-control btn-info\" id=\"feedback_checked_in_".$id."\" onclick=\"feedback_operation('feedback_check_in',".$id.", '".$parent_div."'); return false;\">"._("Solution is checked in")."</button>";
+		}
+		else if($resolved==NULL)
+		{
+ 			echo "<button class=\"form-control btn-primary\" id=\"feedback_resolve_".$id."\" onclick=\"feedback_operation('feedback_resolve',".$id.", '".$parent_div."'); return false;\">"._("Solution is live")."</button>";
+		}
+		if($checked_in==NULL && $resolved==NULL)
+		{
 			if($accepted!=NULL)
 				echo "<button class=\"form-control\" id=\"feedback_unaccept_".$id."\" onclick=\"feedback_operation('feedback_unaccept',".$id.", '".$parent_div."'); return false;\">"._("Unaccept")."</button>";
 			if($not_implemented==NULL)
@@ -781,25 +843,32 @@ function feedback_add_comments_and_parents($id, $add)
 
 function feedback_count_children()
 {
-	//Man får ju börja med att sätta allt till noll...
-	mysql_query("UPDATE ".PREFIX."feedback SET children=0;");
+	//Start by resetting all child numbers to zero
+	mysql_query("UPDATE ".PREFIX."feedback SET children=0, children_rel=0;");
 	
-	//Get all merged. Add one to all the parents
-	$sql="SELECT id, merged_with FROM ".PREFIX."feedback WHERE merged_with IS NOT NULL AND resolved IS NULL AND not_implemented IS NULL;";
+	//Get all merged. Add one values to all parents
+	$sql="SELECT 
+		id, 
+		merged_with,
+		".REL_STR." as rel
+	FROM ".PREFIX."feedback 
+	WHERE merged_with IS NOT NULL 
+	AND resolved IS NULL 
+	AND not_implemented IS NULL;";
 	if($ff=mysql_query($sql))
 	{
 		while($f=mysql_fetch_assoc($ff))
 		{
-			feedback_add_children_to_parents($f['merged_with']);
+			feedback_add_children_to_parents($f['merged_with'], $f['rel']);
 		}
 	}
 	
 }
 
-function feedback_add_children_to_parents($id)
+function feedback_add_children_to_parents($id, $rel=0)
 {
 	//Add one to children
-	$sql="UPDATE ".PREFIX."feedback SET children=children+1 WHERE id=".sql_safe($id).";";
+	$sql="UPDATE ".PREFIX."feedback SET children=children+1, children_rel=children_rel+".sql_safe($rel)." WHERE id=".sql_safe($id).";";
 	mysql_query($sql);
 	//add to all parents too.
 	$sql="SELECT merged_with FROM ".PREFIX."feedback WHERE id=".sql_safe($id)." AND merged_with IS NOT NULL;";
@@ -807,7 +876,7 @@ function feedback_add_children_to_parents($id)
 	{
 		if($f=mysql_fetch_assoc($ff))
 		{
-			feedback_add_children_to_parents($f['merged_with']);
+			feedback_add_children_to_parents($f['merged_with'], $rel);
 		}
 	}
 }
@@ -942,21 +1011,27 @@ function feedback_show_latest_short($antal=3, $length=150, $headline_size=2)
 	}
 }
 
-function feedback_display_specific_headline($id, $parent_name=NULL, $expanded=FALSE, $display_user=TRUE)
+function feedback_display_specific_headline($id, $div_id, $source_div=NULL, $expanded=FALSE, $display_user=TRUE, $div_prefix="")
 {
-	if(strcmp($parent_name,"feedback_line_".$id))
-		$div_id=$parent_name."feedback_line_".$id;
-	else
-		$div_id=$parent_name;
+	// echo "<br />feedback_display_specific_headline($id, $div_id, $source_div, $expanded, $display_user, $div_prefix)";
+	
+	$div_prefix=str_replace(" ","_",$div_prefix);
+	$div_prefix=str_replace("ö","o",$div_prefix);
+	$div_prefix=str_replace("å","a",$div_prefix);
+	$div_prefix=str_replace("ä","a",$div_prefix);
+	
+	if($div_id==NULL && $source_div==NULL)
+		$div_id=$div_prefix."_feedback_post_".$id;
+	else if($div_id==NULL)
+		$div_id=$source_div."_feedback_child_".$id;
+	
+	if($source_div==NULL)
+		$source_div=$div_id;
+	
+	// echo "<p>'$div_id' FROM '$source_div'</p>";
 
-	if($parent_name==NULL)
-		$target_div=$div_id;
-	else
-		$target_div=$parent_name;
 	
-	// echo "<p>$div_id : $target_div : $parent_name</p>";
-	
-	$sql="SELECT id, user, resolved, accepted, not_implemented, created, text, subject, plusones, nick, email, url, flattrID
+	$sql="SELECT id, user, checked_in, resolved, accepted, not_implemented, created, text, subject, plusones, nick, email, url, flattrID
 	FROM ".PREFIX."feedback
 	WHERE id=".sql_safe($id).";";
 	// echo $sql;
@@ -968,6 +1043,8 @@ function feedback_display_specific_headline($id, $parent_name=NULL, $expanded=FA
 				$extra_class="feedback_not_implemented";
 			else if($d['resolved']!=NULL)
 				$extra_class="feedback_resolved";
+			else if($d['checked_in']!=NULL)
+				$extra_class="feedback_checked_in";
 			else if($d['accepted']!=NULL)
 				$extra_class="feedback_accepted";
 			else
@@ -982,7 +1059,7 @@ function feedback_display_specific_headline($id, $parent_name=NULL, $expanded=FA
 				<div class=\"row $extra_class\">
 					<div class=\"col-sm-8 feedback_headline\">";
 						if($display_user)
-							echo "<a href=\"#\" onclick=\"feedback_operation('".$click_operation."', ".$id.", '".$div_id."', '".$target_div."'); return false;\">";
+							echo "<a href=\"#\" onclick=\"feedback_operation('".$click_operation."', ".$id.", '".$div_id."', '".$source_div."&amp;div_prefix=".$div_prefix."'); return false;\">";
 						else
 							echo '<a href="'.SITE_URL.'/?p=feedback&id='.$id.'">';
 						echo "<strong>";
@@ -993,6 +1070,7 @@ function feedback_display_specific_headline($id, $parent_name=NULL, $expanded=FA
 						echo "</strong>";
 						echo "</a>
 					</div>";
+					
 					if($display_user)
 					{
 						echo "<div class=\"col-sm-2 feedback_author\">
@@ -1009,7 +1087,7 @@ function feedback_display_specific_headline($id, $parent_name=NULL, $expanded=FA
 				{
 					feedback_display_body($id);
 					//Visa status och sådär
-					feedback_display_bottom($id, $target_div);
+					feedback_display_bottom($id, $source_div);
 					
 					//Bottom with comments
 					// echo '<div class="panel-footer">';
@@ -1072,6 +1150,7 @@ function feedback_display_list($size, $nr, $headline, $headlinesize)
 	-- AND merged_with IS NULL
 	ORDER BY ".ORDER_STR."
 	LIMIT ".sql_safe($nr).";";
+	// echo preprint($sql);
 	feedback_display_headline_list($sql, $headline, $headlinesize);
 	
 }
@@ -1086,17 +1165,6 @@ function feedback_display_list_resolved($nr, $headline, $headlinesize)
 	ORDER BY ".ORDER_STR."
 	LIMIT ".sql_safe($nr).";";
 	feedback_display_headline_list($sql, $headline, $headlinesize);
-	// if($ff=mysql_query($sql))
-	// {
-		// if(mysql_affected_rows()>0)
-			// echo "<h".$headlinesize.">".$headline."</h".$headlinesize.">";
-		// echo "<div class=\"row\">";
-		// while($f=mysql_fetch_array($ff))
-		// {
-			// feedback_display_specific_headline($f['id']); //, "resolved");
-		// }
-		// echo "</div>";
-	// }
 }
 
 function feedback_display_headline_list($sql, $headline, $headlinesize, $display_user=TRUE)
@@ -1112,7 +1180,7 @@ function feedback_display_headline_list($sql, $headline, $headlinesize, $display
 					while($f=mysql_fetch_array($ff))
 					{
 						echo '<li class="list-group-item">';
-							feedback_display_specific_headline($f['id'], NULL, FALSE, $display_user); //, $parent);
+							feedback_display_specific_headline($f['id'], NULL, NULL, FALSE, $display_user, $headline); //, $parent);
 						echo '</li>';
 					}
 				echo '</ul>';
@@ -1137,6 +1205,7 @@ function feedback_list_user_feedback($user_id, $headline, $headlinesize)
 {
 	$sql="SELECT id, ".REL_STR." as rel FROM ".PREFIX."feedback 
 	WHERE user=".sql_safe($user_id)." ORDER BY ".ORDER_STR.";";
+	
 	feedback_display_headline_list($sql, $headline, $headlinesize, FALSE);
 }
 
@@ -1293,7 +1362,7 @@ function feedback_set_accepted($id)
 function feedback_set_unaccepted($id)
 {
 	//Unaccept the feedback
-	$sql="UPDATE ".PREFIX."feedback SET accepted=NULL WHERE id=".sql_safe($id).";";
+	$sql="UPDATE ".PREFIX."feedback SET accepted=NULL, resolved=NULL, checked_in=NULL WHERE id=".sql_safe($id).";";
 	mysql_query($sql);
 	
 	//Set children that is not done to unaccepted
@@ -1308,6 +1377,23 @@ function feedback_set_unaccepted($id)
 	}
 }
 
+function feedback_set_checked_in($id)
+{
+	//Check in the feedback
+	$sql="UPDATE ".PREFIX."feedback SET not_implemented=NULL, checked_in='".date("YmdHis")."', accepted=IFNULL(accepted, NOW()) WHERE id=".sql_safe($id).";";
+	mysql_query($sql);
+	
+	//Check in any children
+	//Find children
+	$sql="SELECT id FROM  ".PREFIX."feedback WHERE merged_with=".sql_safe($id)." AND not_implemented IS NULL;";
+	if($ff=mysql_query($sql))
+	{
+		while($f=mysql_fetch_array($ff))
+		{
+			feedback_set_checked_in($f['id']);
+		}
+	}	
+}
 function feedback_set_resolved($id)
 {
 	//Resolve the feedback
@@ -1326,6 +1412,13 @@ function feedback_set_resolved($id)
 	}
 }
 
+function feedback_set_all_checked_in_as_resolved()
+{
+	
+	$sql="UPDATE ".PREFIX."feedback SET resolved=NOW() WHERE resolved IS NULL AND checked_in IS NOT NULL;";
+	message_try_mysql($sql,"18361419", _("All feedbacks that was checked in are now set to live"));
+}
+
 function feedback_set_not_implemented($id)
 {
 	//Resolve the feedback
@@ -1334,7 +1427,7 @@ function feedback_set_not_implemented($id)
 	
 	//Resolve any children
 	//Find children
-	$sql="SELECT id, resolved, accepted FROM  ".PREFIX."feedback WHERE merged_with=".sql_safe($id)." AND resolved IS NULL AND accepted IS NULL;";
+	$sql="SELECT id FROM  ".PREFIX."feedback WHERE merged_with=".sql_safe($id)." AND resolved IS NULL AND accepted IS NULL;";
 	if($ff=mysql_query($sql))
 	{
 		while($f=mysql_fetch_array($ff))
@@ -1344,12 +1437,30 @@ function feedback_set_not_implemented($id)
 	}
 }
 
-function feedback_set_unresolved($id)
+function feedback_set_not_checked_in($id)
 {
-	$sql="UPDATE ".PREFIX."feedback SET resolved=NULL WHERE id=".sql_safe($id).";";
+	$sql="UPDATE ".PREFIX."feedback SET resolved=NULL, checked_in=NULL, accepted=IFNULL(accepted,NOW()) WHERE id=".sql_safe($id).";";
 	mysql_query($sql);
 	
-	//Set parent to unresolved
+	//Set parent to unresolved and not checked in (because if this is not checked in, solution can't be live or even checked in)
+	$sql="SELECT merged_with FROM ".PREFIX."feedback WHERE id=".sql_safe($id).";";
+	if($ff=mysql_query($sql))
+	{
+		if($f=mysql_fetch_array($ff))
+		{
+			if($f['merged_with']!=NULL)
+			{
+				feedback_set_not_checked_in($f['merged_with']);
+			}
+		}
+	}
+}
+function feedback_set_unresolved($id)
+{
+	$sql="UPDATE ".PREFIX."feedback SET resolved=NULL, accepted=IFNULL(accepted,NOW())  WHERE id=".sql_safe($id).";";
+	mysql_query($sql);
+	
+	//Set parent to unresolved and not checked in
 	$sql="SELECT merged_with FROM ".PREFIX."feedback WHERE id=".sql_safe($id).";";
 	if($ff=mysql_query($sql))
 	{
@@ -1362,12 +1473,12 @@ function feedback_set_unresolved($id)
 		}
 	}
 }
-function feedback_display_bottom($feedback_id, $parent_div_id)
+function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL)
 {
 	echo '<ul class="list-group">';
-					feedback_status_show($feedback_id, NULL, NULL, NULL, "feedback_status_".$feedback_id, $parent_div_id, '<li class="list-group-item">','</li>');
-					feedback_display_size_buttons($feedback_id, "", '<li class="list-group-item">','</li>');
-					feedback_display_merge_form($feedback_id, "", '<li class="list-group-item">','</li>');
+				feedback_status_show($feedback_id, NULL, NULL, NULL, NULL, "feedback_status_".$feedback_id, $parent_div_id, '<li class="list-group-item">','</li>');
+				feedback_display_size_buttons($feedback_id, "", '<li class="list-group-item">','</li>');
+				feedback_display_merge_form($feedback_id, "", '<li class="list-group-item">','</li>');
 				
 			
 			//Attached
@@ -1381,7 +1492,11 @@ function feedback_display_bottom($feedback_id, $parent_div_id)
 								{
 									echo '<li class="list-group-item">';
 										// echo 'Attached';
-										feedback_display_specific_headline($a, $parent_div_id);
+										// feedback_display_specific_headline($id, $div_id, $source_div=NULL, $expanded=FALSE, $display_user=TRUE, $div_prefix="")
+										if($id_expanded===$a)
+											feedback_display_specific_headline($a, NULL, $parent_div_id, TRUE);
+										else
+											feedback_display_specific_headline($a, NULL, $parent_div_id);
 									echo '</li>';
 								}
 							echo '</ul>';
@@ -1501,5 +1616,35 @@ function feedback_display_author_text($feedback_user_id, $feedback_user_nick, $f
 		echo sprintf(_("Posted by %s at <a href=\"%s\">%s</a>"), $user_name,$feedback_link,$feedback_time);
 	else
 		echo sprintf(_("Posted by <a href=\"%s\">%s</a> at <a href=\"%s\">%s</a>"), $user_link, $user_name,$feedback_link,$feedback_time);
+}
+
+function feedback_get_checked_in()
+{
+	$feedbacks=array();
+	$sql="SELECT id FROM ".PREFIX."feedback WHERE resolved IS NULL AND not_implemented IS NULL AND checked_in IS NOT NULL;";
+	if($ff=mysql_query($sql))
+	{
+		while($f=mysql_fetch_assoc($ff))
+		{
+			$feedbacks[]=$f['id'];
+		}
+	}
+	return $feedbacks;
+}
+
+function feedback_get_main_parent($id)
+{
+	$sql="SELECT merged_with FROM ".PREFIX."feedback WHERE id=".sql_safe($id).";";
+	if($ff=mysql_query($sql))
+	{
+		if($f=mysql_fetch_assoc($ff))
+		{
+			if($f['merged_with']!==NULL)
+			{
+				return feedback_get_main_parent($f['merged_with']);
+			}
+		}
+	}
+	return $id;
 }
 ?>

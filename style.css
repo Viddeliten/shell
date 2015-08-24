@@ -165,6 +165,10 @@ h1.panel-title
 {
 	background-color: #EA8969;
 }
+.feedback_checked_in, .feedback_checked_in  .feedback_headline, .panel-heading.feedback_checked_in
+{
+	background-color: #ccccff;
+}
 .feedback_not_implemented a, .feedback_not_implemented  .feedback_headline a, .panel-heading.feedback_not_implemented a
 {
 	color: #29080B

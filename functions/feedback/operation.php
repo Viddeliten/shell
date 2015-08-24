@@ -27,7 +27,12 @@ if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && 
 {
 	if(isset($_GET['operation']) && isset($_GET['id']))
 	{
-		if($_GET['operation']=="unresolve")
+		if($_GET['operation']=="uncheckin")
+		{
+			feedback_set_not_checked_in($_GET['id']);
+			f_op_display_new_feedback($_GET['id'],$_GET['div_id']);
+		}
+		else if($_GET['operation']=="unresolve")
 		{
 			feedback_set_unresolved($_GET['id']);
 			f_op_display_new_feedback($_GET['id'],$_GET['div_id']);
@@ -40,6 +45,11 @@ if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && 
 		else if($_GET['operation']=="feedback_accept")
 		{
 			feedback_set_accepted($_GET['id']);
+			f_op_display_new_feedback($_GET['id'],$_GET['div_id']);
+		}
+		else if($_GET['operation']=="feedback_check_in")
+		{
+			feedback_set_checked_in($_GET['id']);
 			f_op_display_new_feedback($_GET['id'],$_GET['div_id']);
 		}
 		else if($_GET['operation']=="feedback_resolve")
@@ -102,11 +112,11 @@ if(isset($_GET['operation']) && isset($_GET['id']))
 	if($_GET['operation']=="expand")
 	{
 
-		feedback_display_specific_headline($_GET['id'], $parent, TRUE);
+		feedback_display_specific_headline($_GET['id'], $_GET['div_id'], $_GET['parent'], TRUE);
 	}
 	else if($_GET['operation']=="colapse")
 	{
-		feedback_display_specific_headline($_GET['id'], $parent, FALSE);
+		feedback_display_specific_headline($_GET['id'], $_GET['div_id'], $_GET['parent'], FALSE);
 	}
 }
 
@@ -127,14 +137,15 @@ function f_op_get_display_id($div_id)
 
 function f_op_display_new_feedback($feedback_id, $target_div)
 {
+	$the_new_id=feedback_get_main_parent($feedback_id);
+
 	$size=f_op_get_div_size($target_div);
 	if($size=="big")
 	{
-		$the_new_id=f_op_get_display_id($target_div);
 		$ff=feedback_get_list_specific($the_new_id);
-		feedback_list_print($ff);
+		feedback_list_print($ff, $feedback_id);
 	}
 	else
-		feedback_display_specific_headline($feedback_id, $target_div, TRUE);
+		feedback_display_specific_headline($the_new_id, $target_div, $target_div, TRUE);
 }
  ?>
