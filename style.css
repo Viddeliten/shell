@@ -139,6 +139,10 @@ h1.panel-title
 {
 	font-size: 180%;
 }
+.panel.feedback
+{
+	margin-top: 1em;
+}
 .feedback_list_line
 {
 	padding: 0;

@@ -392,7 +392,7 @@ function feedback_search($search_str, $from, $to)
 	LIMIT ".sql_safe($from).",".sql_safe($to).";";
 	//echo "<br />DEBUG: $sql";
 	
-	return mysql_query($sql);
+	feedback_display_headline_list($sql, "", 1);
 }
 
 function feedback_get_list_resolved($from, $to)
@@ -420,6 +420,7 @@ function feedback_get_list_relevant($from, $to)
 	".REL_STR." as rel
 	FROM ".PREFIX."feedback
 	WHERE resolved IS NULL
+	AND checked_in IS NULL
 	AND is_spam<1
 	AND merged_with IS NULL
 	AND not_implemented IS NULL
@@ -816,7 +817,7 @@ function feedback_count_comments()
 	//Man får ju börja med att sätta allt till noll...
 	mysql_query("UPDATE ".PREFIX."feedback SET comments=0;");
 	
-	$sql="SELECT id FROM ".PREFIX."feedback WHERE resolved IS NULL AND not_implemented IS NULL;";
+	$sql="SELECT id FROM ".PREFIX."feedback WHERE resolved IS NULL checked_in IS NULL AND not_implemented IS NULL;";
 	 // echo "<br />DEBUG2309: $sql";
 	if($cc=mysql_query($sql))
 	{
@@ -855,6 +856,7 @@ function feedback_count_children()
 	FROM ".PREFIX."feedback 
 	WHERE merged_with IS NOT NULL 
 	AND resolved IS NULL 
+	AND checked_in IS NULL 
 	AND not_implemented IS NULL;";
 	if($ff=mysql_query($sql))
 	{
@@ -1129,6 +1131,7 @@ function feedback_get_nr_ongoing()
 	WHERE is_spam<1
 	AND accepted IS NOT NULL
 	AND resolved IS NULL
+	AND checked_in IS NULL
 	AND merged_with IS NULL";
 	mysql_query($sql);
 	return mysql_affected_rows();
@@ -1147,6 +1150,7 @@ function feedback_display_list($size, $nr, $headline, $headlinesize)
 		$sql.="AND size=".sql_safe($size);
 	$sql.="
 	AND resolved IS NULL
+	AND checked_in IS NULL
 	AND not_implemented IS NULL
 	-- AND merged_with IS NULL
 	ORDER BY ".ORDER_STR."
@@ -1367,7 +1371,7 @@ function feedback_set_unaccepted($id)
 	mysql_query($sql);
 	
 	//Set children that is not done to unaccepted
-	$sql="SELECT id FROM  ".PREFIX."feedback WHERE merged_with=".sql_safe($id)." AND resolved IS NULL;";
+	$sql="SELECT id FROM  ".PREFIX."feedback WHERE merged_with=".sql_safe($id)." AND resolved IS NULL AND checked_in IS NULL;";
 	// echo $sql;
 	if($ff=mysql_query($sql))
 	{
@@ -1428,7 +1432,7 @@ function feedback_set_not_implemented($id)
 	
 	//Resolve any children
 	//Find children
-	$sql="SELECT id FROM  ".PREFIX."feedback WHERE merged_with=".sql_safe($id)." AND resolved IS NULL AND accepted IS NULL;";
+	$sql="SELECT id FROM  ".PREFIX."feedback WHERE merged_with=".sql_safe($id)." AND resolved IS NULL AND checked_in IS NULL AND accepted IS NULL;";
 	if($ff=mysql_query($sql))
 	{
 		while($f=mysql_fetch_array($ff))
