@@ -53,7 +53,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:868:"CREATE TABLE
   `showFlattr` text COLLATE utf8_bin,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:4;a:2:{s:5:"Table";s:17:"messages_to_users";s:12:"Create Table";s:934:"CREATE TABLE IF NOT EXISTS `messages_to_users` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:4;a:2:{s:5:"Table";s:17:"messages_to_users";s:12:"Create Table";s:931:"CREATE TABLE IF NOT EXISTS `messages_to_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `event` varchar(64) CHARACTER SET latin1 DEFAULT NULL,
   `type` enum('information','success','warning','error') COLLATE utf8_bin NOT NULL DEFAULT 'information',
@@ -65,7 +65,7 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:868:"CREATE TABLE
   `sendby` varchar(256) COLLATE utf8_bin NOT NULL DEFAULT 'insite_privmess' COMMENT '''email'',''insite_privmess'',''insite_notice''',
   `activated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `DH_mess_event_active` (`event`,`activated`)
+  UNIQUE KEY `mess_event_active` (`event`,`activated`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:5;a:2:{s:5:"Table";s:22:"messages_to_users_sent";s:12:"Create Table";s:509:"CREATE TABLE IF NOT EXISTS `messages_to_users_sent` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `message_event` varchar(64) CHARACTER SET latin1 NOT NULL,
@@ -135,12 +135,12 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:868:"CREATE TABLE
   `version` float DEFAULT NULL COMMENT 'version',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'när det blev denna version',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:13;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:523:"CREATE TABLE IF NOT EXISTS `version_done` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:13;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:520:"CREATE TABLE IF NOT EXISTS `version_done` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` int(11) DEFAULT NULL COMMENT 'om null så är saken färdig, men version har inte ökat sen dess',
   `done_id` int(11) NOT NULL,
   `done_type` varchar(64) CHARACTER SET latin1 NOT NULL DEFAULT 'feedback',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `DH_version_done_id` (`done_id`)
+  KEY `version_done_id` (`done_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Vad som färdigställts till varje version'";}}
