@@ -283,6 +283,9 @@ function feedback_show()
 		}
 		else
 		{
+			//Visa några okategoriserade SOM länkar! Bara rubriker!
+			feedback_display_list(0, 5, _("Uncategorized"), 2);
+			
 			$ongoing=feedback_get_nr_ongoing();
 			if($ongoing>0)
 			{
@@ -296,8 +299,6 @@ function feedback_show()
 				feedback_display_list(-1, 3, _("Suggested"), 2);
 			}
 			
-			//Visa några okategoriserade SOM länkar! Bara rubriker!
-			feedback_display_list(0, 5, _("Uncategorized"), 2);
 			//Visa några bugfixar SOM länkar! Bara rubriker!
 			feedback_display_list(1, 5, _("Reported bugs"), 2);
 			//Visa några required SOM länkar! Bara rubriker!
