@@ -1180,7 +1180,7 @@ function feedback_display_headline_list($sql, $headline, $headlinesize, $display
 				echo '<ul class="list-group">';
 					while($f=mysql_fetch_array($ff))
 					{
-						echo '<li class="list-group-item">';
+						echo '<li class="list-group-item feedback '.feedback_get_class($f['id']).'">';
 							feedback_display_specific_headline($f['id'], NULL, NULL, FALSE, $display_user, $headline); //, $parent);
 						echo '</li>';
 					}
@@ -1491,7 +1491,7 @@ function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL
 							echo '<ul class="list-group">';
 								foreach($attached as $a)
 								{
-									echo '<li class="list-group-item">';
+									echo '<li class="list-group-item feedback '.feedback_get_class($a).'">';
 										// echo 'Attached';
 										// feedback_display_specific_headline($id, $div_id, $source_div=NULL, $expanded=FALSE, $display_user=TRUE, $div_prefix="")
 										if($id_expanded===$a)
@@ -1504,6 +1504,19 @@ function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL
 						echo '</li>';
 					}
 			echo '</ul>';
+}
+
+function feedback_get_class($id)
+{
+	if(feedback_get_is_resolved($id))
+		return "feedback_resolved";
+	if(feedback_get_is_checked_in($id))
+		return "feedback_checked_in";
+	if(feedback_get_is_not_implemented($id))
+		return "feedback_not_implemented";
+	if(feedback_get_is_accepted($id))
+		return "feedback_accepted";
+	return "";
 }
 
 function feedback_display_body($id, $hidden=FALSE)

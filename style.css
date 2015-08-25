@@ -139,12 +139,15 @@ h1.panel-title
 {
 	font-size: 180%;
 }
-/*
 .feedback_list_line
 {
-	border-bottom: 1px dotted black;
-	clear: both;
-} */
+	padding: 0;
+}
+li.list-group-item.feedback
+{
+	padding: 0px 15px;
+}
+
 .feedback_author, .feedback_time
 {
 	text-align: right;
