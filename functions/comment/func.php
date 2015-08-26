@@ -490,6 +490,25 @@ function comment_get_link($id, $link_id=NULL)
 	return NULL;
 }
 
+function comment_get_main_id($id)
+{
+	$sql="SELECT id, comment_type, comment_on FROM ".PREFIX."comment WHERE id=".sql_safe($id).";";
+	if($cc=mysql_query($sql))
+	{
+		if($c=mysql_fetch_array($cc))
+		{
+			if(!strcmp($c['comment_type'],"comment"))
+			{
+				return comment_get_main_id($c['comment_on']);
+			}
+			else
+			{
+				return $c;
+			}
+		}
+	}
+}
+
 function comment_display_author_text($comment_user_id, $comment_user_nick, $comment_user_url, $comment_id, $comment_created)
 {
 	$comment_time=date("Y-m-d H:i",strtotime($comment_created));
