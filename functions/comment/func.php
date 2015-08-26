@@ -490,7 +490,7 @@ function comment_get_link($id, $link_id=NULL)
 	return NULL;
 }
 
-function comment_get_main_id($id)
+function comment_get_main($id)
 {
 	$sql="SELECT id, comment_type, comment_on FROM ".PREFIX."comment WHERE id=".sql_safe($id).";";
 	if($cc=mysql_query($sql))
@@ -499,7 +499,7 @@ function comment_get_main_id($id)
 		{
 			if(!strcmp($c['comment_type'],"comment"))
 			{
-				return comment_get_main_id($c['comment_on']);
+				return comment_get_main($c['comment_on']);
 			}
 			else
 			{
