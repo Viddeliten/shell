@@ -7,13 +7,24 @@
 	// -((".date("YmdHis")."-IFNULL(not_implemented,".date("YmdHis")."))/86400))
 	// +(4-size)");
 	
+// define('REL_STR',
+// "plusones
+// +IFNULL((TIMESTAMPDIFF(DAY,created,CURDATE())/365),0)
+// +IFNULL((TIMESTAMPDIFF(DAY,accepted,CURDATE())/365),0)
+// -IFNULL((TIMESTAMPDIFF(DAY,checked_in,CURDATE())/365),0)
+// -IFNULL((TIMESTAMPDIFF(DAY,resolved,CURDATE())/365),0)
+// -IFNULL((TIMESTAMPDIFF(DAY,not_implemented,CURDATE())/365),0)
+// +(comments/10)
+// +IF(children && children_rel,((children_rel/children)*(children/5)),0)
+// +(1-size/4)*3"
+// );	
 define('REL_STR',
 "plusones
-+IFNULL((TIMESTAMPDIFF(DAY,created,CURDATE())/365),0)
-+IFNULL((TIMESTAMPDIFF(DAY,accepted,CURDATE())/365),0)
--IFNULL((TIMESTAMPDIFF(DAY,checked_in,CURDATE())/365),0)
--IFNULL((TIMESTAMPDIFF(DAY,resolved,CURDATE())/365),0)
--IFNULL((TIMESTAMPDIFF(DAY,not_implemented,CURDATE())/365),0)
++IFNULL((TIMESTAMPDIFF(MINUTE,created,CURDATE())/(365*144)),0)
++IFNULL((TIMESTAMPDIFF(MINUTE,accepted,CURDATE())/(365*144)),0)
+-IFNULL((TIMESTAMPDIFF(MINUTE,checked_in,CURDATE())/(365*144)),0)
+-IFNULL((TIMESTAMPDIFF(MINUTE,resolved,CURDATE())/(365*144)),0)
+-IFNULL((TIMESTAMPDIFF(MINUTE,not_implemented,CURDATE())/(365*144)),0)
 +(comments/10)
 +IF(children && children_rel,((children_rel/children)*(children/5)),0)
 +(1-size/4)*3"
@@ -250,22 +261,6 @@ function feedback_show()
 	echo '<h1>'._("Feedback").'</h1>
 			<p>'._("Suggestions for improvements, bufixes and ideas!").'</p>';
 			
-	$checked_in=feedback_get_checked_in();
-	$nr_checked_in=count($checked_in);
-	if($nr_checked_in>0 && login_check_logged_in_mini()>0 && user_get_level($_SESSION[PREFIX.'user_id']))
-	{
-		echo '<p>'.$nr_checked_in.' feedbacks checked in but not yet live</p>';
-		echo '<form method="post">
-			<input 
-				type="submit"
-				class="btn btn-primary" 
-				name="feedback_checked_in_is_live" 
-				value="Mark all cecked in as live"
-				onclick="return confirm(\''._("Are you sure you want to set ALL feedbacks that are currently checked in to live?").'\');"
-			>
-		</form>';
-	}
-
 	if(isset($_GET['id']))
 	{
 		//Om vi ska visa en specifik feedback, så gör vi det här.
@@ -314,6 +309,27 @@ function feedback_show()
 	}
 	echo '</div>
 	<div class="col-lg-4">';
+	//Show checked in feedbacks
+		$checked_in=feedback_get_checked_in();
+		$nr_checked_in=count($checked_in);
+		if($nr_checked_in>0 && login_check_logged_in_mini()>0 && user_get_level($_SESSION[PREFIX.'user_id']))
+		{
+			echo '<div class="row"><div class="col-lg-12 well">';
+			echo '<h2>'._("Checked in feedbacks").'</h2>';
+			echo '<p>'.sprintf(_("%s feedbacks checked in (staged) but not yet live"),$nr_checked_in).'</p>';
+			feedback_display_list_checked_in(0, _("Checked in"), 3, FALSE);
+			echo '<form method="post">
+				<input 
+					type="submit"
+					class="btn btn-primary" 
+					name="feedback_checked_in_is_live" 
+					value="Mark all cecked in as live"
+					onclick="return confirm(\''._("Are you sure you want to set ALL feedbacks that are currently checked in to live?").'\');"
+				>
+			</form>
+			</div></div>';
+		}
+	
 		//Visa sökformulär
 		feedback_search_show();
 		//Visa inmatningsformulär
@@ -1158,6 +1174,22 @@ function feedback_display_list($size, $nr, $headline, $headlinesize)
 	// echo preprint($sql);
 	feedback_display_headline_list($sql, $headline, $headlinesize);
 	
+}
+
+function feedback_display_list_checked_in($nr, $headline, $headlinesize, $display_user=TRUE)
+{
+	$sql="SELECT id, ".REL_STR." as rel
+	FROM ".PREFIX."feedback 
+	WHERE is_spam<1
+	AND checked_in IS NOT NULL
+	AND resolved IS NULL
+	AND not_implemented IS NULL
+	ORDER BY ".ORDER_STR;
+	if($nr>0)
+		$sql.="
+		LIMIT ".sql_safe($nr).";";
+	// echo preprint($sql);
+	feedback_display_headline_list($sql, $headline, $headlinesize, $display_user);
 }
 
 function feedback_display_list_resolved($nr, $headline, $headlinesize)
