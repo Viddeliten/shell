@@ -380,7 +380,7 @@ Regards,\nThe ".SITE_NAME." Team";
 					{
 						add_error("Message delivery failed.");
 					}
-					define('REGISTRATION_DONE');
+					define('REGISTRATION_DONE',1);
 				}
 				else
 				{
