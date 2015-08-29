@@ -10,6 +10,27 @@ function replace_html_div(div_id_to, path)
 		$( '#' + div_id_to ).replaceWith();
 }
 
+function run_html(path)
+{
+	// alert (path);
+	if(path !== undefined)
+	{
+		var result=false;
+		$.ajax({
+			url: path,
+			type: 'get',
+			dataType: 'html',
+			async: false,
+			success: function(data) {
+				// alert(data);
+				result = true;
+			} 
+		 });
+		return result;
+	}
+	return false;
+}
+
 function feedback_operation(operation, id, target_div_id, extra_element_id)
 {
 	// alert('onwards');
