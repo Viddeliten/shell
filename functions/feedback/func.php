@@ -312,7 +312,7 @@ function feedback_show()
 	//Show checked in feedbacks
 		$checked_in=feedback_get_checked_in();
 		$nr_checked_in=count($checked_in);
-		if($nr_checked_in>0 && login_check_logged_in_mini()>0 && user_get_level($_SESSION[PREFIX.'user_id']))
+		if($nr_checked_in>0 && login_check_logged_in_mini()>0 && user_get_level($_SESSION[PREFIX.'user_id'])>=3)
 		{
 			echo '<div class="row"><div class="col-lg-12 well">';
 			echo '<h2>'._("Checked in feedbacks").'</h2>';
