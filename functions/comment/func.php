@@ -6,6 +6,7 @@ function comment_receive()
 	
 	if(isset($_POST['addcomment']))
 	{
+		// echo preprint($_POST);
 		// echo "<br />DEBUG1832: isset(\$_POST['addcomment']))";
 		//Om man inte är inloggad måste man ange captcha
 		if($inloggad<1 && !isset($_POST['addcomment_captcha']))
@@ -68,7 +69,7 @@ function comment_receive()
 			added='".date("YmdHis")."',
 			IP='".sql_safe($IP)."';";
 			// echo "<br />DEBUG 1225: $sql";
-			mysql_query($sql);
+			message_try_mysql($sql,"102472");
 			
 			$id=mysql_insert_id();
 			
