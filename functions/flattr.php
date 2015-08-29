@@ -71,12 +71,7 @@ function flattr_set_flattrID($user_id, $flattr_id)
 		else
 			$sql="UPDATE ".PREFIX."flattr SET flattrID='".sql_safe($flattr_id)."' WHERE user_id='".sql_safe($user_id)."';";
 		
-		// echo "<pre>".print_r($sql,1)."</pre>";
-
-		if(mysql_query($sql))
-			add_message("New Flattr ID set");
-		else
-			add_error("New Flattr ID could not be set: ".mysql_error());
+		message_try_mysql($sql,"214776", _("New Flattr ID set"));
 	}
 }
 function flattr_set_flattr_choice($user_id, $flattr_choice)
