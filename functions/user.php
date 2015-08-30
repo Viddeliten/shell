@@ -318,12 +318,35 @@ function user_display_settings()
 				'.sprintf(_("Display Flattr-button on <strong>%s</strong>"),_("feedbacks")).'
 			  </label>';
 		echo '</div>';
-		
+		if(defined('CUSTOM_SETTINGS'))
+		{
+			$custom_settings=unserialize(CUSTOM_SETTINGS);
+			if(isset($custom_settings['flattr']))
+			{
+				foreach($custom_settings['flattr'] as $custom_flattr_choice => $translation)
+					user_setting_flattr_display($user_id, $custom_flattr_choice, $translation);
+			}
+		}
+		else
+			echo "custom settings undefined";
 		//Save button
 		echo '<input type="submit" class="btn btn-success" value="'._("Save").'" name="user_update_settings">';
 		
 		echo '</form>';
 	}
+}
+
+function user_setting_flattr_display($user_id, $value, $translation)
+{
+	echo '<div class="checkbox">';
+		echo '<label>
+			<input type="checkbox" name="flattr_choice[]" value="'.$value.'"';
+			if(flattr_get_flattr_choice($user_id, $value))
+				echo ' checked';
+			echo '>
+			'.sprintf(_("Display Flattr-button on <strong>%s</strong>"),$translation).'
+		  </label>';
+	echo '</div>';
 }
 
 function user_register()
