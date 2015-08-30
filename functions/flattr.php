@@ -95,4 +95,30 @@ function flattr_set_flattr_choice($user_id, $flattr_choice)
 				add_error(sprintf(_("New flattr choices could not be set. Error: %s"),mysql_error()));
 	}
 }
+
+function flattr_button_conditional($user_id, $type, $link, $title, $description)
+{
+	//Eventuell Flattr-knapp
+	if($user_id!=NULL && flattr_get_flattr_choice($user_id, $type))
+		$flattrID=flattr_get_flattrID($user_id);
+	else
+		$flattrID=NULL;
+		
+	// echo "<br />DEBUG 1252: $flattrID";
+		
+	if($flattrID)
+	{
+		//echo "<br />debug1758: flattr ".$c['user'];
+		
+		if($link!="")
+		{
+			flattr_button_show($flattrID, $link , $title, $description, 'compact', 'en_GB');
+		}
+		else
+		{
+			echo "<br />";
+			echo "Flattr-code broken! Please tell admin!";
+		}
+	}
+}
 ?>

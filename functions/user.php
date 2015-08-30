@@ -327,8 +327,7 @@ function user_display_settings()
 					user_setting_flattr_display($user_id, $custom_flattr_choice, $translation);
 			}
 		}
-		else
-			echo "custom settings undefined";
+
 		//Save button
 		echo '<input type="submit" class="btn btn-success" value="'._("Save").'" name="user_update_settings">';
 		
@@ -342,7 +341,7 @@ function user_setting_flattr_display($user_id, $value, $translation)
 		echo '<label>
 			<input type="checkbox" name="flattr_choice[]" value="'.$value.'"';
 			if(flattr_get_flattr_choice($user_id, $value))
-				echo ' checked';
+				echo ' checked="checked"';
 			echo '>
 			'.sprintf(_("Display Flattr-button on <strong>%s</strong>"),$translation).'
 		  </label>';
