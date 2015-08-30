@@ -6,13 +6,36 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-	<?php require_once("config.php"); ?>
+	 <meta name="author" content="">
+	<?php require_once("config.php"); 
+	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
+		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
 
-    <link rel="icon" href="<?php echo CUSTOM_CONTENT_PATH; ?>/favicon.ico">
+	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
+		require_once(CUSTOM_CONTENT_PATH."/globals.php");
 	
-    <title><?php echo SITE_NAME; ?></title>
+	require_once("functions/login.php");
+	require_once("functions/db_connect.php");
+	require_once("functions/string.php");
+	require_once("functions/message.php");
+	require_once("functions/user.php");
+	require_once("functions/flattr.php");
+	require_once("functions/spam.php");
+	require_once("functions/version.php");
+	require_once("functions/admin.php");
+	require_once("functions/language.php");
+	require_once("functions/display.php");
+	require_once("functions/feedback/func.php");
+	require_once("functions/comment/func.php");
+	require_once("functions/news.php");
+	require_once("functions/mailer.php");
+	require_once("functions/usermessage.php");
+	require_once("functions/privmess.php");
+	require_once("functions/notice.php");
+	
+	if(function_exists('meta_title_and_description')) meta_title_and_description(); ?>
+   
+    <link rel="icon" href="<?php echo CUSTOM_CONTENT_PATH; ?>/favicon.ico">
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -33,30 +56,7 @@
    
   <?php
   
-    if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
-	  require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
 
-  if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
-	  require_once(CUSTOM_CONTENT_PATH."/globals.php");
-  
-  require_once("functions/login.php");
-  require_once("functions/db_connect.php");
-  require_once("functions/string.php");
-  require_once("functions/message.php");
-  require_once("functions/user.php");
-  require_once("functions/flattr.php");
-  require_once("functions/spam.php");
-  require_once("functions/version.php");
-  require_once("functions/admin.php");
-  require_once("functions/language.php");
-  require_once("functions/display.php");
-  require_once("functions/feedback/func.php");
-  require_once("functions/comment/func.php");
-  require_once("functions/news.php");
-  require_once("functions/mailer.php");
-  require_once("functions/usermessage.php");
-  require_once("functions/privmess.php");
-  require_once("functions/notice.php");
   
   language_setup();
   $connection=db_connect(db_host, db_name, db_user, db_pass);

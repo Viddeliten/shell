@@ -83,7 +83,7 @@ function add_get_to_URL($get_name, $value, $url=NULL)
 }
 
 function string_slugify($text)
-{ 
+{
   // replace non letter or digits by -
   $text = preg_replace('~[^\\pL\d]+~u', '-', $text);
 
@@ -106,6 +106,11 @@ function string_slugify($text)
 
   return $text;
 }
+function string_unslugify($text)
+{
+	return ucfirst(str_replace("_"," ",$text));
+}
+
 function preprint($value)
 {
 	return prestr($value);
