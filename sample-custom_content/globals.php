@@ -7,8 +7,9 @@
 define('CUSTOM_PAGES_ARRAY',serialize(array(
 	//name	=>	content
 	_("Page without sub pages")			=>	array(	"slug"				=>	"head_page",
-													"req_user_level"	=>	0 //If 1, only logged in users can see this. If >=2 only users with this admin level can see this link.
+													"req_user_level"	=>	0, //If 1, only logged in users can see this. If >=2 only users with this admin level can see this link.
 																				//NOTE: This number only affects the visibility of the link. The contents has to be governed separately
+													"meta_description"	=> "This page is an example of page without sub pages"
 												),
 	_("Admin tools")					=>	array(	"slug"				=>	"admin", //This will only affect the admin-menu! Subpages will be added to the regular admin menu.
 																						// For this condition to be true, slug needs to be exactly "admin". req_user_level is not nessessary
