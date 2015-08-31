@@ -12,6 +12,8 @@ require_once(ROOT_PATH."functions/usermessage.php");
 require_once(ROOT_PATH."functions/language.php");
 require_once(ROOT_PATH."functions/news.php");
 require_once(ROOT_PATH."functions/rss_class.php");
+require_once(ROOT_PATH."functions/privmess.php");
+require_once(ROOT_PATH."functions/user.php");
 
 require_once(ROOT_PATH."config.php");
 
@@ -21,5 +23,4 @@ if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
 	require_once(CUSTOM_CONTENT_PATH."/globals.php");
 
 language_setup();
-  
 ?>

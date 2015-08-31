@@ -40,6 +40,12 @@ th
 	margin-bottom: 50px;
 	min-height: 80%;
 }
+
+#single
+{
+	padding: 0 2em;
+}
+
 .clearer
 {
 	clear: both;

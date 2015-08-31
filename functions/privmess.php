@@ -71,22 +71,44 @@ function privmess_get_unread_nr($receiver_id)
 
 function privmess_display()
 {
-	if(isset($_GET['message_id']) && !isset($_GET['privmess_mark_unread']) && !isset($_GET['privmess_delete']) && !isset($_POST['privmess_send']))
-	{
-		if(isset($_GET['privmess_reply']))
-			privmess_display_reply($_GET['message_id']);
-		else
-			privmess_display_single_message($_GET['message_id']);
-	}
-	else if(isset($_GET['compose']) && !isset($_POST['privmess_send']))
-	{
-		privmess_display_compose();
-	}
-	else
-	{
-		if(login_check_logged_in_mini()>0)
-			privmess_display_inbox($_SESSION[PREFIX.'user_id']);
-	}
+	// http://getbootstrap.com/javascript/#tabs
+	echo '
+	<div class="row">
+		<div class="col-lg-12">
+			<!-- Nav tabs -->
+		  <ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="'.SITE_URL.'?p=user&s=privmess" >'._("Inbox").'</a></li>
+			<li role="presentation"><a href="#sent" aria-controls="sent" role="tab" data-toggle="tab">'._("Sent messages").'</a></li>
+			<li role="presentation"><a href="#compose" aria-controls="compose" role="tab" data-toggle="tab">'._("Compose").'</a></li>
+			<span style="display:none">
+				<li role="presentation"><a href="#single" aria-controls="single" role="tab" data-toggle="tab">'._("Single").'</a></li>
+			</span>
+		  </ul>
+
+		  <!-- Tab panes -->
+		  <div class="tab-content">
+			<div role="tabpanel" class="tab-pane fade in active" id="inbox">';
+				if(login_check_logged_in_mini()>0)
+					privmess_display_inbox($_SESSION[PREFIX.'user_id']);
+			echo '</div>
+			<div role="tabpanel" class="tab-pane fade" id="sent">';
+				if(login_check_logged_in_mini()>0)
+					privmess_display_outbox($_SESSION[PREFIX.'user_id']);
+			echo '</div>
+			<div role="tabpanel" class="tab-pane fade" id="compose">';
+				privmess_display_compose();
+			echo '</div>';
+			// below does not have tab, but can be shown by links
+			echo '
+			<div role="tabpanel" class="tab-pane fade" id="reply">';
+				privmess_display_reply($_GET['message_id']);
+			echo '</div>
+			<div role="tabpanel" class="tab-pane fade" id="single">';
+				privmess_display_single_message($_GET['message_id']);
+			echo '</div>
+		  </div>
+	  </div>
+  </div>';
 }
 
 function privmess_display_single_message($message_id)
@@ -94,9 +116,9 @@ function privmess_display_single_message($message_id)
 	if(login_check_logged_in_mini()>0)
 	{
 		//Show message
-		$sql="SELECT sender, sent, subject, message 
+		$sql="SELECT sender, sent, subject, message, reciever
 			FROM ".PREFIX."privmess 
-			WHERE reciever='".sql_safe($_SESSION[PREFIX.'user_id'])."'
+			WHERE (reciever='".sql_safe($_SESSION[PREFIX.'user_id'])."' OR sender='".sql_safe($_SESSION[PREFIX.'user_id'])."')
 			AND id=".sql_safe($message_id).";";
 		if($mm=mysql_query($sql))
 		{
@@ -108,6 +130,15 @@ function privmess_display_single_message($message_id)
 				$message=str_replace("\r","<br />",$message);
 				$message=str_replace("<br /><br />","</p><p>",$message);
 				$message=str_replace("</p><p></p><p>","</p><p>",$message);
+				
+				$reply_link='<a class="btn btn-default"
+										href="#reply"
+										aria-controls="reply"
+										role="tab"
+										data-toggle="tab"
+										onclick="return replace_html_div_inner(\'reply\', \''.SITE_URL.'/operation/privmess_reply.php?message_id='.$message_id.'\');"
+							>';
+				
 				echo '
 				<div class="row">
 					<div class="col-xm-12">
@@ -122,20 +153,34 @@ function privmess_display_single_message($message_id)
 							</div>
 							<div class="panel-body">
 								<p>'.$message.'</p>
-							</div>
-							 <div class="panel-footer">
+							</div> 
+							<div class="panel-footer">';
+							if($m['reciever']==$_SESSION[PREFIX.'user_id'])
+							{
+								echo '
+							
 								<form method="get">
 									<input type="hidden" name="message_id" value="'.$message_id.'">
 									<input type="hidden" name="p" value="user">
 									<input type="hidden" name="s" value="privmess">';
 									if($m['sender'])
-										echo '<input type="submit" name="privmess_reply" value="'._("Reply").'" class="btn btn-default">';
+										echo $reply_link.
+											// '<a name="privmess_reply" value="'.
+											_("Reply").'</a>';
 									echo '
 									<input type="submit" name="privmess_mark_unread" value="'._("Mark unread").'" class="btn btn-default">
 									<input type="submit" name="privmess_delete" value="'._("Delete").'" class="btn btn-default"
-									onclick="return confirm(\''._("Are you sure you want to delete this message?").'\')">
+											onclick="return confirm(\''._("Are you sure you want to delete this message?").'\')">';
+									echo '
 								</form>
-							 </div>
+							';
+							}
+							else
+							{
+								echo "<p>".sprintf(_("Sent to %s"), user_get_link($m['reciever']))."</p>";
+							}
+							echo '
+							</div>
 						</div>
 					</div>
 				</div>';
@@ -144,11 +189,13 @@ function privmess_display_single_message($message_id)
 				echo "<p class=\"error\">Message could not be found</p>";
 		}
 	}
+	else
+		echo "Not logged in";
 }
 
 function privmess_display_reply($message_id)
 {
-	echo "Replyinig to message $message_id";
+	// echo "Replyinig to message $message_id";
 	//Get sender, subject and message text from the message we are replying on
 	$sql="SELECT sender, subject, message, sent
 		FROM ".PREFIX."privmess 
@@ -200,15 +247,6 @@ function privmess_display_inbox($receiver_id)
 {
 	echo '<div class="row">
 		<div class="col-xs-12">
-			<form method="get">
-				<input type="hidden" name="p" value="user">
-				<input type="hidden" name="s" value="privmess">
-				<input type="submit" name="compose" value="'._("Compose message").'" class="btn btn-default">
-			</form>
-		</div>
-	</div>';
-	echo '<div class="row">
-		<div class="col-xs-12">
 			<h1>'._("Inbox").'</h1>';
 	
 	//Get all messages
@@ -233,16 +271,71 @@ function privmess_display_inbox($receiver_id)
 		
 		while($m=mysql_fetch_array($mm))
 		{
-			$message_link=SITE_URL."/?p=user&amp;s=privmess&amp;message_id=".$m['id'];
-			
+			// $message_link=SITE_URL."/?p=user&amp;s=privmess&amp;message_id=".$m['id'];
+			$message_link='<a href="#single" aria-controls="single" role="tab" data-toggle="tab" onclick="return replace_html_div_inner(\'single\', \''.SITE_URL.'/operation/privmess_single.php?message_id='.$m['id'].'\');">';
 			if($m['opened']===NULL)
 				echo '<tr class="active">';
 			else
 				echo '<tr>';
 			echo '
 					<td>'.user_get_link($m['sender']).'</td>
-					<td><a href="'.$message_link.'">'.$m['subject'].'</a></td>
-					<td><a href="'.$message_link.'">'.$m['sent'].'</a></td>
+					<td>'.$message_link.$m['subject'].'</a></td>
+					<td>'.$message_link.$m['sent'].'</a></td>
+					<td>'.$m['opened'].'</td>
+				</tr>';
+		}
+		if($nr>0)
+			echo '</table>';
+	}
+	
+	echo '
+		</div>
+	</div>';
+}
+
+function privmess_display_outbox($sender_id)
+{
+	echo '<div class="row">
+		<div class="col-xs-12">
+			<h1>'._("Sent messages").'</h1>';
+	
+	//Get all messages
+	$sql="SELECT id, reciever, sent, subject, opened
+		FROM ".PREFIX."privmess 
+		WHERE sender='".sql_safe($sender_id)."'
+		ORDER BY sent DESC;";
+	// echo preprint($sql);
+	if($mm=mysql_query($sql))
+	{
+		$nr=mysql_affected_rows();
+		if($nr>0)
+			echo '<table class="table table-hover">
+				<tr>
+					<th>'._("Receiver").'</th>
+					<th>'._("Subject").'</th>
+					<th>'._("Sent").'</th>
+					<th>'._("Opened").'</th>
+				</tr>';
+		else
+			echo "<p>No messages</p>";
+		
+		while($m=mysql_fetch_array($mm))
+		{
+			// $message_link=SITE_URL."/?p=user&amp;s=privmess&amp;message_id=".$m['id'];
+			$message_link='<a 
+								href="#single" 
+								aria-controls="single" 
+								role="tab" 
+								data-toggle="tab"
+								onclick="return replace_html_div_inner(\'single\', \''.SITE_URL.'/operation/privmess_single.php?message_id='.$m['id'].'\');">';
+			if($m['opened']===NULL)
+				echo '<tr class="active">';
+			else
+				echo '<tr>';
+			echo '
+					<td>'.user_get_link($m['reciever']).'</td>
+					<td>'.$message_link.$m['subject'].'</a></td>
+					<td>'.$message_link.$m['sent'].'</a></td>
 					<td>'.$m['opened'].'</td>
 				</tr>';
 		}

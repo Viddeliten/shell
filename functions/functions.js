@@ -10,6 +10,26 @@ function replace_html_div(div_id_to, path)
 		$( '#' + div_id_to ).replaceWith();
 }
 
+function replace_html_div_inner(div_id_to, path)
+{
+	if(path !== undefined)
+	{
+		var result=false;
+		$.ajax({
+			url: path,
+			type: 'get',
+			dataType: 'html',
+			async: false,
+			success: function(data) {
+				$( '#' + div_id_to ).html( data );
+				result = true;
+			} 
+		 });
+		return result;
+	}
+	return false;
+}
+
 function run_html(path)
 {
 	// alert (path);
@@ -59,4 +79,11 @@ $( ".autoExpanding" ).each(function() {
 		this.style.height = this.scrollHeight + 'px';
 	}, false);
 
+});
+
+
+//Activating bootstrap tabs from link outside tab list
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    var target = this.href.split('#');
+    $('.nav a').filter('[href="#'+target[1]+'"]').tab('show');
 });
