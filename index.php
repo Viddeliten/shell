@@ -172,7 +172,7 @@
 	
 	<script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
 
-	<script src="functions/functions.js?v=150615_6"></script>
+	<script src="functions/functions.js?v=150901"></script>
 	<script src="//viddewebb.se/_commons/js/basic.js"></script>
 
 	<?php if(file_exists(CUSTOM_CONTENT_PATH.'/functions/java.js')) { ?>

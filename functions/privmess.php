@@ -101,10 +101,12 @@ function privmess_display()
 			// below does not have tab, but can be shown by links
 			echo '
 			<div role="tabpanel" class="tab-pane fade" id="reply">';
-				privmess_display_reply($_GET['message_id']);
+				if(isset($_GET['message_id']))
+					privmess_display_reply($_GET['message_id']);
 			echo '</div>
 			<div role="tabpanel" class="tab-pane fade" id="single">';
-				privmess_display_single_message($_GET['message_id']);
+				if(isset($_GET['message_id']))
+					privmess_display_single_message($_GET['message_id']);
 			echo '</div>
 		  </div>
 	  </div>
