@@ -66,60 +66,7 @@ function usermessage_receive()
 			{
 				add_message(_("Message added"));
 				//Lägg in criterier också.
-				$checkarr=array();
-				foreach($_POST['criteria'] as $c)
-				{
-					if($c['table_name']!="")
-					{
-						add_message("<pre>".print_r($c,1)."</pre>");
-						
-						//Check that it doesn't already exist
-						$sql="SELECT id 
-						FROM ".PREFIX."criteria
-							WHERE name='".sql_safe($criteria_name)."'
-							AND table_name='".sql_safe($c['table_name'])."'
-							AND user_column='".sql_safe($c['user_column'])."'
-							AND table_where='".sql_safe($c['table_where'])."'";
-						 // echo "<br />DEBUG1021:";
-						 // echo preprint($sql);
-						if($dd=mysql_query($sql))
-						{
-							if(mysql_affected_rows()<1)
-							{
-								$sql="INSERT INTO ".PREFIX."criteria SET 
-								name='".sql_safe($criteria_name)."',
-								 table_name='".sql_safe($c['table_name'])."',
-								 user_column='".sql_safe($c['user_column'])."',
-								 table_where='".sql_safe($c['table_where'])."'";
-								 // echo "<br />DEBUG1022:";
-								 // echo preprint($sql);
-								 if(!mysql_query($sql))
-								{
-									add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
-								}
-							}
-						}
-						$checkarr[]=$c['table_name'].",".$c['user_column'].",".$c['table_where'];
-					}
-				}
-				
-				// echo "<br />checkarr:<pre>".print_r($checkarr,1)."</pre>";
-				
-				//Kolla att alla i databasen ska vara där
-				$sql="SELECT id, table_name, user_column, table_where FROM  ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."';";
-				if($cc=mysql_query($sql))
-				{
-					while($c=mysql_fetch_array($cc))
-					{
-						if(!in_array($c['table_name'].",".$c['user_column'].",".$c['table_where'], $checkarr))
-						{
-							$sql="DELETE FROM ".PREFIX."criteria WHERE id=".$c['id'].";";
-							// echo "<br />$sql
-							// <br />!in_array(".$c['table_name'].",".$c['user_column'].",".$c['table_where'].", ".print_r($checkarr,1)."))";
-							mysql_query($sql);
-						}
-					}
-				}
+				usermessage_criteria_save($criteria_name, $_POST['criteria']);
 			}
 		}
 	}
@@ -247,6 +194,64 @@ function usermessage_admin_show_form($SOURCE)
 		<br /><input class="btn btn-success" type='submit' name='add_message' value='Save this message'>
 	</form>
 	<?php
+}
+
+function usermessage_criteria_save($criteria_name, $criteria_arr)
+{
+	$checkarr=array();
+	foreach($criteria_arr as $c)
+	{
+		if($c['table_name']!="")
+		{
+			// add_message("<pre>".print_r($c,1)."</pre>");
+			
+			//Check that it doesn't already exist
+			$sql="SELECT id 
+			FROM ".PREFIX."criteria
+				WHERE name='".sql_safe($criteria_name)."'
+				AND table_name='".sql_safe($c['table_name'])."'
+				AND user_column='".sql_safe($c['user_column'])."'
+				AND table_where='".sql_safe($c['table_where'])."'";
+			 // echo "<br />DEBUG1021:";
+			 // echo preprint($sql);
+			if($dd=mysql_query($sql))
+			{
+				if(mysql_affected_rows()<1)
+				{
+					$sql="INSERT INTO ".PREFIX."criteria SET 
+					name='".sql_safe($criteria_name)."',
+					 table_name='".sql_safe($c['table_name'])."',
+					 user_column='".sql_safe($c['user_column'])."',
+					 table_where='".sql_safe($c['table_where'])."'";
+					 // echo "<br />DEBUG1022:";
+					 // echo preprint($sql);
+					 if(!mysql_query($sql))
+					{
+						add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
+					}
+				}
+			}
+			$checkarr[]=$c['table_name'].",".$c['user_column'].",".$c['table_where'];
+		}
+	}
+	
+	// echo "<br />checkarr:<pre>".print_r($checkarr,1)."</pre>";
+	
+	//Kolla att alla i databasen ska vara där
+	$sql="SELECT id, table_name, user_column, table_where FROM  ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."';";
+	if($cc=mysql_query($sql))
+	{
+		while($c=mysql_fetch_array($cc))
+		{
+			if(!in_array($c['table_name'].",".$c['user_column'].",".$c['table_where'], $checkarr))
+			{
+				$sql="DELETE FROM ".PREFIX."criteria WHERE id=".$c['id'].";";
+				// echo "<br />$sql
+				// <br />!in_array(".$c['table_name'].",".$c['user_column'].",".$c['table_where'].", ".print_r($checkarr,1)."))";
+				mysql_query($sql);
+			}
+		}
+	}
 }
 
 function usermessage_criteria_form()
