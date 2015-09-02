@@ -15,12 +15,13 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE
   PRIMARY KEY (`id`),
   KEY `comment_user` (`user`),
   KEY `comment_on_type` (`comment_on`,`comment_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:1;a:2:{s:5:"Table";s:8:"criteria";s:12:"Create Table";s:405:"CREATE TABLE IF NOT EXISTS `criteria` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:1;a:2:{s:5:"Table";s:8:"criteria";s:12:"Create Table";s:454:"CREATE TABLE IF NOT EXISTS `criteria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) COLLATE utf8_bin NOT NULL,
   `table_name` varchar(128) COLLATE utf8_bin DEFAULT NULL,
   `user_column` varchar(62) COLLATE utf8_bin NOT NULL COMMENT 'Name of the column wich identifies user',
   `table_where` text COLLATE utf8_bin,
+  `count_required` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:2;a:2:{s:5:"Table";s:8:"feedback";s:12:"Create Table";s:1530:"CREATE TABLE IF NOT EXISTS `feedback` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
