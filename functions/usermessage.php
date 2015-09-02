@@ -189,7 +189,9 @@ function usermessage_admin_show_form($SOURCE)
 		</select>
 		<h3><?php echo _("Criteria"); ?></h3>
 		
-		<?php usermessage_criteria_form(); ?>
+		<?php
+		$_REQUEST['criteria_name']=$SOURCE['criteria_name'];
+		usermessage_criteria_form(); ?>
 		
 		<br /><input class="btn btn-success" type='submit' name='add_message' value='Save this message'>
 	</form>
@@ -211,6 +213,7 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 				WHERE name='".sql_safe($criteria_name)."'
 				AND table_name='".sql_safe($c['table_name'])."'
 				AND user_column='".sql_safe($c['user_column'])."'
+				AND count_required='".sql_safe($c['count_required'])."'
 				AND table_where='".sql_safe($c['table_where'])."'";
 			 // echo "<br />DEBUG1021:";
 			 // echo preprint($sql);
@@ -222,6 +225,7 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 					name='".sql_safe($criteria_name)."',
 					 table_name='".sql_safe($c['table_name'])."',
 					 user_column='".sql_safe($c['user_column'])."',
+					 count_required='".sql_safe($c['count_required'])."',
 					 table_where='".sql_safe($c['table_where'])."'";
 					 // echo "<br />DEBUG1022:";
 					 // echo preprint($sql);
@@ -231,23 +235,23 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 					}
 				}
 			}
-			$checkarr[]=$c['table_name'].",".$c['user_column'].",".$c['table_where'];
+			$checkarr[]=$c['table_name'].",".$c['user_column'].",".$c['table_where'].",".$c['count_required'];
 		}
 	}
 	
 	// echo "<br />checkarr:<pre>".print_r($checkarr,1)."</pre>";
 	
 	//Kolla att alla i databasen ska vara där
-	$sql="SELECT id, table_name, user_column, table_where FROM  ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."';";
+	$sql="SELECT id, table_name, user_column, table_where, count_required FROM  ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."';";
 	if($cc=mysql_query($sql))
 	{
 		while($c=mysql_fetch_array($cc))
 		{
-			if(!in_array($c['table_name'].",".$c['user_column'].",".$c['table_where'], $checkarr))
+			if(!in_array($c['table_name'].",".$c['user_column'].",".$c['table_where'].",".$c['count_required'], $checkarr))
 			{
 				$sql="DELETE FROM ".PREFIX."criteria WHERE id=".$c['id'].";";
 				// echo "<br />$sql
-				// <br />!in_array(".$c['table_name'].",".$c['user_column'].",".$c['table_where'].", ".print_r($checkarr,1)."))";
+				// <br />!in_array(".$c['table_name'].",".$c['user_column'].",".$c['table_where'].",".$c['count_required'].", ".print_r($checkarr,1)."))";
 				mysql_query($sql);
 			}
 		}
@@ -290,7 +294,7 @@ function usermessage_criterias_form($nr_id, $criteria_name=NULL)
 		$criterias=array();
 		if($criteria_name!=NULL && $criteria_name!="")
 		{
-			$sql="SELECT table_name,user_column,table_where FROM ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."'";
+			$sql="SELECT table_name,user_column,table_where, count_required FROM ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."'";
 			if($cc=mysql_query($sql))
 			{
 				while($c=mysql_fetch_assoc($cc))
@@ -352,6 +356,10 @@ function usermessage_criterias_form_row($nr_id, $c=NULL)
 		<div class="form-group">
 			<label for="where_value_<?php echo $nr_id; ?>"><?php echo _("WHERE:"); ?></label>
 			<textarea id="where_value_<?php echo $nr_id; ?>" class="form-control" name="criteria[<?php echo $nr_id; ?>][table_where]"><?php if(isset($c['table_where'])) echo $c['table_where']; ?></textarea>
+		</div>
+		<div class="form-group">
+			<label for="criteria_count_required_<?php echo $nr_id; ?>"><?php echo _("Count required:"); ?></label>
+			<input id="criteria_count_required_<?php echo $nr_id; ?>" class="form-control" type="text" value="<?php if(isset($c['count_required'])) echo $c['count_required']; ?>" name="criteria[<?php echo $nr_id; ?>][count_required]">
 		</div>
 	</div>
 	<?php
@@ -515,7 +523,7 @@ function usermessage_check_criteria($user, $message_event)
 				{
 					if($t=mysql_fetch_assoc($tt))
 					{
-						if($t['nr']<1)
+						if($t['nr']<$c['count_required'])
 							return FALSE;
 					}
 				}
