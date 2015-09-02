@@ -7,6 +7,11 @@ if(isset($_GET[1]))
 else
 	$id_nr=0;
 
-usermessage_criterias_form($id_nr);
+// echo preprint($_GET);
+
+if(isset($_GET['criteria_name']))
+	usermessage_criterias_form($id_nr, $_GET['criteria_name']);
+else
+	usermessage_criterias_form($id_nr);
 	
 ?>

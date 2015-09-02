@@ -241,56 +241,95 @@ function usermessage_admin_show_form($SOURCE)
 			<option value="error"><?php echo _("Error"); ?></option>
 		</select>
 		<h3><?php echo _("Criteria"); ?></h3>
-		<div class="form-group">
-			<label for="criteria_name_text"><?php echo _("Name:"); ?></label>
-			<input id="criteria_name_text" class="form-control" type="text" value="<?php if(isset($SOURCE['criteria_name'])) echo $SOURCE['criteria_name']; ?>" name="criteria_name">
-		</div>
-		<?php 
-		if(isset($SOURCE['criteria_name']))
-			usermessage_criterias_form(0, $SOURCE['criteria_name']);
-		else
-			usermessage_criterias_form(0);
-		?>
+		
+		<?php usermessage_criteria_form(); ?>
 		
 		<br /><input class="btn btn-success" type='submit' name='add_message' value='Save this message'>
 	</form>
 	<?php
 }
 
+function usermessage_criteria_form()
+{ 
+	// echo "usermessage_criteria_form".preprint($_REQUEST);
+	?>
+	<div id="criterias">
+		<?php	//Droplist to load existing criteria
+		usermessage_criterias_droplist("load_criteria_droplist");
+		?>	
+		<button class="btn btn-default" 
+				<?php $path=SITE_URL.'/operation/criteria_form.php/?1=0&criteria_name='; //#load_criteria_droplist.val()'; ?>
+				onclick="replace_html_div('criterias', '<?php echo $path; ?>'+document.getElementById('load_criteria_droplist').value); return false;">
+			Load criteria
+		</button>
+		<div class="form-group">
+			<label for="criteria_name_text"><?php echo _("Name:"); ?></label>
+			<input id="criteria_name_text" class="form-control" type="text" value="<?php if(isset($_REQUEST['criteria_name'])) echo $_REQUEST['criteria_name']; ?>" name="criteria_name">
+		</div>
+		<?php 
+		if(isset($_REQUEST['criteria_name']))
+			usermessage_criterias_form(0, $_REQUEST['criteria_name']);
+		else
+			usermessage_criterias_form(0);
+		?>
+	</div> <?php
+}
+
 function usermessage_criterias_form($nr_id, $criteria_name=NULL)
 {
-	//Check if $criteria_name is set, and if so, get the criterias
-	$criterias=array();
-	if($criteria_name!=NULL && $criteria_name!="")
-	{
-		$sql="SELECT table_name,user_column,table_where FROM ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."'";
-		if($cc=mysql_query($sql))
+	?>
+	<div id="criteria_<?php echo $nr_id; ?>">
+	<?php
+	
+		//Check if $criteria_name is set, and if so, get the criterias
+		$criterias=array();
+		if($criteria_name!=NULL && $criteria_name!="")
 		{
-			while($c=mysql_fetch_assoc($cc))
+			$sql="SELECT table_name,user_column,table_where FROM ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."'";
+			if($cc=mysql_query($sql))
 			{
-				$criterias[]=$c;
+				while($c=mysql_fetch_assoc($cc))
+				{
+					$criterias[]=$c;
+				}
 			}
 		}
-	}
-	
-	if(empty($criterias))
-		$next_id=usermessage_criterias_form_row($nr_id);
-	else
-	{
-		foreach($criterias as $key => $c)
-			$next_id=usermessage_criterias_form_row($key, $c);
-	}
-	
-	?>
-	<div id="condition_add">
-		<button class="btn btn-default" 
-				<?php $path=SITE_URL.'/operation/condition_form.php/?1='.($next_id); ?>
-				onclick="replace_html_div('condition_add', '<?php echo $path; ?>'); return false;">
-			Add condition
-		</button>
+		
+		if(empty($criterias))
+			$next_id=usermessage_criterias_form_row($nr_id);
+		else
+		{
+			foreach($criterias as $key => $c)
+				$next_id=usermessage_criterias_form_row($key, $c);
+		}
+		
+		?>
+		<div id="condition_add">
+			<button class="btn btn-default" 
+					<?php $path=SITE_URL.'/operation/condition_form.php/?1='.($next_id); ?>
+					onclick="replace_html_div('condition_add', '<?php echo $path; ?>'); return false;">
+				Add condition
+			</button>
+		</div>
 	</div>
 	
-	<?php //TODO: add fields for adding table criteria here!!!
+	<?php
+}
+
+function usermessage_criterias_droplist($droplist_id_name)
+{
+	$sql="SELECT name FROM ".PREFIX."criteria GROUP BY name";
+	if($cc=mysql_query($sql))
+	{
+		echo '<select id="'.$droplist_id_name.'">
+				<option value=""></option>';
+		while($c=mysql_fetch_assoc($cc))
+		{
+			echo '<option value="'.$c['name'].'">'.$c['name'].'</option>';
+		}
+		echo '</select>';
+	}
+	
 }
 
 function usermessage_criterias_form_row($nr_id, $c=NULL)
