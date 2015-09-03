@@ -8,12 +8,12 @@ function comment_receive()
 	{
 		// echo preprint($_POST);
 		// echo "<br />DEBUG1832: isset(\$_POST['addcomment']))";
-		//Om man inte ‰r inloggad mÂste man ange captcha
+		//Om man inte √§r inloggad m√•ste man ange captcha
 		if($inloggad<1 && !isset($_POST['addcomment_captcha']))
 		{
-			//Kanske h‰mta det man kommenterar pÂ h‰r sen... ?
+			//Kanske h√§mta det man kommenterar p√• h√§r sen... ?
 			echo "<h2>Adding comment</h2><form method=\"post\">";
-			//Sl‰ng med postat data...
+			//Sl√§ng med postat data...
 			echo "<p>Name: ".$_POST['nick']."<input type=\"hidden\" name=\"nick\" value=\"".$_POST['nick']."\">";
 			echo "<br />Email: ".$_POST['email']."<input type=\"hidden\" name=\"email\" value=\"".$_POST['email']."\">";
 			echo "<br />Website: ".$_POST['url']."<input type=\"hidden\" name=\"url\" value=\"".$_POST['url']."\">";
@@ -48,7 +48,7 @@ function comment_receive()
 			die ("The reCAPTCHA wasn't entered correctly. Go back and try it again." .
 			 "(reCAPTCHA said: " . $resp->error . ")");
 		}		
-		else if ($inloggad>0 || (isset($_POST['addcomment_captcha']) && $resp->is_valid))//Om man ‰r inloggad eller har skrivit r‰tt captcha
+		else if ($inloggad>0 || (isset($_POST['addcomment_captcha']) && $resp->is_valid))//Om man √§r inloggad eller har skrivit r√§tt captcha
 		{		
 			if(login_check_logged_in_mini()>0)
 			{
@@ -60,7 +60,7 @@ function comment_receive()
 			}
 			$IP=$_SERVER['REMOTE_ADDR'];
 				
-			//L‰gg till en kommentar
+			//L√§gg till en kommentar
 			$sql="INSERT INTO ".PREFIX."comment SET
 			comment_type='".sql_safe($_POST['type'])."',
 			comment_on=".sql_safe($_POST['id']).",
@@ -119,10 +119,10 @@ function comment_receive()
 			{
 				if($a=mysql_fetch_array($aa))
 				{
-					//Kolla om det ‰r anv‰ndarens kommentar.
+					//Kolla om det √§r anv√§ndarens kommentar.
 					if(!strcmp($a['user'],$_SESSION[PREFIX."user_id"]))
 					{
-						//Kolla sÂ att det inte finns nÂgra svar
+						//Kolla s√• att det inte finns n√•gra svar
 						if($dd=mysql_query("SELECT id from ".PREFIX."comment WHERE comment_on=".sql_safe($_POST['id'])." AND comment_type='comment';"))
 						{
 							if(mysql_affected_rows()<1)
@@ -147,7 +147,7 @@ function comment_form_show($id, $type, $beforetext)
 	<?php
 	if(login_check_logged_in_mini()<1)
 	{
-		//Man kanske vill ange namn, e-post, hemsida och Flattr-id om man inte ‰r inloggad
+		//Man kanske vill ange namn, e-post, hemsida och Flattr-id om man inte √§r inloggad
 		echo "<p><label for=\"nick\">Name:</label> <input type=\"text\" name=\"nick\" class=\"form-control\">";
 		echo "<br /><label for=\"email\">Email:</label> <input type=\"text\" name=\"email\" class=\"form-control\">";
 		echo "<br /><label for=\"url\">Website:</label> <input type=\"text\" name=\"url\" class=\"form-control\">";
@@ -168,158 +168,103 @@ function comment_show_comments($id, $type)
 	$nr=0;
 	$inloggad=login_check_logged_in_mini();
 	
-		//H‰mta alla kommentarer
-		$sql="SELECT * FROM ".PREFIX."comment WHERE comment_on=".sql_safe($id)." AND comment_type='$type' AND is_spam<1;";
-		if($cc=@mysql_query($sql))
+	//H√§mta alla kommentarer
+	$sql="SELECT * FROM ".PREFIX."comment WHERE comment_on=".sql_safe($id)." AND comment_type='$type' AND is_spam<1;";
+	if($cc=@mysql_query($sql))
+	{
+		while($c=mysql_fetch_array($cc))
 		{
-			while($c=mysql_fetch_array($cc))
-			{
-				$nr++;
-				
-				//Kolla om fˆrfattaren ‰r admin
-				$admin=user_get_admin($c['user']);
-				
-				//skriv ut en anchor-pryl
-				echo '<span class="anchor" id="anchor_comment_'.$c['id'].'"></span>';
-				
-				//Skriv ut kommentar
-				if($admin<2)
-					echo "<div class=\"comment\" id=\"comment_".$c['id']."\">";
-				else
-					echo "<div class=\"comment admin_comment\" id=\"comment_".$c['id']."\">";
-				
-				// if($c['user']!=NULL && $admin>1)
-					// echo "<div class=\"author\">Posted by <a href=\"?page=user&amp;user=".$c['user']."\">".user_get_name($c['user'])."</a>(admin) at ";
-				// else if($c['user']!=NULL)
-					// echo "<div class=\"author\">Posted by <a href=\"?page=user&amp;user=".$c['user']."\">".user_get_name($c['user'])."</a> at ";
-				// else if($c['nick']!=NULL)
-				// {
-					// if($c['url']!=NULL)
-						// echo "<div class=\"author\">Posted by <a href=\"".$c['url']."\">".$c['nick']."</a> at ";
-					// else
-						// echo "<div class=\"author\">Posted by ".$c['nick']." at ";
-				// }
-				// else
-					// echo "<div class=\"author\">Posted at ";
-				
-				echo "<div class=\"author\">";
-					
-				// if(isset($_GET['page']) && $_GET['page']=="feedback")
-					// echo "<a href=\"".SITE_URL."?page=feedback&amp;id=$id#comment_".$c['id']."\">";
-				// else if(isset($_GET['page']) && $_GET['page']=="FAQ")
-					// echo "<a href=\"".SITE_URL."?page=FAQ&amp;id=$id#comment_".$c['id']."\">";
-				// else if(isset($_GET['story']))
-					// echo "<a href=\"".SITE_URL."?story=".$_GET['story']."&amp;mode=album&amp;p=".$_GET['p']."#comment_".$c['id']."\">";
-				// else if(isset($_GET['page']) && $_GET['page']=="news")
-					// echo "<a href=\"".SITE_URL."?page=news&amp;id=$id#comment_".$c['id']."\">";
-				// echo date("Y-m-d H:i:s",strtotime($c['added']))."</a>";
+			$nr++;
+			
+			//Kolla om f√∂rfattaren √§r admin
+			$admin=user_get_admin($c['user']);
+			
+			//skriv ut en anchor-pryl
+			echo '<span class="anchor" id="anchor_comment_'.$c['id'].'"></span>';
+			
+			//Skriv ut kommentar
+			if($admin<2)
+				echo "<div class=\"comment\" id=\"comment_".$c['id']."\">";
+			else
+				echo "<div class=\"comment admin_comment\" id=\"comment_".$c['id']."\">";
+			
+				comment_display_single($c['id']);
 
-				comment_display_author_text($c['user'], $c['nick'], $c['url'], $c['id'], $c['added']);
-				
-				//Eventuell Flattr-knapp
-				//echo "<br />debug1757: flattr ".$c['user'];
-				if($c['user']!=NULL && flattr_get_flattr_choice($c['user'], "comment"))
-					$flattrID=flattr_get_flattrID($c['user']);
-				else if($c['flattrID']!=NULL)
-					$flattrID=$c['flattrID'];
-				else
-					$flattrID=NULL;
-					
-				// echo "<br />DEBUG 1252: $flattrID";
-					
-				if($flattrID)
+			//Visa knapp f√∂r borttagning om man √§r admin
+			if($inloggad>1)
+			{
+				echo "<form id=\"delete_comment_".$c['id']."\" method=\"post\">
+						<input type=\"hidden\" name=\"id\" value=\"".$c['id']."\">
+						<input type=\"hidden\" name=\"deletecomment\" value=\"".$c['id']."\">
+						<input type=\"button\" name=\"deletecomment_button\" onclick=\"confirmation_delete('delete_comment_".$c['id']."', '"._("Do you really want to delete the comment? This cannot be undone.")."')\"  value=\""._("Remove comment")."\">
+					</form>";
+						// <input type=\"button\" name=\"deletecomment_button\" onclick=\"return confirm('"._("Do you really want to delete the comment? This cannot be undone.")."');\"  value=\""._("Remove comment")."\">
+				if($aa=mysql_query("SELECT user from ".PREFIX."comment WHERE id=".sql_safe($c['id']).";"))
 				{
-					//echo "<br />debug1758: flattr ".$c['user'];
-					
-					if($comment_link=comment_get_link($c['id']))
+					if($a=mysql_fetch_array($aa))
 					{
-						echo "<br />";
-						flattr_button_show($flattrID, $comment_link , "Comment ".$c['id']." - a ".$c['comment_type']." comment on ".SITE_URL, $c['comment'], 'compact', 'en_GB');
-					}
-					else
-					{
-						echo "<br />";
-						echo "Flattr-code broken! Please tell admin!";
+						//Kolla om det √§r anv√§ndarens kommentar.
+						if(strcmp($a['user'],$_SESSION[PREFIX."user_id"]))
+							spam_show_clicker($c['id'], "comment");
 					}
 				}
-				echo "</div>";
-				
-				$c_text=str_replace("\n","<br />",$c['comment']);
-				echo "<p class=\"comment_text\">".$c_text."</p>";
-				//Visa knapp fˆr borttagning om man ‰r admin
-				if($inloggad>1)
+			}
+			else if($inloggad>=1)
+			{
+				//Om det √§r ens egen kommentar och den inte har n√•gra svar ska man kunna ta bort den.
+				if($aa=mysql_query("SELECT user from ".PREFIX."comment WHERE id=".sql_safe($c['id']).";"))
 				{
-					echo "<form id=\"delete_comment_".$c['id']."\" method=\"post\">
-							<input type=\"hidden\" name=\"id\" value=\"".$c['id']."\">
-							<input type=\"hidden\" name=\"deletecomment\" value=\"".$c['id']."\">
-							<input type=\"button\" name=\"deletecomment_button\" onclick=\"confirmation_delete('delete_comment_".$c['id']."', '"._("Do you really want to delete the comment? This cannot be undone.")."')\"  value=\""._("Remove comment")."\">
-						</form>";
-							// <input type=\"button\" name=\"deletecomment_button\" onclick=\"return confirm('"._("Do you really want to delete the comment? This cannot be undone.")."');\"  value=\""._("Remove comment")."\">
-					if($aa=mysql_query("SELECT user from ".PREFIX."comment WHERE id=".sql_safe($c['id']).";"))
+					if($a=mysql_fetch_array($aa))
 					{
-						if($a=mysql_fetch_array($aa))
+						//Kolla om det √§r anv√§ndarens kommentar.
+						if(!strcmp($a['user'],$_SESSION[PREFIX."user_id"]))
 						{
-							//Kolla om det ‰r anv‰ndarens kommentar.
-							if(strcmp($a['user'],$_SESSION[PREFIX."user_id"]))
-								spam_show_clicker($c['id'], "comment");
-						}
-					}
-				}
-				else if($inloggad>=1)
-				{
-					//Om det ‰r ens egen kommentar och den inte har nÂgra svar ska man kunna ta bort den.
-					if($aa=mysql_query("SELECT user from ".PREFIX."comment WHERE id=".sql_safe($c['id']).";"))
-					{
-						if($a=mysql_fetch_array($aa))
-						{
-							//Kolla om det ‰r anv‰ndarens kommentar.
-							if(!strcmp($a['user'],$_SESSION[PREFIX."user_id"]))
+							//Kolla s√• att det inte finns n√•gra svar
+							if($dd=mysql_query("SELECT id from ".PREFIX."comment WHERE comment_on=".sql_safe($c['id'])." AND comment_type='comment';"))
 							{
-								//Kolla sÂ att det inte finns nÂgra svar
-								if($dd=mysql_query("SELECT id from ".PREFIX."comment WHERE comment_on=".sql_safe($c['id'])." AND comment_type='comment';"))
+								if(mysql_affected_rows()<1)
 								{
-									if(mysql_affected_rows()<1)
-									{
-										echo "<form id=\"delete_comment_".$c['id']."\" method=\"post\">
-												<input type=\"hidden\" name=\"id\" value=\"".$c['id']."\">
-												<input type=\"hidden\" name=\"deletecomment\" value=\"".$c['id']."\">
-												<input type=\"button\" name=\"deletecomment_button\" onclick=\"confirmation_delete('delete_comment_".$c['id']."', '"._("Do you really want to delete the comment? This cannot be undone.")."')\"  value=\""._("Remove comment")."\">
-											</form>";
-												// <input type=\"button\" name=\"deletecomment_button\" onclick=\"return confirm('"._("Do you really want to delete the comment? This cannot be undone.")."');\"  value=\""._("Remove comment")."\">
-									}
+									echo "<form id=\"delete_comment_".$c['id']."\" method=\"post\">
+											<input type=\"hidden\" name=\"id\" value=\"".$c['id']."\">
+											<input type=\"hidden\" name=\"deletecomment\" value=\"".$c['id']."\">
+											<input type=\"button\" name=\"deletecomment_button\" onclick=\"confirmation_delete('delete_comment_".$c['id']."', '"._("Do you really want to delete the comment? This cannot be undone.")."')\"  value=\""._("Remove comment")."\">
+										</form>";
+											// <input type=\"button\" name=\"deletecomment_button\" onclick=\"return confirm('"._("Do you really want to delete the comment? This cannot be undone.")."');\"  value=\""._("Remove comment")."\">
 								}
 							}
-							else
-								spam_show_clicker($c['id'], "comment");
 						}
+						else
+							spam_show_clicker($c['id'], "comment");
 					}
 				}
+			}
+		
 			
-				
-				if($inloggad>0)
-				{
-					//Om man ‰r inloggad ska man kunna svara
-					echo "<a class=\"button\" onClick=\"showhide('replyto".$c['id']."');\" href=\"#reply\">"._("Reply")."</a>";
-					echo "<div id=\"replyto".$c['id']."\" style=\"display:none\">";
-					comment_form_show($c['id'], "comment", "");
-					echo "</div>";
-				}
-				else
-				{
-					//Om man inte ‰r inloggad ska man kunna svara med captcha
+			if($inloggad>0)
+			{
+				//Om man √§r inloggad ska man kunna svara
+				echo "<a class=\"button\" onClick=\"showhide('replyto".$c['id']."');\" href=\"#reply\">"._("Reply")."</a>";
+				echo "<div id=\"replyto".$c['id']."\" style=\"display:none\">";
+				comment_form_show($c['id'], "comment", "");
+				echo "</div>";
+			}
+			else
+			{
+				//Om man inte √§r inloggad ska man kunna svara med captcha
 
-					echo "<a class=\"button\" onClick=\"showhide('replyto".$c['id']."');\" href=\"#reply\">"._("Reply")."</a>";
-					echo "<div id=\"replyto".$c['id']."\" style=\"display:none\">";
-					comment_form_show($c['id'], "comment", "");
-					echo "</div>";
-				}
-				
-				
+				echo "<a class=\"button\" onClick=\"showhide('replyto".$c['id']."');\" href=\"#reply\">"._("Reply")."</a>";
+				echo "<div id=\"replyto".$c['id']."\" style=\"display:none\">";
+				comment_form_show($c['id'], "comment", "");
+				echo "</div>";
+			}
 			
-				//Skriv ut svar pÂ denna
-				//echo "<br />DEBUG: $nr + comment_show_comments = ";
-				$nr+=comment_show_comments($c['id'], "comment");
-				//echo "$nr";
+			
+		
+			//Skriv ut svar p√• denna
+			//echo "<br />DEBUG: $nr + comment_show_comments = ";
+			$nr+=comment_show_comments($c['id'], "comment");
+			//echo "$nr";
+			
 			echo "</div>";
 		}
 	}
@@ -357,7 +302,7 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlis
 {
 	$sql="SELECT id, comment_type, user, nick, email, url, flattrID, added, SUBSTRING(`comment`, 1, ".sql_safe( $length).") AS comment FROM ".PREFIX."comment WHERE is_spam<1 ORDER BY added DESC LIMIT 0,".sql_safe($antal).";";
 	//echo "<br />DEBUG1323: $sql";
-	if($cc=mysql_query($sql)) //H‰mta bara de senaste
+	if($cc=mysql_query($sql)) //H√§mta bara de senaste
 	{
 		if(mysql_affected_rows()<1)
 			echo "<p>"._("No resent comments")."</p>";
@@ -365,7 +310,7 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlis
 		$first=1;
 		while($c = mysql_fetch_array($cc))
 		{
-			$comment_link=comment_get_link($c['id']);
+			
 			if($first)
 			{
 				echo "<li class=\"first\">";
@@ -375,56 +320,63 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlis
 			{
 				echo "<li>";
 			}
+			
+			comment_display_single($c['id'], $length);
 
-				//Skriv ut info om n‰r kommentaren skrevs och av vem
+			echo "<div class=\"clearer\"></div></li>";
+		}
+		echo "</ul>";
+	}
+}
+
+function comment_display_single($comment_id, $max_length=NULL)
+{
+	$sql="SELECT 
+					id,
+					comment_type,
+					user,
+					nick,
+					email,
+					url,
+					flattrID,
+					added,";
+	if( $max_length !== NULL)
+		$sql.="
+					SUBSTRING(`comment`, 1, ".sql_safe( $max_length).") AS comment";
+	else
+		$sql.="
+					comment";
+	$sql.="
+		FROM ".PREFIX."comment 
+		WHERE id=".sql_safe($comment_id).";";
+	//echo "<br />DEBUG1323: $sql";
+	if($cc=mysql_query($sql)) //H√§mta bara de senaste
+	{
+		if($c = mysql_fetch_array($cc))
+		{
+			$comment_link=comment_get_link($c['id']);
+					//Skriv ut info om n√§r kommentaren skrevs och av vem
 				echo "<div class=\"comment_head\">";
 					if($c['user']!=NULL)
 					{
-						//Kolla om vi har en avatar
-						$sql="SELECT img_thumb FROM ".PREFIX."userimage WHERE user='".sql_safe($c['user'])."';";
-						if($ii=mysql_query($sql))
-						{
-							if($im=mysql_fetch_array($ii))
-							{	
-								if($im['img_thumb']!=NULL)
-								{
-									if(file_exists(USER_IMG_URL.$im['img_thumb']))
-										echo "<div class=\"left_avatar left\"><img src=\"".USER_IMG_URL.$im['img_thumb']."\" /></div>" ;
-									else
-									{
-										$sql="UPDATE ".PREFIX."userimage SET img_thumb=NULL WHERE user='".sql_safe($c['user'])."';";
-										mysql_query($sql);
-										$im['img_thumb']=NULL;
-									}
-								}
-							}
-						}
-							
-						if(!isset($im) || $im['img_thumb']==NULL)
-						{
-							echo "<img class=\"left_avatar leftfloat\"  src=\"http://www.gravatar.com/avatar/".md5( strtolower( trim( user_get_email($c['user']) ) ) )."?s=60\" />" ;
-						}
-						// echo "<div class=\"date\">Posted by <a href=\"?page=user&amp;user=".$c['user']."\"><strong>".user_get_name($c['user'])."</strong></a> at ";
+						// Kolla om vi har en avatar
+						echo '<a href="'.user_get_link_url($c['user']).'"><img class="left_avatar leftfloat"  src="'.user_get_avatar_path($c['user'], 60).'"></a>';
 					}
 					else if($c['nick']!=NULL)
 					{
 						//Kolla om vi har en gravatar
+						if($c['url']!=NULL)
+							echo '<a href="'.$c['url'].'">';
 						if($c['email']!=NULL)
 						{
 							echo "<img class=\"left_avatar leftfloat\"  src=\"http://www.gravatar.com/avatar/".md5( strtolower( trim( $c['email'] ) ) )."?s=60\" />" ;
 						}
-
-						// if($c['url']!=NULL)
-							// echo "<div class=\"date\">Posted by <a href=\"".$c['url']."\">".$c['nick']."</a> at ";
-						// else
-							// echo "<div class=\"date\">Posted by <strong>".$c['nick']."</strong> at ";
+						if($c['url']!=NULL)
+							echo '</a>';
 					}
-					// else
-						// echo "<div class=\"date\">Posted at ";
-
 					echo "<div class=\"date\">";
-					// echo "<a href=\"$comment_link\">".date("Y-m-d H:i:s",strtotime($c['added']))."</a>";
-					comment_display_author_text($c['user'], $c['nick'], $c['url'], $c['id'], $c['added']);
+
+					comment_display_author_text($c['id']);
 					
 					//Eventuell Flattr-knapp
 					if($c['user']!=NULL && flattr_get_flattr_choice($c['user'], "comment"))
@@ -434,25 +386,23 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlis
 					else
 						$flattrID=NULL;
 						
-					// echo "<br />DEBUG 1252: $flattrID";
-						
 					if($flattrID)
 					{
 						echo "<br />";
 						flattr_button_show($flattrID, $comment_link , "Comment ".$c['id']." - a ".$c['comment_type']." comment on ".SITE_URL, $c['comment'], 'compact', 'en_GB');
 					}
 					echo "</div>";
-				echo "</div>";
+				echo '<div class="clearfix"></div></div>';
 				
 				echo "<div class=\"comment_body\">";
 					//Skriv ut kommentar
 					$c_text=str_replace("\n","<br />",$c['comment']);
-					echo "<p class=\"comment_text\">".$c_text."<a href=\"$comment_link\">[...]</a></p>";			
+					echo "<p class=\"comment_text\">".$c_text;
+					if( $max_length !== NULL)
+						echo "<a href=\"$comment_link\">[...]</a>";
+					echo "</p>";			
 				echo "</div>";
-
-			echo "<div class=\"clearer\"></div></li>";
 		}
-		echo "</ul>";
 	}
 }
 
@@ -510,37 +460,44 @@ function comment_get_main($id)
 	}
 }
 
-function comment_display_author_text($comment_user_id, $comment_user_nick, $comment_user_url, $comment_id, $comment_created)
+function comment_display_author_text($comment_id)
 {
-	$comment_time=date("Y-m-d H:i",strtotime($comment_created));
-	$comment_link=comment_get_link($comment_id);
-	
-	$user_link=NULL;
+	$sql="SELECT user, nick, email, url, added FROM ".PREFIX."comment WHERE id=".sql_safe($comment_id).";";
+	if($cc=mysql_query($sql))
+	{
+		if($c=mysql_fetch_assoc($cc))
+		{
+			$comment_time=date("Y-m-d H:i",strtotime($c['added']));
+			$comment_link=comment_get_link($comment_id);
+			
+			$user_link=NULL;
 
-	if($comment_user_id!=NULL)
-	{
-		$user_name=user_get_name($comment_user_id);
-		$user_link=user_get_link($comment_user_id);
+			if($c['user']!==NULL)
+			{
+				$user_name=user_get_name($c['user']);
+				$user_link=user_get_link($c['user']);
+			}
+			else if($c['nick']!==NULL)
+			{
+				$user_name=$c['nick'];
+				$user_link="<a href=\"".$c['url']."\">".$user_name."</a>";
+			}
+			
+			//Kolla om f√∂rfattaren √§r admin
+			
+			if(user_get_admin($c['user'])>1)
+				$admin=" "._("(Admin)");
+			else
+				$admin="";
+			
+			if(!isset($user_name))
+				echo sprintf(_("Posted at <a href=\"%s\">%s</a>"),$comment_link,$comment_time);
+			else if($user_link==NULL)
+				echo sprintf(_("Posted by %s%s at <a href=\"%s\">%s</a>"), $user_name, $admin, $comment_link,$comment_time);
+			else
+				echo sprintf(_("Posted by %s%s at <a href=\"%s\">%s</a>"), $user_link, $admin, $comment_link, $comment_time);
+		}
 	}
-	else if($comment_user_nick!=NULL)
-	{
-		$user_name=$comment_user_nick;
-		$user_link="<a href=\"".$comment_user_url."\">".$user_name."</a>";
-	}
-	
-	//Kolla om fˆrfattaren ‰r admin
-	
-	if(user_get_admin($comment_user_id)>1)
-		$admin=" "._("(Admin)");
-	else
-		$admin="";
-	
-	if(!isset($user_name))
-		echo sprintf(_("Posted at <a href=\"%s\">%s</a>"),$comment_link,$comment_time);
-	else if($user_link==NULL)
-		echo sprintf(_("Posted by %s%s at <a href=\"%s\">%s</a>"), $user_name, $admin, $comment_link,$comment_time);
-	else
-		echo sprintf(_("Posted by %s%s at <a href=\"%s\">%s</a>"), $user_link, $admin, $comment_link, $comment_time);
 }
 
 function comment_count($type, $id)
