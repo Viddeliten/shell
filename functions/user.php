@@ -207,9 +207,9 @@ function user_display_profile($user_id)
 	echo '<h1>'.user_get_name($user_id).'</h1>';
 
 	$user_description=user_get_description($user_id);
-	$user_image=user_get_avatar_path($user_id);
+	$user_image=user_get_avatar_path($user_id, 180);
 	
-	if(login_check_logged_in_mini()>0 && isset($_POST['profile_edit']) && $user_id==$_SESSION[PREFIX.'user_id'])
+	if(login_check_logged_in_mini()>0 && isset($_POST['profile_edit']) && $user_id===$_SESSION[PREFIX.'user_id'])
 	{
 		//Show edit form
 		
@@ -218,7 +218,15 @@ function user_display_profile($user_id)
 		echo '<form method="post">
 			<div class="form-group">
 				<label for="description_text">'._("Profile text").'</label>
-				<textarea class="form-control" id="description_text" name="description"></textarea>
+				<textarea class="form-control" id="description_text" name="description">'.$user_description.'</textarea>
+			</div>
+			<div class="form-group">
+				<label for="avatar_change_div">'._("Profile image (avatar)").'</label>
+				<div id="avatar_change_div">
+					<p>To change your avatar, <a href="http://gravatar.com">go to Gravatar</a>, log in and upload desired picture!</p>
+					<p>Current picture being used for '.user_get_email($user_id).' is:</p>
+					<img class="avatar" src="'.$user_image.'">
+				</div>
 			</div>
 			<input type="submit" class="btn btn-success" name="profile_save" value="'._("Save").'">
 		</form>';
@@ -252,10 +260,11 @@ function user_display_profile($user_id)
 		{
 			user_profile_custom_content($user_id);
 		}
+		
+		echo '<div class="col-lg-12">';
+		comments_show_comments_and_replies($user_id, "user");
+		echo "</div>";
 	}
-	echo '<div class="col-lg-12">';
-	comments_show_comments_and_replies($user_id, "user");
-	echo "</div>";
 }
 
 function user_display_settings()
