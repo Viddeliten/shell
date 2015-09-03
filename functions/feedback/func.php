@@ -1372,22 +1372,22 @@ function feedback_get_droplist($exclude_id, $droplist_id)
 		{
 			if($r['id']!=$exclude_id)
 			{
-				if($r['is_merged']==1)
+				if($r['is_merged']==1 && $is_merged==0)
 				{
 					$is_merged=1;
 					$r_str.="<option value=\"\">-- "._("Merged")." : --</option>";
 				}
-				if($r['is_not_implemented']==1)
+				if($r['is_not_implemented']==1 && $is_not_implemented==0)
 				{
 					$is_not_implemented=1;
 					$r_str.="<option value=\"\">-- "._("Not implemented")." : --</option>";
 				}
-				if($r['is_checked_in']==1)
+				if($r['is_checked_in']==1 && $is_checked_in==0)
 				{
 					$is_checked_in=1;
 					$r_str.="<option value=\"\">-- "._("Checked in")." : --</option>";
 				}
-				if($r['is_resolved']==1)
+				if($r['is_resolved']==1 && $is_resolved==0)
 				{
 					$is_resolved=1;
 					$r_str.="<option value=\"\">-- "._("Resolved")." : --</option>";
