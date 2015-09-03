@@ -131,13 +131,14 @@ function user_get_description($id)
 			return $h['description'];
 	return NULL;
 }
-function user_get_avatar_path($user_id)
+function user_get_avatar_path($user_id, $width=60)
 {
 	//Check if user has an image
-	if(file_exists("img/avatars/".$user_id.".png"))
-		return "img/avatars/".$user_id.".png";
+	if(file_exists("img/avatar/".$user_id.".png"))
+		return "img/avatar/".$user_id.".png";
 	else
-		return "img/no_avatar.png";
+		return "http://www.gravatar.com/avatar/".md5( strtolower( trim( user_get_email($user_id) ) ) )."?s=".$width;
+		// return "img/no_avatar.png";
 }
 function user_get_email($id)
 {
