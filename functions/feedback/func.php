@@ -432,15 +432,20 @@ function feedback_get_list_relevant($from, $to)
 	//Formel= plusones + dagar sedan accepterad
 	//ta inte med resolvade
 	//Visar de 20 mest "upptummade" feedback-texterna
-	$sql="SELECT *,
+	$sql="SELECT ".PREFIX."feedback.*,
+	IF(merged_with,1,0) as is_merged,
+	IF(not_implemented,1,0) as is_not_implemented,
+	IF(resolved,1,0) as is_resolved,
+	IF(checked_in,1,0) as is_checked_in,
 	".REL_STR." as rel
 	FROM ".PREFIX."feedback
-	WHERE resolved IS NULL
-	AND checked_in IS NULL
-	AND is_spam<1
-	AND merged_with IS NULL
-	AND not_implemented IS NULL
-	ORDER BY ".ORDER_STR."
+	WHERE is_spam<1
+	ORDER BY
+		is_merged ASC,
+		is_not_implemented ASC,
+		is_checked_in ASC,
+		is_resolved ASC,
+		".ORDER_STR."
 	LIMIT ".sql_safe($from).",".sql_safe($to).";";
 	// echo "<br />DEBUG: $sql";
 	
@@ -1359,10 +1364,35 @@ function feedback_get_droplist($exclude_id, $droplist_id)
 	if($rel=feedback_get_list_relevant(0, 500))
 	{
 		$r_str="<select id=\"".$droplist_id."\">";
+		$is_merged=0;
+		$is_not_implemented=0;
+		$is_checked_in=0;
+		$is_resolved=0;
 		while($r=mysql_fetch_array($rel))
 		{
 			if($r['id']!=$exclude_id)
 			{
+				if($r['is_merged']==1)
+				{
+					$is_merged=1;
+					$r_str.="<option value=\"\">-- "._("Merged")." : --</option>";
+				}
+				if($r['is_not_implemented']==1)
+				{
+					$is_not_implemented=1;
+					$r_str.="<option value=\"\">-- "._("Not implemented")." : --</option>";
+				}
+				if($r['is_checked_in']==1)
+				{
+					$is_checked_in=1;
+					$r_str.="<option value=\"\">-- "._("Checked in")." : --</option>";
+				}
+				if($r['is_resolved']==1)
+				{
+					$is_resolved=1;
+					$r_str.="<option value=\"\">-- "._("Resolved")." : --</option>";
+				}
+
 				if($r['subject']!=NULL)
 					$str=$r['subject'];
 				else
