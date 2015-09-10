@@ -36,7 +36,7 @@ function add_error($error_mess)
 		define('ERROR'.$i, $error_mess);
 	}
 }
-function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=FALSE)
+function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=FALSE, $generate_warning_on_fail=FALSE)
 {
 	if(mysql_query($sql))
 	{
@@ -55,6 +55,8 @@ function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=F
 				message_print_error(sprintf(_("Error code %s<br />SQL: %s<br />ERROR: %s"),$error_code, $sql, mysql_error()));
 			else
 				add_error_mysql($error_code,$sql, mysql_error());
+		if($generate_warning_on_fail)
+			trigger_error (sprintf(_("Error code %s	SQL: %s	ERROR: %s"),$error_code, $sql, mysql_error()));
 		return FALSE;
 	}
 }
