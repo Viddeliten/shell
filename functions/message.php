@@ -56,9 +56,14 @@ function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=F
 			else
 				add_error_mysql($error_code,$sql, mysql_error());
 		if($generate_warning_on_fail)
-			trigger_error (sprintf(_("Error code %s	SQL: %s	ERROR: %s"),$error_code, $sql, mysql_error()));
+			message_trigger_warning($error_code, $sql, mysql_error());
+			// trigger_error (sprintf(_("Error code %s	SQL: %s	ERROR: %s"),$error_code, $sql, mysql_error()));
 		return FALSE;
 	}
+}
+function message_trigger_warning($error_code, $sql, $mysql_error)
+{
+	trigger_error (sprintf(_("Error code %s	SQL: %s	ERROR: %s"),$error_code, $sql, $mysql_error));
 }
 function add_error_mysql($error_code,$sql, $mysql_error)
 {
