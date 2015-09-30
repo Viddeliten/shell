@@ -38,4 +38,17 @@ function sql_print_results($alldata)
 	}
 	echo "</table>";
 }
+
+function sql_get($sql)
+{
+	$return=array();
+	if($aa=mysql_query($sql))
+	{
+		while($a=mysql_fetch_assoc($aa))
+		{
+			$return[]=$a;
+		}
+	}
+	return $return;
+}
 ?>
