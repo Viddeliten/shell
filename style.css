@@ -14,6 +14,11 @@
     }
 }
 
+.progress
+{
+	margin-bottom: 0;
+}
+
 body {
 
   padding-top: 50px;
@@ -250,6 +255,17 @@ li.list-group-item.feedback
 {
 	font-size: 115%;
 }
+
+/*		Tooltip						*/
+.ui-tooltip
+{
+	box-shadow: 0px 0px 390px 400px rgba(255,255,255,0.5);
+}
+.ui-tooltip-content
+{
+	color: red;
+}
+
 /************************************/
 /*		For notices and such		*/
 /************************************/
