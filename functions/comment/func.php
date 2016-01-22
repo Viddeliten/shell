@@ -1,5 +1,7 @@
 <?php
 
+require_once('functions/news.php');
+
 function comment_receive()
 {
 	$inloggad=login_check_logged_in_mini();
