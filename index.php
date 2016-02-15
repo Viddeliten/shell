@@ -87,70 +87,34 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="<?php echo SITE_URL; ?>"><?php echo SITE_NAME; ?></a>
-		  <?php version_show_linked_number("v", 'navbar-brand'); ?>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li <?php if(!isset($_GET['p'])) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>"><?php echo _("Home"); ?></a></li>
-			<?php admin_menu_dropdown(); ?>
-           <!-- <li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"about")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>?p=about" ><?php echo _("About"); ?></a></li> -->
-		   <?php display_custom_pages_menu(); ?>
-            <li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"feedback")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>?p=feedback"><?php echo _("Feedback"); ?></a></li>
-			<li><?php flattr_button_show(SITE_OWNER_FLATTR_ID, SITE_URL, SITE_NAME, "", 'compact', "sv"); ?></li>
-          </ul>
-		  <ul class="nav navbar-nav navbar-right">
-			<li><?php login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"'); ?></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
-	<div class="container" id="main_container">
-		<div id="content">
-		<?php 
-			if(!isset($_SESSION[PREFIX."username"]))
-			{
-				echo '<div id="main_login_form" class="row" style="display: none;">
-						<div class="col-lg-12">';
-							login_form_login_inline();
-				echo '</div>
-				</div>';
-			}
-		?>
-		<?php 
+    <? 
+	if(file_exists(CUSTOM_CONTENT_PATH."/index.php"))
+	{
+		include(CUSTOM_CONTENT_PATH."/index.php");
+	}
+	else
+	{
+		display_topline_menu(); ?>
 		
-		// $custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
-		// echo "<pre>".print_r($custom_pages,1)."</pre>";
-		
-		include("content.php"); ?>
-		<div class="clearfix"></div>
-		</div>
-		<div id="footer">
-			<div class="row">
-				<div class="col-md-8 center">
-					<p><?php echo _("This site is presented by"); ?></p>
-					<a href="http://viddewebb.se"><img src="img/ViddeWebb-footer.png" alt="Vidde Webb"></a>
-				</div>
-				<div class="col-md-4 right">
-					<p><?php echo _("Select language:"); ?>
-						<a href="<?php echo add_get_to_URL("language", "sv"); ?>"><img src="img/flag/sv.png"></a>
-						<a href="<?php echo add_get_to_URL("language", "uk"); ?>"><img src="img/flag/uk.png"></a>
-					</p>
-				</div>
+		<div class="container" id="main_container">
+			<div id="content">
+				<?php 
+					display_conditional_login();
+				?>
+				<?php 
+				
+				include("content.php"); ?>
+				<div class="clearfix"></div>
 			</div>
-		</div>
-    </div><!-- /.container -->
+
+			<?php //Footer
+			display_footer(); ?>
+			
+		</div><!-- /.container -->
 	
-	<?php db_close($connection); ?>
+	<?php 
+	}
+	db_close($connection); ?>
 	
 	<!-- Flattr-stuff: -->
 
