@@ -2,7 +2,6 @@
 
 function news_receive()
 {
-	preprint($_POST);
 	if(isset($_POST['news']) && isset($_POST['text']))
 	{
 		//Check for admin

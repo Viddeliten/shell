@@ -1,9 +1,9 @@
 <?php
 
-function display_topline_menu()
+function display_topline_menu($navbar_type="navbar-inverse")
 {
 	?>
-	<nav class="navbar navbar-inverse navbar-fixed-top">
+	<nav class="navbar <?php echo $navbar_type; ?> navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -12,7 +12,7 @@ function display_topline_menu()
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="<?php echo SITE_URL; ?>"><?php echo SITE_NAME; ?></a>
+          <a id="navbar-site-name" class="navbar-brand" href="<?php echo SITE_URL; ?>"><?php echo SITE_NAME; ?></a>
 		  <?php version_show_linked_number("v", 'navbar-brand'); ?>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
