@@ -64,9 +64,9 @@ else if(isset($_GET['p']))
 }
 else
 {
-	if(file_exists(CUSTOM_CONTENT_PATH."/index.php"))
+	if(file_exists(CUSTOM_CONTENT_PATH."/start.php"))
 	{
-		include(CUSTOM_CONTENT_PATH."/index.php");
+		include(CUSTOM_CONTENT_PATH."/start.php");
 	}
 	else
 	{
