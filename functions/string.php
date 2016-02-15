@@ -113,7 +113,7 @@ function string_unslugify($text)
 
 function preprint($value)
 {
-	return prestr($value);
+	echo prestr($value);
 }
 function prestr($value)
 {
