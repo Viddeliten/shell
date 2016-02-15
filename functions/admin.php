@@ -33,32 +33,37 @@ function admin_menu_dropdown()
 	//For custom admin pages
 	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
 	
+	//Get custom admin pages
+	foreach($custom_pages as $name => $content)
+	{
+		if(!strcmp($content['slug'],"admin"))
+		{
+			$custom_admin_pages=$content;
+			$custom_admin_name=$name;
+		}
+	}
+	
 	$logged_in=login_check_logged_in_mini();
 	if($logged_in>1)
 	{
 		//Admin dropdown menu
 		echo '<li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'._("Admin tools").'<span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.(isset($custom_admin_name) ? $custom_admin_name : _("Admin tools")).'<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="'.SITE_URL.'/?p=admin&amp;s=users">'._("Users").'</a></li>
             <li><a href="'.SITE_URL.'/?p=admin&amp;s=version">'._("Version").'</a></li>
             <li><a href="'.SITE_URL.'/?p=admin&amp;s=news">'._("Site news").'</a></li>
             <li><a href="'.SITE_URL.'/?p=admin&amp;s=mess">'._("Messages").'</a></li>';
 
-		//Custom admin pages
-		foreach($custom_pages as $name => $content)
+
+		if(isset($custom_admin_pages['subpages']) && !empty($custom_admin_pages['subpages']))
 		{
-			if(!strcmp($content['slug'],"admin"))
+			foreach($custom_admin_pages['subpages'] as $s_name => $s_content)
 			{
-				if(isset($content['subpages']) && !empty($content['subpages']))
-				{
-					foreach($content['subpages'] as $s_name => $s_content)
-					{
-						echo '<li ><a href="'.SITE_URL.'/?p='.$content['slug'].'&amp;s='.$s_content['slug'].'" >'.$s_name.'</a></li>';
-					}
-				}
+				echo '<li ><a href="'.SITE_URL.'/?p='.$custom_admin_pages['slug'].'&amp;s='.$s_content['slug'].'" >'.$s_name.'</a></li>';
 			}
 		}
+
 		
 			
 		echo '
