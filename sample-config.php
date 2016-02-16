@@ -10,6 +10,9 @@
 // define('DEFAULT_LANGUAGE', 'sv_SE'); //Swedish
 define('DEFAULT_LANGUAGE', 'en_GB');	//Brittish
 
+if(!defined('ABS_PATH'))
+	define('ABS_PATH',"/var/www/catalog_name");
+
 /********************************/
 /*		Other constants			*/
 /********************************/

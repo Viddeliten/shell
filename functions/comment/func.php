@@ -1,6 +1,6 @@
 <?php
 
-require_once('functions/news.php');
+require_once(ABS_PATH."/functions/news.php");
 
 function comment_receive()
 {
