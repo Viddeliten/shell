@@ -2,6 +2,13 @@
 
 function message_display_messages_and_errors()
 {
+	if(defined('SUCCESS_MESS'))
+		message_print_success_message(SUCCESS_MESS);
+	for($i=0;defined('SUCCESS_MESS'.$i);$i++)
+	{
+		message_print_success_message(constant('SUCCESS_MESS'.$i));
+	}
+
 	if(defined('MESS'))
 		message_print_message(MESS);
 	for($i=0;defined('MESS'.$i);$i++)
@@ -30,6 +37,11 @@ function message_print_error($message)
 	echo "<div class=\"message_box error well\">".$message."</div>";
 }
 
+function message_add_error($error_mess)
+{
+	add_error($error_mess);
+}
+
 function add_error($error_mess)
 {
 	if(!defined('ERROR'))
@@ -49,7 +61,7 @@ function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=F
 			if($print_now)
 				message_print_success_message($success_message);
 			else
-				add_message($success_message);
+				message_add_success_message($success_message);
 		}
 		return TRUE;
 	}
@@ -73,6 +85,10 @@ function add_error_mysql($error_code,$sql, $mysql_error)
 {
 	add_error(sprintf(_("Error code %s<br />SQL: %s<br />ERROR: %s"),$error_code, $sql, $mysql_error));
 }
+function message_add_message($message)
+{
+	add_message($message);
+}
 function add_message($message)
 {
 	if(!defined('MESS'))
@@ -81,6 +97,16 @@ function add_message($message)
 	{
 		for($i=0;defined('MESS'.$i);$i++);
 		define('MESS'.$i, $message);
+	}
+}
+function message_add_success_message($message)
+{
+	if(!defined('SUCCESS_MESS'))
+		define('SUCCESS_MESS', $message);
+	else
+	{
+		for($i=0;defined('SUCCESS_MESS'.$i);$i++);
+		define('SUCCESS_MESS'.$i, $message);
 	}
 }
 
