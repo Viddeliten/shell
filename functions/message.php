@@ -21,6 +21,10 @@ function message_print_message($message)
 {
 	echo "<div class=\"message_box well\">".$message."</div>";
 }
+function message_print_success_message($message)
+{
+	echo "<div class=\"message_box success well\">".$message."</div>";
+}
 function message_print_error($message)
 {
 	echo "<div class=\"message_box error well\">".$message."</div>";
@@ -43,7 +47,7 @@ function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=F
 		if($success_message!=NULL)
 		{
 			if($print_now)
-				message_print_message($success_message);
+				message_print_success_message($success_message);
 			else
 				add_message($success_message);
 		}
