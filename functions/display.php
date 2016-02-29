@@ -25,12 +25,38 @@ function display_topline_menu($navbar_type="navbar-inverse")
 			<li><?php flattr_button_show(SITE_OWNER_FLATTR_ID, SITE_URL, SITE_NAME, "", 'compact', "sv"); ?></li>
           </ul>
 		  <ul class="nav navbar-nav navbar-right">
+			<?php 
+			display_friend_request_drop_menu();
+			// display_dropdown_menu('<span class="glyphicon glyphicon-user"></span>',
+										// "user",
+										// array("friend request from name" => array("slug" => "profile&amp;user=1"))); ?>
 			<li><?php login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"'); ?></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
 	<?php 
+}
+
+function display_friend_request_drop_menu()
+{
+	
+	if(login_check_logged_in_mini()<1)
+		return 0;
+	
+	$requests=user_friend_get_requests($_SESSION['user_id']);
+	
+	if(!empty($requests))
+	{
+		$r=array();
+		foreach($requests as $request)
+		{
+			$r[sprintf("Friend request from %s", user_get_name($request['requested_by']))]=array("slug" => "profile&amp;user=".$request['requested_by']);
+		}
+		display_dropdown_menu('<span class="glyphicon glyphicon-user"></span>',
+									"user",
+									$r);
+	}
 }
 
 function display_conditional_login()
@@ -95,6 +121,21 @@ function display_custom_pages_menu()
 			}
 		}
 	}
+}
+
+function display_dropdown_menu($name, $slug, $subpages)
+{
+	$logged_in_level=login_check_logged_in_mini();
+	echo '<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.$name.'<span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">';
+					  foreach($subpages as $s_name => $s_content)
+					  {
+							if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
+								echo '<li ><a href="'.SITE_URL.'/?p='.$slug.'&amp;s='.$s_content['slug'].'" >'.$s_name.'</a></li>';
+					  }
+				echo '</ul>
+	</li>';
 }
 
 ?>

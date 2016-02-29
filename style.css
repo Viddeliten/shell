@@ -355,6 +355,11 @@ li.list-group-item.feedback
 	padding-bottom: 1em;
 }
 
+.btn
+{
+	margin-top: 0.5em;
+}
+
 /*
   position: absolute;
   bottom: 0;  stick to bottom

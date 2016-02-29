@@ -33,17 +33,14 @@ define('CUSTOM_PAGES_ARRAY',serialize(array(
 																										)
 																			)
 												),
-	_("Stuff")							=>	array(	"slug"	=>	"stuff",
+	_("Users")							=>	array(	"slug"	=>	"users",
 													"req_user_level"	=>	0,
 													"subpages"		=>	array(
-																				_("Active users")	=>	array(	"slug"	=>	"users",
+																				_("Active users")	=>	array(	"slug"	=>	"active",
 																											"req_user_level"	=>	0	//This will be seen by all
 																										),
-																				_("Stuff 2")	=>	array(	"slug"	=>	"stuff2",
-																											"req_user_level"	=>	2	//This will be seen by admins
-																										),
-																				_("Stuff 3")	=>	array(	"slug"	=>	"stuff3",
-																											"req_user_level"	=>	0	
+																				_("Friends")	=>	array(	"slug"	=>	"friends",
+																											"req_user_level"	=>	1	//This will be seen by logged in users
 																										)
 																			)
 												)

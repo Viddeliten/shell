@@ -255,6 +255,8 @@ function user_display_profile($user_id)
 			</div>
 			';
 		}
+		else if(login_check_logged_in_mini()>0)
+			echo user_friend_get_request_button($user_id);
 		
 		if (function_exists ( 'user_profile_custom_content' ))
 		{
@@ -586,6 +588,66 @@ function user_display_active_users($include_reputation=TRUE)
 			</tr>";
 	}
 	echo "</table>";
+}
+
+function user_display_friends()
+{
+	echo "user_display_friends";
+}
+
+function user_friend_request($requested_by, $user_id)
+{
+	$sql="INSERT INTO ".PREFIX."user_friend SET requested_by=".sql_safe($requested_by).", user=".sql_safe($user_id).";";
+	message_try_mysql($sql,6171728, _("Friend request sent"), TRUE);
+}
+
+function user_friend_get($user1, $user2)
+{
+	$sql="SELECT * FROM user_friend
+	WHERE (requested_by=".sql_safe($user1)." AND user=".sql_safe($user2).")
+	OR (requested_by=".sql_safe($user2)." AND user=".sql_safe($user1).");";
+	
+}
+
+function user_friend_get_request_button($user_id)
+{
+	//Check user is logged in
+	if(login_check_logged_in_mini()<1)
+		return FALSE;
+	
+	//Check that it isn't logged in user
+	if($_SESSION['user_id']==$user)
+		return FALSE;
+
+
+	//Check current friendship status
+	$current_friendship=user_friend_get($user1, $user2);
+	preprint($current_friendship);
+	
+	//Receive form data
+	if(isset($_POST['add_user_friend']))
+	{
+		user_friend_request($_SESSION['user_id'], $_POST['user_id']);
+	}
+
+	return '<form method="post">
+		<input type="hidden" value="'.$user.'" name="user_id">
+		<input type="submit" class="btn" value="'._("Add as friend +").'" name="add_user_friend">
+	</form>';
+}
+
+function user_friend_get_requests($user_id)
+{
+	$sql="SELECT * FROM user_friend WHERE user=".sql_safe($user_id)." AND status='NEW';";
+	$return=array();
+	if($rr=mysql_query($sql))
+	{
+		while($r=mysql_fetch_assoc($rr))
+		{
+			$return[]=$r;
+		}
+	}
+	return $return;
 }
 
 ?>
