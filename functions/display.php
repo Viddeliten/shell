@@ -78,17 +78,17 @@ function display_custom_pages_menu()
 		{
 			if(!isset($content['subpages']) || empty($content['subpages']))
 			{
-				echo '<li ><a href="'.SITE_URL.'/?p='.$content['slug'].'" >'.$name.'</a></li>';
+				echo '<li ><a href="'.SITE_URL.'/?p='.$content['slug'].'" >'._($name).'</a></li>';
 			}
 			else
 			{
 				echo '<li class="dropdown">
-					  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.$name.'<span class="caret"></span></a>
+					  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'._($name).'<span class="caret"></span></a>
 					  <ul class="dropdown-menu" role="menu">';
 					  foreach($content['subpages'] as $s_name => $s_content)
 					  {
 							if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
-								echo '<li ><a href="'.SITE_URL.'/?p='.$content['slug'].'&amp;s='.$s_content['slug'].'" >'.$s_name.'</a></li>';
+								echo '<li ><a href="'.SITE_URL.'/?p='.$content['slug'].'&amp;s='.$s_content['slug'].'" >'._($s_name).'</a></li>';
 					  }
 				echo '</ul>
 					</li>';
