@@ -50,13 +50,33 @@ function flattr_get_flattrID($user_id)
 	return 0;
 }
 
-function flattr_button_show($uid, $url, $title, $description, $button, $language)
+function flattr_get_button_code($user_id, $flattr_id, $type, $url, $title, $description)
+{
+	if(NULL!==$user_id && flattr_get_flattr_choice($user_id, $type))
+		$flattrID=flattr_get_flattrID($user_id);
+	else if($flattr_id!==NULL)
+		$flattrID=$flattr_id;
+	else
+		$flattrID=NULL;
+	
+	if($flattrID)
+	{
+		return flattr_button_show($flattrID, $url, $title, $description, 'compact', 'en_GB', true);
+	}
+	return NULL;
+}
+
+function flattr_button_show($uid, $url, $title, $description, $button, $language, $return_code=false)
 {
 	$script_id=password_generate(32);
 	// echo "<script>
 	// echo "<script id='fbwxhy2'>
-	echo "<script id='$script_id'>
-	(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=".$uid."&title=".$title."&button=".$button."&description=".$description."&url='+encodeURIComponent('".$url."');f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('$script_id');</script>";
+	$code="<script id='$script_id'>
+	(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=".$uid."&title=".$title."&button=".$button."&description=".sql_safe($description)."&url='+encodeURIComponent('".$url."');f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('$script_id');</script>";
+	if($return_code)
+		return $code;
+	else
+		echo $code;
 }
 
 function flattr_set_flattrID($user_id, $flattr_id)
