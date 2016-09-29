@@ -53,6 +53,10 @@ function user_receive()
 		else
 			add_error(sprintf(_("Profile update fail<br />SQL: %s<br />ERROR: %s"),$sql,mysql_error()));
 	}
+	else if(isset($_POST['add_user_friend']))
+	{
+		user_friend_request($_SESSION['user_id'], $_POST['user_id']);
+	}
 }
 
 function user_display_dropdown()
@@ -597,16 +601,65 @@ function user_display_friends()
 
 function user_friend_request($requested_by, $user_id)
 {
-	$sql="INSERT INTO ".PREFIX."user_friend SET requested_by=".sql_safe($requested_by).", user=".sql_safe($user_id).";";
-	message_try_mysql($sql,6171728, _("Friend request sent"), TRUE);
+	$req=user_friend_get($user_id, $requested_by);
+	//If $user_id has asked to add friend, accept it
+	if(!empty($req) && $req['requested_by']==$user_id && !strcmp($req['status'],'DESIRED'))
+	{
+		$sql="UPDATE ".PREFIX." user_friend SET status='ACCEPTED' WHERE id=".sql_safe($req['id']).";";
+		if(message_try_mysql($sql,6071814, _("Friend request accepted"), TRUE))
+			return true;
+	}
+	else if(empty($req))
+	{
+		$sql="INSERT INTO ".PREFIX."user_friend SET requested_by=".sql_safe($requested_by).", user=".sql_safe($user_id).";";
+		if(message_try_mysql($sql,6171728, _("Friend request sent"), TRUE))
+			return true;
+	}
+	return false;
 }
 
 function user_friend_get($user1, $user2)
 {
-	$sql="SELECT * FROM user_friend
-	WHERE (requested_by=".sql_safe($user1)." AND user=".sql_safe($user2).")
-	OR (requested_by=".sql_safe($user2)." AND user=".sql_safe($user1).");";
-	
+	$sql="SELECT user_friend.*, fh.timestamp as update_time
+	FROM user_friend
+	LEFT JOIN (SELECT MAX(id) as id, user_friend_id FROM user_friend_history GROUP BY user_friend_id) fh2 ON fh2.user_friend_id=user_friend.id
+	LEFT JOIN user_friend_history fh ON fh.user_friend_id=user_friend.id AND fh.id=fh2.id
+	WHERE (user_friend.requested_by=".sql_safe($user1)." AND user_friend.user=".sql_safe($user2).")
+	OR (user_friend.requested_by=".sql_safe($user2)." AND user_friend.user=".sql_safe($user1).");";
+	// preprint($sql, "DEBUG1834");
+	$ff=mysql_query($sql);
+	while($s=mysql_fetch_assoc($ff))
+	{
+		// preprint($s,"s");
+		$f=$s;
+		if($f['status']=="ACCEPTED")
+		{
+			return $f;
+		}
+		else if($f['status']=="REJECTED")
+		{
+			if($f['requested_by']==$user1)
+				$f['status']='FORBIDDEN';
+			return $f;
+		}
+		else if($f['status']=="NEW" && $f['requested_by']==$user1)
+		{
+			$f['status']="DESIRED";
+			return $f;
+		}
+		else if(!strcmp($f['status'],"NEW") && $f['requested_by']==$user2)
+		{
+			$f['status']="PENDING";
+			return $f;
+		}
+		// else
+		// {
+			// preprint($f['status'],"status");
+			// preprint($f['requested_by'],"requested_by");
+			// preprint($f);
+		// }
+	}
+	return array();
 }
 
 function user_friend_get_request_button($user_id)
@@ -616,24 +669,40 @@ function user_friend_get_request_button($user_id)
 		return FALSE;
 	
 	//Check that it isn't logged in user
-	if($_SESSION['user_id']==$user)
+	if($_SESSION['user_id']==$user_id)
 		return FALSE;
 
 
 	//Check current friendship status
-	$current_friendship=user_friend_get($user1, $user2);
-	preprint($current_friendship);
+	$current_friendship=user_friend_get($user_id, $_SESSION['user_id']);
+	// preprint($current_friendship,"current_friendship");
 	
-	//Receive form data
-	if(isset($_POST['add_user_friend']))
+	if($current_friendship['status']=="PENDING")
 	{
-		user_friend_request($_SESSION['user_id'], $_POST['user_id']);
+		return "<p><i>".sprintf(_("Friendship requested %s"),date("Y-m-d H:i",strtotime($current_friendship['request_time'])))."</i></p>";
 	}
-
-	return '<form method="post">
-		<input type="hidden" value="'.$user.'" name="user_id">
-		<input type="submit" class="btn" value="'._("Add as friend +").'" name="add_user_friend">
-	</form>';
+	if($current_friendship['status']=="ACCEPTED")
+	{
+		return "<p><i>".sprintf(_("Friendship accepted %s"),date("Y-m-d H:i",strtotime($current_friendship['update_time'])))."</i></p>";
+	}
+	if($current_friendship['status']=="FORBIDDEN")
+	{
+		return "<p><i>".sprintf(_("Friendship rejected %s"),date("Y-m-d H:i",strtotime($current_friendship['update_time'])))."</i></p>";
+	}
+	else
+	{
+		if($current_friendship['status']=="DESIRED")
+			$button_text=_("Accept friend request");
+		else
+			$button_text=_("Add as friend +");
+		$return='<form method="post">
+			<input type="hidden" value="'.$user_id.'" name="user_id">
+			<input type="submit" class="btn success" value="'.$button_text.'" name="add_user_friend">';
+		if($current_friendship['status']=="DESIRED")
+			$return.='<input type="submit" class="btn error" value="'._("Reject friend request").'" name="reject_user_friend">';
+		$return.='</form>';
+	}
+	return $return;
 }
 
 function user_friend_get_requests($user_id)
