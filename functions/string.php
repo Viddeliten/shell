@@ -111,9 +111,9 @@ function string_unslugify($text)
 	return ucfirst(str_replace("_"," ",$text));
 }
 
-function preprint($value)
+function preprint($value, $label="")
 {
-	echo prestr($value);
+	echo $label.prestr($value);
 }
 function prestr($value)
 {
