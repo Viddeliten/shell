@@ -743,15 +743,15 @@ function user_friend_get_request_button($user_id)
 	$current_friendship=user_friend_get($user_id, $_SESSION['user_id']);
 	// preprint($current_friendship,"current_friendship");
 	
-	if($current_friendship['status']=="PENDING")
+	if(isset($current_friendship['status']) && $current_friendship['status']=="PENDING")
 	{
 		return "<p><i>".sprintf(_("Friendship requested %s"),date("Y-m-d H:i",strtotime($current_friendship['request_time'])))."</i></p>";
 	}
-	if($current_friendship['status']=="ACCEPTED")
+	if(isset($current_friendship['status']) && $current_friendship['status']=="ACCEPTED")
 	{
 		return "<p><i>".sprintf(_("Friendship accepted %s"),date("Y-m-d H:i",strtotime($current_friendship['update_time'])))."</i></p>";
 	}
-	if($current_friendship['status']=="FORBIDDEN" || $current_friendship['status']=="REJECTED")
+	if(isset($current_friendship['status']) && ($current_friendship['status']=="FORBIDDEN" || $current_friendship['status']=="REJECTED"))
 	{
 		$return="<p><i>".sprintf(_("Friendship rejected %s"),date("Y-m-d H:i",strtotime($current_friendship['update_time'])))."</i></p>";
 		if($current_friendship['status']=="FORBIDDEN")
@@ -763,14 +763,14 @@ function user_friend_get_request_button($user_id)
 	}
 	else
 	{
-		if($current_friendship['status']=="DESIRED")
+		if(isset($current_friendship['status']) && $current_friendship['status']=="DESIRED")
 			$button_text=_("Accept friend request");
 		else
 			$button_text=_("Add as friend")." +";
 		$return='<form method="post">
 			<input type="hidden" value="'.$user_id.'" name="user_id">
 			<input type="submit" class="btn success" value="'.$button_text.'" name="add_user_friend">';
-		if($current_friendship['status']=="DESIRED")
+		if(isset($current_friendship['status']) && $current_friendship['status']=="DESIRED")
 			$return.='<input type="submit" class="btn error" value="'._("Reject friend request").'" name="reject_user_friend">';
 		$return.='</form>';
 	}
