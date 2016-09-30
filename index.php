@@ -8,11 +8,6 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	 <meta name="author" content="">
 	<?php require_once("config.php"); 
-	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
-		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
-
-	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
-		require_once(CUSTOM_CONTENT_PATH."/globals.php");
 	
 	require_once("functions/login.php");
 	require_once("functions/db_connect.php");
@@ -33,6 +28,12 @@
 	require_once("functions/privmess.php");
 	require_once("functions/notice.php");
 	
+	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
+		require_once(CUSTOM_CONTENT_PATH."/globals.php");
+
+	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
+		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
+
 	if(function_exists('meta_title_and_description')) meta_title_and_description(); ?>
    
     <link rel="icon" href="<?php echo CUSTOM_CONTENT_PATH; ?>/favicon.ico">
