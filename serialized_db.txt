@@ -1,4 +1,4 @@
-a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE IF NOT EXISTS `comment` (
+a:18:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE IF NOT EXISTS `comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `comment_type` varchar(64) COLLATE utf8_bin NOT NULL COMMENT 'Vad det är en kommentar på',
   `comment_on` int(11) NOT NULL COMMENT 'id för det det är en kommentar på',
@@ -123,7 +123,25 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE
   `reputation` int(11) NOT NULL DEFAULT '0' COMMENT 'Used by some sites to value users',
   `inactive` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:11;a:2:{s:5:"Table";s:15:"user_reset_code";s:12:"Create Table";s:359:"CREATE TABLE IF NOT EXISTS `user_reset_code` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:11;a:2:{s:5:"Table";s:11:"user_friend";s:12:"Create Table";s:529:"CREATE TABLE IF NOT EXISTS `user_friend` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `request_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `requested_by` int(11) NOT NULL COMMENT 'user that requested friendship',
+  `user` int(11) NOT NULL COMMENT 'the user the first user wants to be friends with',
+  `status` enum('NEW','ACCEPTED','REJECTED') COLLATE utf8_bin NOT NULL DEFAULT 'NEW',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_friend_relation` (`requested_by`,`user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:12;a:2:{s:5:"Table";s:19:"user_friend_history";s:12:"Create Table";s:611:"CREATE TABLE IF NOT EXISTS `user_friend_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `operation` enum('UPDATE','DELETE') COLLATE utf8_bin NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_friend_id` int(11) NOT NULL,
+  `request_time` datetime NOT NULL,
+  `requested_by` int(11) NOT NULL COMMENT 'user that requested friendship',
+  `user` int(11) NOT NULL COMMENT 'the user the first user wants to be friends with',
+  `status` enum('NEW','ACCEPTED','REJECTED') COLLATE utf8_bin NOT NULL DEFAULT 'NEW',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:13;a:2:{s:5:"Table";s:15:"user_reset_code";s:12:"Create Table";s:359:"CREATE TABLE IF NOT EXISTS `user_reset_code` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user` int(11) NOT NULL,
   `code` text CHARACTER SET latin1 NOT NULL,
@@ -131,12 +149,12 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE
   `used` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `reset_code_customer` (`user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:12;a:2:{s:5:"Table";s:7:"version";s:12:"Create Table";s:296:"CREATE TABLE IF NOT EXISTS `version` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:14;a:2:{s:5:"Table";s:7:"version";s:12:"Create Table";s:296:"CREATE TABLE IF NOT EXISTS `version` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` float DEFAULT NULL COMMENT 'version',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'när det blev denna version',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:13;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:520:"CREATE TABLE IF NOT EXISTS `version_done` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:15;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:520:"CREATE TABLE IF NOT EXISTS `version_done` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` int(11) DEFAULT NULL COMMENT 'om null så är saken färdig, men version har inte ökat sen dess',
   `done_id` int(11) NOT NULL,
@@ -144,4 +162,42 @@ a:14:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `version_done_id` (`done_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Vad som färdigställts till varje version'";}}
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Vad som färdigställts till varje version'";}i:16;a:6:{s:7:"Trigger";s:26:"user_friend_update_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:402:"CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_update_history` AFTER UPDATE ON `user_friend` FOR EACH ROW BEGIN
+
+   INSERT INTO user_friend_history
+   ( `operation`,
+    `user_friend_id`,
+    `request_time`,
+    `requested_by`,
+    `user`,
+    `status`
+)
+   VALUES
+   ( 'UPDATE',
+    OLD.id,
+    OLD.request_time,
+    OLD.requested_by,
+    OLD.user,
+    OLD.status
+);
+   
+END";s:20:"character_set_client";s:7:"utf8mb4";s:20:"collation_connection";s:18:"utf8mb4_general_ci";s:18:"Database Collation";s:8:"utf8_bin";}i:17;a:6:{s:7:"Trigger";s:26:"user_friend_delete_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:405:"CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_delete_history` AFTER DELETE ON `user_friend` FOR EACH ROW BEGIN
+
+   INSERT INTO user_friend_history
+   ( `operation`,
+    `user_friend_id`,
+    `request_time`,
+    `requested_by`,
+    `user`,
+    `status`
+   )
+   VALUES
+   ( 'DELETE',
+    OLD.id,
+    OLD.request_time,
+    OLD.requested_by,
+    OLD.user,
+    OLD.status
+);
+   
+END";s:20:"character_set_client";s:7:"utf8mb4";s:20:"collation_connection";s:18:"utf8mb4_general_ci";s:18:"Database Collation";s:8:"utf8_bin";}}
