@@ -620,9 +620,9 @@ function user_display_friends()
 		
 		echo '<table class="table table-striped">
 		<tr>
-			<th><a href="'.$url['name'].'">Name</a></th>
-			<th><a href="'.$url['accepted'].'">Friends since</a></th>
-			<th><a href="'.$url['lastlogin'].'">Last logged in</a></th>
+			<th><a href="'.$url['name'].'">'._("Name").'</a></th>
+			<th><a href="'.$url['accepted'].'">'._("Friends since").'</a></th>
+			<th><a href="'.$url['lastlogin'].'">'._("Last logged in").'</a></th>
 		</tr>';
 		foreach($friends as $friend)
 		{
