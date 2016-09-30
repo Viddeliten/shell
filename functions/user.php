@@ -57,6 +57,10 @@ function user_receive()
 	{
 		user_friend_request($_SESSION['user_id'], $_POST['user_id']);
 	}
+	else if(isset($_POST['reject_user_friend']))
+	{
+		user_friend_reject($_SESSION['user_id'], $_POST['user_id']);
+	}
 }
 
 function user_display_dropdown()
@@ -596,26 +600,94 @@ function user_display_active_users($include_reputation=TRUE)
 
 function user_display_friends()
 {
-	echo "user_display_friends";
+	$friends=user_friend_get_accepted($_SESSION['user_id'],$_GET['sortby'],$_GET['order']);
+	// preprint($friends,"FRIENDS:");
+	if(empty($friends))
+	{
+		echo '<p>'._("Found no current friends").'</p>';
+	}
+	else
+	{
+		$url['name']=add_get_to_URL("order",
+								    (isset($_GET['sortby']) && $_GET['sortby']=="name" && isset($_GET['order']) && $_GET['order']=='ASC' ? 'DESC' : 'ASC'),
+									add_get_to_URL("sortby", "name"));
+		$url['accepted']=add_get_to_URL("order",
+									(isset($_GET['sortby']) && $_GET['sortby']=="accepted" && isset($_GET['order']) && $_GET['order']=='ASC' ? 'DESC' : 'ASC'),
+									add_get_to_URL("sortby", "accepted"));
+		$url['lastlogin']=add_get_to_URL("order",
+									(isset($_GET['sortby']) && $_GET['sortby']=="lastlogin" && isset($_GET['order']) && $_GET['order']=='ASC' ? 'DESC' : 'ASC'),
+									add_get_to_URL("sortby", "lastlogin"));
+		
+		echo '<table class="table table-striped">
+		<tr>
+			<th><a href="'.$url['name'].'">Name</a></th>
+			<th><a href="'.$url['accepted'].'">Friends since</a></th>
+			<th><a href="'.$url['lastlogin'].'">Last logged in</a></th>
+		</tr>';
+		foreach($friends as $friend)
+		{
+			echo '<tr>
+				<td>'.user_get_link($friend['friend_id']).'</td>
+				<td>'.$friend['accepted'].'</td>
+				<td>'.$friend['lastlogin'].'</td>
+			</tr>';
+		}
+		echo '</table>';
+	}
+}
+
+function user_friend_reject($active_user, $rejected_user)
+{
+	$sql="UPDATE ".PREFIX." user_friend SET status='REJECTED' WHERE user=".sql_safe($active_user)." AND requested_by=".sql_safe($rejected_user).";";
+	message_try_mysql($sql,6071814, _("Friend request rejected"));
 }
 
 function user_friend_request($requested_by, $user_id)
 {
 	$req=user_friend_get($user_id, $requested_by);
 	//If $user_id has asked to add friend, accept it
-	if(!empty($req) && $req['requested_by']==$user_id && !strcmp($req['status'],'DESIRED'))
+	if(!empty($req) && $req['requested_by']==$user_id && (!strcmp($req['status'],'DESIRED') || !strcmp($req['status'],'FORBIDDEN')))
 	{
 		$sql="UPDATE ".PREFIX." user_friend SET status='ACCEPTED' WHERE id=".sql_safe($req['id']).";";
-		if(message_try_mysql($sql,6071814, _("Friend request accepted"), TRUE))
+		if(message_try_mysql($sql,6071814, _("Friend request accepted")))
 			return true;
 	}
 	else if(empty($req))
 	{
 		$sql="INSERT INTO ".PREFIX."user_friend SET requested_by=".sql_safe($requested_by).", user=".sql_safe($user_id).";";
-		if(message_try_mysql($sql,6171728, _("Friend request sent"), TRUE))
+		if(message_try_mysql($sql,6171728, _("Friend request sent")))
 			return true;
 	}
+	message_add_error(_("Befriending unsuccessful"));
 	return false;
+}
+
+function user_friend_get_accepted($user_id, $sortby, $order)
+{
+	
+	$sql="SELECT 
+		user_friend.*, 
+		IF(user_friend.requested_by=".sql_safe($user_id).",user_friend.user,user_friend.requested_by) as friend_id,
+		fh.timestamp as accepted,
+		user.username as name,
+		user.lastlogin
+	FROM user_friend
+	INNER JOIN user ON user.id=IF(user_friend.requested_by=".sql_safe($user_id).",user_friend.user,user_friend.requested_by)
+	LEFT JOIN (SELECT MAX(id) as id, user_friend_id FROM user_friend_history GROUP BY user_friend_id) fh2 ON fh2.user_friend_id=user_friend.id
+	LEFT JOIN user_friend_history fh ON fh.user_friend_id=user_friend.id AND fh.id=fh2.id
+	WHERE (user_friend.requested_by=".sql_safe($user_id)." OR user_friend.user=".sql_safe($user_id).")
+	AND user_friend.status='ACCEPTED'
+	".($sortby!="" ? "ORDER BY ".sql_safe($sortby)." ".sql_safe($order) : "").";";
+	// preprint($sql, "DEBUG1832");
+	$friends=array();
+	if($ff=mysql_query($sql))
+	{
+		while($f=mysql_fetch_assoc($ff))
+		{
+			$friends[]=$f;
+		}
+	}
+	return $friends;
 }
 
 function user_friend_get($user1, $user2)
@@ -652,12 +724,6 @@ function user_friend_get($user1, $user2)
 			$f['status']="PENDING";
 			return $f;
 		}
-		// else
-		// {
-			// preprint($f['status'],"status");
-			// preprint($f['requested_by'],"requested_by");
-			// preprint($f);
-		// }
 	}
 	return array();
 }
@@ -685,16 +751,22 @@ function user_friend_get_request_button($user_id)
 	{
 		return "<p><i>".sprintf(_("Friendship accepted %s"),date("Y-m-d H:i",strtotime($current_friendship['update_time'])))."</i></p>";
 	}
-	if($current_friendship['status']=="FORBIDDEN")
+	if($current_friendship['status']=="FORBIDDEN" || $current_friendship['status']=="REJECTED")
 	{
-		return "<p><i>".sprintf(_("Friendship rejected %s"),date("Y-m-d H:i",strtotime($current_friendship['update_time'])))."</i></p>";
+		$return="<p><i>".sprintf(_("Friendship rejected %s"),date("Y-m-d H:i",strtotime($current_friendship['update_time'])))."</i></p>";
+		if($current_friendship['status']=="FORBIDDEN")
+		{
+			$return.='<form method="post">
+				<input type="hidden" value="'.$user_id.'" name="user_id">
+				<input type="submit" class="btn success" value="'._("Add as friend").'" name="add_user_friend">';
+		}
 	}
 	else
 	{
 		if($current_friendship['status']=="DESIRED")
 			$button_text=_("Accept friend request");
 		else
-			$button_text=_("Add as friend +");
+			$button_text=_("Add as friend")." +";
 		$return='<form method="post">
 			<input type="hidden" value="'.$user_id.'" name="user_id">
 			<input type="submit" class="btn success" value="'.$button_text.'" name="add_user_friend">';
