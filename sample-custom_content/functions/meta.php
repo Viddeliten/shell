@@ -46,7 +46,7 @@ function meta_get_description()
 	if(isset($_GET['p']))
 	{
 		$this_page=array();
-		foreach($custom_pages as $name => $arr)
+		foreach($custom_pages as $arr)
 		{
 			if(!strcmp($arr['slug'], $_GET['p']))
 				$this_page=$arr;
@@ -55,10 +55,17 @@ function meta_get_description()
 	if(isset($_GET['s']))
 	{
 		$this_side=array();
-		foreach($this_page as $name => $arr)
+		
+		if(isset($this_page['subpages']))
 		{
-			if(!strcmp($arr['slug'], $_GET['s']))
-				$this_side=$arr;
+			foreach($this_page['subpages'] as $name => $arr)
+			{
+				if(is_array($arr))
+				{
+					if(!strcmp($arr['slug'], $_GET['s']))
+						$this_side=$arr;
+				}
+			}
 		}
 	}
 	else if(isset($this_page))
