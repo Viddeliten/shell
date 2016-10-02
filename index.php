@@ -27,6 +27,7 @@
 	require_once("functions/usermessage.php");
 	require_once("functions/privmess.php");
 	require_once("functions/notice.php");
+	require_once("functions/html.php");
 	
 	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
 		require_once(CUSTOM_CONTENT_PATH."/globals.php");
