@@ -63,7 +63,7 @@ function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=F
 			else
 				message_add_success_message($success_message);
 		}
-		return TRUE;
+		return mysql_insert_id();
 	}
 	else
 	{
