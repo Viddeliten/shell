@@ -3,6 +3,36 @@
 	The thought behind having this file is to only have to change html creating in one place when bootstrap updates	
 	ALL the functions just returns html in strings so they can be echoed or used in other ways. */
 	
+function html_rows($min_columns, $max_columns, $elements)
+{
+	$nr=count($elements);
+	
+	if($nr>=$max_columns)
+		$columns=$max_columns;
+	else if($nr<=$min_columns)
+		$columns=$min_columns;
+	else
+		$columns=$nr;
+	
+	$col_size=(int)(12/$columns);
+		
+	$return="";
+	if(!empty($elements))
+	{
+		$return.='<div class="row">';
+		foreach($elements as $key => $e)
+		{
+			if($key%$columns==0 && $key!=0)
+				$return.= '</div><div class="row">';
+			$return.= '<div class="col-md-'.$col_size.'">';
+				$return.=$e;
+			$return.= '</div>';
+		}
+		$return.='</div>';
+	}
+	return $return;
+}
+	
 function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL)
 {
 	return '<div class="form-group">
