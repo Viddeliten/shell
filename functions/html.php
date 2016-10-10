@@ -48,3 +48,8 @@ function html_form_textarea($input_id, $label, $name, $value, $placeholder=NULL)
 			<textarea class="form-control autoExpanding" id="'.$input_id.'" placeholder="'.$placeholder.'" name="'.$name.'">'.$value.'</textarea>
 		</div>';
 }
+
+function html_form_button($name, $value, $button_type="default")
+{
+	return '<input type="submit" name="'.$name.'" value="'.$value.'" class="btn btn-'.$button_type.'">';
+}

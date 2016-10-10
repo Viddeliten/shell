@@ -128,6 +128,12 @@ function login_check()
 	return 0;
 }
 
+function login_get_user()
+{
+	if(login_check_logged_in_mini()>0)
+		return $_SESSION[PREFIX.'user_id'];
+}
+
 function login_check_logged_in_mini()
 {
 	// echo "<br />Inloggad: ".$_SESSION["".PREFIX."inloggad"];
@@ -143,20 +149,20 @@ function login_check_logged_in_mini()
 						return $_SESSION[PREFIX."inloggad"];
 				}
 				else
-					$_SESSION["".PREFIX."inloggad"]=-6;
+					$_SESSION[PREFIX."inloggad"]=-6;
 			}
 			else
-				$_SESSION["".PREFIX."inloggad"]=-7;
+				$_SESSION[PREFIX."inloggad"]=-7;
 		}
 		else
 			$_SESSION["".PREFIX."inloggad"]=-8;
 		
-		echo "<br />FEL: ".$_SESSION["".PREFIX."inloggad"];
+		echo "<br />FEL: ".$_SESSION[PREFIX."inloggad"];
 		login_logout();
-		return $_SESSION["".PREFIX."inloggad"];
+		return $_SESSION[PREFIX."inloggad"];
 	}
 	else
-		$_SESSION["".PREFIX."inloggad"]=-9;			
+		$_SESSION[PREFIX."inloggad"]=-9;			
 	
 	return NULL;
 }
