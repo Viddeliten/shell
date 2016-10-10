@@ -52,4 +52,9 @@ define('CUSTOM_PAGES_ARRAY',serialize(array(
 define('CUSTOM_SETTINGS',serialize(array(
 	"flattr"	=>	array(	"some_object" => _("Some object"))
 	)));
+
+/****************************************************/
+/*		Optional properties to add to body tag		*/	
+/****************************************************/
+define('BODY_PROPERTIES', "");
 ?>
