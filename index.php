@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<?php session_start(); ?>
 <?php setlocale(LC_NUMERIC, 'en_US'); ?>
   <head>
     <meta charset="utf-8">
@@ -54,12 +55,8 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 	
-	  <?php session_start(); ?>
    
-  <?php
-  
-
-  
+  <?php  
   language_setup();
   $connection=db_connect(db_host, db_name, db_user, db_pass);
 
@@ -67,8 +64,6 @@
   
   
   //Include custom content
-
-  
   if(file_exists(CUSTOM_CONTENT_PATH."/receive.php"))
 	  require_once(CUSTOM_CONTENT_PATH."/receive.php");
   
@@ -80,7 +75,7 @@
   usermessage_receive();
   notice_receive();
   privmess_receive();
-  
+
   if(isset($_SESSION[PREFIX.'user_id']))
 	usermessage_check_messages($_SESSION[PREFIX.'user_id']);
 
@@ -88,7 +83,7 @@
 	
   </head>
 
-  <body>
+  <body <?php echo BODY_PROPERTIES; ?>>
     <? 
 	if(file_exists(CUSTOM_CONTENT_PATH."/index.php"))
 	{
