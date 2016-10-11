@@ -53,3 +53,8 @@ function html_form_button($name, $value, $button_type="default")
 {
 	return '<input type="submit" name="'.$name.'" value="'.$value.'" class="btn btn-'.$button_type.'">';
 }
+
+function html_tooltip($tip_text)
+{
+	return '<a class="helpmarker" href=# title="'.$tip_text.'">?</a>';
+}

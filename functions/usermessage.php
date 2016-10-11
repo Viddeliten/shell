@@ -161,7 +161,7 @@ function usermessage_admin_show_form($SOURCE)
 		<div class="radio">
 			<label>
 				<input type="radio" name="once" value="one_instance" />
-				<?php echo _("One at the time"); ?>
+				<?php echo _("One at the time").html_tooltip(_("Once every time the criteria is filled")); ?>
 			</label>
 		</div>
 		<label for="sendby"><?php echo _("Send by:"); ?></label>
