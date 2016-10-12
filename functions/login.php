@@ -173,8 +173,13 @@ function login_logout()
 	{
 		mysql_query("UPDATE ".PREFIX."user set lastlogin='".date("YmdHis")."', active=1 WHERE id='".$_SESSION[PREFIX.'user_id']."'");
 
-		session_unset();
-		session_destroy();
+		//Do not destroy session
+		unset($_SESSION[PREFIX.'user_id']);
+		unset($_SESSION[PREFIX.'username']);
+		unset($_SESSION[PREFIX.'password']);
+		unset($_SESSION[PREFIX.'inloggad']);
+		unset($_SESSION[PREFIX.'HTTP_USER_AGENT']);
+			
 		add_message("You are now logged out");
 	}
 }
