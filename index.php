@@ -111,6 +111,7 @@
 	
 	<?php 
 	}
+	usermessage_check_messages();
 	db_close($connection); ?>
 	
 	<!-- Flattr-stuff: -->

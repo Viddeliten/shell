@@ -2,7 +2,7 @@
 function db_connect($db_host, $db_name, $db_user, $db_pass)
 {
 	$conn=mysql_connect($db_host, $db_user,$db_pass)
-		or die("MySQL-servern är okontaktbar.");
+		or die("MySQL-servern $db_host är okontaktbar.");
 	$databas=mysql_select_db($db_name)
 		or die("Databasen $db_name fungerar inte.");
 		
@@ -39,16 +39,56 @@ function sql_print_results($alldata)
 	echo "</table>";
 }
 
-function sql_get($sql)
+function sql_get($sql, $array=false)
 {
 	$return=array();
 	if($aa=mysql_query($sql))
 	{
-		while($a=mysql_fetch_assoc($aa))
+		if($array)
 		{
-			$return[]=$a;
+			while($a=mysql_fetch_array($aa))
+			{
+				$return[]=$a;
+			}	
+		}
+		else
+		{
+			while($a=mysql_fetch_assoc($aa))
+			{
+				$return[]=$a;
+			}
 		}
 	}
 	return $return;
+}
+
+/************************************************/
+/*		Function:sql_get_tables					*/
+/*		Gets all tables in current database		*/
+/************************************************/
+function sql_get_tables()
+{
+	$tables=sql_get("show tables;", true);
+	$t=array();
+	foreach($tables as $table)
+	{
+		$t[]=$table[0];
+	}
+	return $t;
+}
+
+/************************************************/
+/*		Function:sql_get_columns				*/
+/*		Gets columns in a table					*/
+/************************************************/
+function sql_get_columns($selected_table)
+{
+	$tables=sql_get("SHOW COLUMNS FROM ".sql_safe($selected_table).";", true);
+	$t=array();
+	foreach($tables as $table)
+	{
+		$t[]=$table[0];
+	}
+	return $t;
 }
 ?>

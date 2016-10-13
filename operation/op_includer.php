@@ -14,6 +14,7 @@ require_once(ROOT_PATH."functions/news.php");
 require_once(ROOT_PATH."functions/rss_class.php");
 require_once(ROOT_PATH."functions/privmess.php");
 require_once(ROOT_PATH."functions/user.php");
+require_once(ROOT_PATH."functions/html.php");
 
 require_once(ROOT_PATH."config.php");
 

@@ -54,7 +54,7 @@ a:18:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE
   `showFlattr` text COLLATE utf8_bin,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:4;a:2:{s:5:"Table";s:17:"messages_to_users";s:12:"Create Table";s:913:"CREATE TABLE IF NOT EXISTS `messages_to_users` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:4;a:2:{s:5:"Table";s:17:"messages_to_users";s:12:"Create Table";s:1026:"CREATE TABLE IF NOT EXISTS `messages_to_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `event` varchar(64) CHARACTER SET latin1 DEFAULT NULL,
   `type` enum('information','success','warning','error') COLLATE utf8_bin NOT NULL DEFAULT 'information',
@@ -63,6 +63,7 @@ a:18:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE
   `criteria_name` text COLLATE utf8_bin,
   `reward` int(11) DEFAULT NULL,
   `once` enum('multiple','one_instance','once') COLLATE utf8_bin NOT NULL DEFAULT 'once' COMMENT 'once=each user will only receive this once,  one_instance=only one instance at once',
+  `every_hours` int(11) DEFAULT '0' COMMENT 'how many hours it must be since last message to user of this kind',
   `sendby` varchar(256) COLLATE utf8_bin NOT NULL DEFAULT 'insite_privmess' COMMENT '''email'',''insite_privmess'',''insite_notice''',
   `activated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -181,7 +182,7 @@ a:18:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE
     OLD.status
 );
    
-END";s:20:"character_set_client";s:7:"utf8mb4";s:20:"collation_connection";s:18:"utf8mb4_general_ci";s:18:"Database Collation";s:8:"utf8_bin";}i:17;a:6:{s:7:"Trigger";s:26:"user_friend_delete_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:405:"CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_delete_history` AFTER DELETE ON `user_friend` FOR EACH ROW BEGIN
+END";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";s:18:"Database Collation";s:8:"utf8_bin";}i:17;a:6:{s:7:"Trigger";s:26:"user_friend_delete_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:405:"CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_delete_history` AFTER DELETE ON `user_friend` FOR EACH ROW BEGIN
 
    INSERT INTO user_friend_history
    ( `operation`,
@@ -200,4 +201,4 @@ END";s:20:"character_set_client";s:7:"utf8mb4";s:20:"collation_connection";s:18:
     OLD.status
 );
    
-END";s:20:"character_set_client";s:7:"utf8mb4";s:20:"collation_connection";s:18:"utf8mb4_general_ci";s:18:"Database Collation";s:8:"utf8_bin";}}
+END";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";s:18:"Database Collation";s:8:"utf8_bin";}}
