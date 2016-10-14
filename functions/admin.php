@@ -131,6 +131,7 @@ function admin_display_messages()
 	}
 	else if(isset($_POST['add_message']))
 	{
+		echo '<h2>'._("New message").'</h2>';
 		usermessage_admin_show_form($_POST);
 	}
 }

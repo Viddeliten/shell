@@ -49,7 +49,24 @@ function html_form_textarea($input_id, $label, $name, $value, $placeholder=NULL)
 		</div>';
 }
 
+function html_form_droplist($input_id, $label, $name, $options, $selected="", $onchange=NULL)
+{
+	$return='<label for="'.$input_id.'">'.$label.'</label>
+		<select class="form-control" name="'.$name.'" id="'.$input_id.'"'.($onchange!==NULL ? 'onchange="'.$onchange.'"':'').'>';
+	foreach($options as $key => $val)
+	{
+		$return.='<option value="'.$key.'"'.(!strcmp($selected,$key) ? ' selected="selected"':'').'>'.$val.'</option>';
+	}
+	$return.='</select>';
+	return $return;
+}
+
 function html_form_button($name, $value, $button_type="default")
 {
 	return '<input type="submit" name="'.$name.'" value="'.$value.'" class="btn btn-'.$button_type.'">';
+}
+
+function html_tooltip($tip_text)
+{
+	return '<a class="helpmarker" href=# title="'.$tip_text.'">?</a>';
 }

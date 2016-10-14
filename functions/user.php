@@ -89,6 +89,22 @@ function user_display_dropdown()
           </ul>';
 }
 
+function user_get_all($type)
+{
+	$sql="SELECT id FROM user";
+	if(!strcmp($type,"active"))
+		$sql.=" WHERE lastlogin IS NOT NULL AND inactive IS NULL;";
+	$r=array();
+	if($uu=mysql_query($sql))
+	{
+		while($u=mysql_fetch_assoc($uu))
+		{
+			$r[]=$u['id'];
+		}
+	}
+	return $r;
+}
+
 function user_get_name($id)
 {
 	$sql="SELECT username FROM ".PREFIX."user WHERE id=".sql_safe($id).";";

@@ -1,8 +1,17 @@
 <?php
+/************************************************************************/
+/*		This file is for functions handling messages automatically		 
+/*		sent by website according to criteria admin sets logged in 
+/*		to website
+/************************************************************************/
+
+/**************************************************************/
+/*		Function:	usermessage_receive
+/*		Summary:	Standard receiving function for 
+/*					handling _POST sent by admin, probably
+/**************************************************************/	
 function usermessage_receive()
 {	
-	// echo  "<pre>".print_r($_POST,1)."</pre>";
-	
 	if(isset($_POST['add_message']) && (!strcmp($_POST['add_message'],"Save this message") || !strcmp($_POST['add_message'],"Save new version")))
 	{
 		if(login_check_logged_in_mini()<2)
@@ -21,7 +30,7 @@ function usermessage_receive()
 		}
 		else
 		{
-			//ok, lägg in skiten då
+			//Save data
 			if(!isset($_POST['subject']) || $_POST['subject']=="")
 				$subject='NULL';
 			else
@@ -53,7 +62,8 @@ function usermessage_receive()
 			message='".sql_safe($_POST['message'])."',
 			criteria_name='".sql_safe($criteria_name)."',
 			reward='".sql_safe($reward)."',
-			once='".sql_safe($once)."'
+			once='".sql_safe($once)."',
+			every_hours='".(isset($_POST['every_hours'])? sql_safe($_POST['every_hours']) : 0)."'
 			".$sendby_str.";";
 			
 			// echo "DEBUG1415:<pre>$sql</pre>";
@@ -103,11 +113,13 @@ function usermessage_admin_show_editer_form($event)
 		//Hämta den senaste
 		$sql="SELECT * FROM ".PREFIX."messages_to_users WHERE event='".sql_safe($event)."' ORDER BY activated DESC;";
 	}
+
 	
 	if($mm=mysql_query($sql))
 	{
 		if($m=mysql_fetch_array($mm))
 		{
+			echo '<h2>'._("Edit message").'</h2>';
 			usermessage_admin_show_form($m);
 		}
 	}
@@ -119,15 +131,18 @@ function usermessage_admin_show_editer_form($event)
 
 function usermessage_admin_show_form($SOURCE)
 {
-	// echo "<br />DEBUG2058: <pre>".print_r($SOURCE,1)."</pre>";
 	//event 	subject 	message 	criteria 	reward 	once om detta meddelandet ska skickas bara en gång och inte varje gång något är uppfyllt	activated 
-	if(is_array($SOURCE['sendby']))
-		$sendby=$SOURCE['sendby'];
+	if(isset($SOURCE['sendby']))
+	{
+		if(is_array($SOURCE['sendby']))
+			$sendby=$SOURCE['sendby'];
+		else
+			$sendby=explode(",",$SOURCE['sendby']);
+	}
 	else
-		$sendby=explode(",",$SOURCE['sendby']);
+		$sendby=array();
 	
 	?>
-	<h2><?php echo _("New message"); ?></h2>
 	<form method="post">
 		<div class="form-group">
 			<label for="event_text"><?php echo _("Event:"); ?></label>
@@ -145,25 +160,28 @@ function usermessage_admin_show_form($SOURCE)
 			<label for="reward"><?php echo _("Reward (on site currency, if any):"); ?></label>
 			<input class="form-control" type="text" value="<?php if(isset($SOURCE['reward'])) echo $SOURCE['reward']; ?>" name="reward">
 		</div>
-		<label><?php echo _("Once:"); ?></label>
+		<label><?php echo _("Once"); ?>:</label>
 		<div class="radio">
 			<label>
-				<input type="radio" name="once" value="multiple" />
-				<?php echo _("Multiple"); ?>
+				<input type="radio" name="once" value="once" <?php echo (!strcmp($SOURCE['once'],"once")? 'checked="checked"' :''); ?> />
+				<?php echo _("Once").html_tooltip(_("Will only be sent once per user. Once you have gotten this, you will never see it again.")); ?>
 			</label>
 		</div>
 		<div class="radio">
 			<label>
-				<input type="radio" name="once" value="once" checked="checked" />
-				<?php echo _("Once"); ?>
+				<input type="radio" name="once" value="one_instance" <?php echo (!strcmp($SOURCE['once'],"one_instance")? 'checked="checked"' :''); ?>/>
+				<?php echo _("One at the time").html_tooltip(_("Sending all the time when the criteria is fullfilled, but only if there is not a current message about it. Only use for in site private messages and notices.")); ?>
 			</label>
 		</div>
 		<div class="radio">
 			<label>
-				<input type="radio" name="once" value="one_instance" />
-				<?php echo _("One at the time"); ?>
+				<input type="radio" name="once" value="multiple" <?php echo (!strcmp($SOURCE['once'],"multiple")? 'checked="checked"' :''); ?>/>
+				<?php echo _("Multiple times").html_tooltip(_("Sending every time criteria is fullfilled, but cares about minimum waiting time.")); ?>
 			</label>
 		</div>
+		<?php //How often then message should be allowed to be sent
+		echo html_form_input("every_hours_number", _("Minimum waiting time between messages (hours)"), "number", "every_hours", (isset($SOURCE['every_hours']) ? $SOURCE['every_hours'] : 24)); ?>
+		
 		<label for="sendby"><?php echo _("Send by:"); ?></label>
 		<div class="checkbox">
 			<label>
@@ -190,7 +208,7 @@ function usermessage_admin_show_form($SOURCE)
 		<h3><?php echo _("Criteria"); ?></h3>
 		
 		<?php
-		$_REQUEST['criteria_name']=$SOURCE['criteria_name'];
+		$_REQUEST['criteria_name']=(isset($SOURCE['criteria_name'])?$SOURCE['criteria_name']:"");
 		usermessage_criteria_form(); ?>
 		
 		<br /><input class="btn btn-success" type='submit' name='add_message' value='Save this message'>
@@ -201,6 +219,7 @@ function usermessage_admin_show_form($SOURCE)
 function usermessage_criteria_save($criteria_name, $criteria_arr)
 {
 	$checkarr=array();
+	
 	foreach($criteria_arr as $c)
 	{
 		if($c['table_name']!="")
@@ -215,8 +234,6 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 				AND user_column='".sql_safe($c['user_column'])."'
 				AND count_required='".sql_safe($c['count_required'])."'
 				AND table_where='".sql_safe($c['table_where'])."'";
-			 // echo "<br />DEBUG1021:";
-			 // echo preprint($sql);
 			if($dd=mysql_query($sql))
 			{
 				if(mysql_affected_rows()<1)
@@ -227,8 +244,6 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 					 user_column='".sql_safe($c['user_column'])."',
 					 count_required='".sql_safe($c['count_required'])."',
 					 table_where='".sql_safe($c['table_where'])."'";
-					 // echo "<br />DEBUG1022:";
-					 // echo preprint($sql);
 					 if(!mysql_query($sql))
 					{
 						add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
@@ -260,7 +275,6 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 
 function usermessage_criteria_form()
 { 
-	// echo "usermessage_criteria_form".preprint($_REQUEST);
 	?>
 	<div id="criterias">
 		<?php	//Droplist to load existing criteria
@@ -341,21 +355,50 @@ function usermessage_criterias_droplist($droplist_id_name)
 	
 }
 
-function usermessage_criterias_form_row($nr_id, $c=NULL)
+/************************************************************************/
+/*		Displays a row with form elements for usermessage criteria		*/
+/************************************************************************/
+function usermessage_criterias_form_row($nr_id, $SOURCE=NULL)
 {
+	if($SOURCE==NULL)
+		$SOURCE=$_REQUEST['criteria'][$nr_id];
+
+	$tables=sql_get_tables();
+	foreach($tables as $table)
+	{
+		$options[$table]=$table;
+	}
 	?>
 	<div class="form-inline">
-		<div class="form-group">
-			<label for="criteria_table_name_<?php echo $nr_id; ?>"><?php echo _("Table name:"); ?></label>
-			<input id="criteria_table_name_<?php echo $nr_id; ?>" class="form-control" type="text" value="<?php if(isset($c['table_name'])) echo $c['table_name']; ?>" name="criteria[<?php echo $nr_id; ?>][table_name]">
-		</div>
-		<div class="form-group">
-			<label for="criteria_user_column_<?php echo $nr_id; ?>"><?php echo _("User column:"); ?></label>
-			<input id="criteria_user_column_<?php echo $nr_id; ?>" class="form-control" type="text" value="<?php if(isset($c['user_column'])) echo $c['user_column']; ?>" name="criteria[<?php echo $nr_id; ?>][user_column]">
-		</div>
+		<?php	
+		//Droplist with all tables
+		$path=SITE_URL.'/operation/condition_form.php/?1='.($nr_id).'&criteria['.$nr_id.'][table_name]'."='+this.value+'&criteria[".$nr_id."][table_where]='+document.getElementById('"."where_value_".$nr_id."').value+' ";
+		$onclick="replace_html_div('criteria_".$nr_id."', '$path'); return false;";
+		echo html_form_droplist(	"criteria_table_name_".$nr_id, 
+										_("Table name:"), 
+										"criteria[".$nr_id."][table_name]", 
+										$options, 
+										(isset($SOURCE['table_name'])?$SOURCE['table_name']:""),
+										$onclick);	
+		
+		//Droplist with all columns in selected table
+		$selected_table=(isset($SOURCE['table_name'])? $SOURCE['table_name']:$options[0]);
+		$options=array();
+		$columns=sql_get_columns($selected_table);
+		foreach($columns as $column)
+		{
+			$options[$column]=$column;
+		}
+		echo html_form_droplist(	"criteria_user_column_".$nr_id, 
+										_("User column:"), 
+										"criteria[".$nr_id."][user_column]", 
+										$options, 
+										(isset($SOURCE['criteria'][$nr_id]['user_column'])?$SOURCE['criteria'][$nr_id]['user_column']:""));
+										
+		?>
 		<div class="form-group">
 			<label for="where_value_<?php echo $nr_id; ?>"><?php echo _("WHERE:"); ?></label>
-			<textarea id="where_value_<?php echo $nr_id; ?>" class="form-control" name="criteria[<?php echo $nr_id; ?>][table_where]"><?php if(isset($c['table_where'])) echo $c['table_where']; ?></textarea>
+			<textarea id="where_value_<?php echo $nr_id; ?>" class="form-control" name="criteria[<?php echo $nr_id; ?>][table_where]"><?php if(isset($SOURCE['table_where'])) echo $SOURCE['table_where']; ?></textarea>
 		</div>
 		<div class="form-group">
 			<label for="criteria_count_required_<?php echo $nr_id; ?>"><?php echo _("Count required:"); ?></label>
@@ -389,6 +432,18 @@ function usermessage_get_subject($event)
 	}
 }
 
+function usermessage_get_data($data, $event)
+{
+	$sql="SELECT ".sql_safe($data)." as data FROM ".PREFIX."messages_to_users WHERE event='".sql_safe($event)."' ORDER BY activated DESC LIMIT 1;";
+	if($mm=mysql_query($sql))
+	{
+		if($m=mysql_fetch_array($mm))
+		{
+			return $m['data'];
+		}
+	}
+}
+
 function usermessage_get_criterias($criteria_name)
 {
 	$ret=array();
@@ -402,23 +457,35 @@ function usermessage_get_criterias($criteria_name)
 	return $ret;
 }
 
-/****************************************************/
-/*	Function: usermessage_check_messages			*/
-/*	checks for messages to send to specific user	*/
-/*	If criterias are met, messages are sent.		*/
-/****************************************************/
-function usermessage_check_messages($user)
+/************************************************************************************************/
+/*	Function: usermessage_check_messages														*/
+/*	checks for messages to send to specific user (or if user_id is NULL, all users)				*/
+/*	If criterias are met, messages are sent.													*/
+/*	Call this from your cron if you have messages that should be sent to users regardless of if	*/
+/*	they log in!																				*/
+/************************************************************************************************/
+function usermessage_check_messages($user_id=NULL)
 {
-	$sql="SELECT event FROM ".PREFIX."messages_to_users GROUP BY event;";
+	$users=array();
+	if($user_id!==NULL)
+		$users[]=$user_id;
+	else
+		$users=user_get_all("active");
+
+			$sql="SELECT event FROM ".PREFIX."messages_to_users GROUP BY event;";
 	if($mm=mysql_query($sql))
 	{
 		while($m=mysql_fetch_array($mm))
 		{
-			// echo "<br />DEBUG1537: usermessage_check_criteria(".$user.", ".$m['event'].")";
-			if(usermessage_check_criteria($user, $m['event']))
-			{
-				// echo "<br />SEND ".$m['event']."!!!";
-				usermessage_send_to_user($user, $m['event']);
+			
+			foreach($users as $user)
+			{			
+				// echo "<br />DEBUG1537: usermessage_check_criteria(".$user.", ".$m['event'].")";
+				if(usermessage_check_criteria($user, $m['event']))
+				{
+					// echo "<br />SEND ".$m['event']."!!!";
+					usermessage_send_to_user($user, $m['event']);
+				}
 			}
 		}
 	}
@@ -446,6 +513,7 @@ function usermessage_check_criteria($user, $message_event)
 			
 			if(!strcmp($m['once'],"once"))
 			{
+				usermessage_get_data("every_hours", $message_event);
 				$sql="SELECT COUNT(id) as nr 
 					FROM ".PREFIX."messages_to_users_sent 
 					WHERE message_event='".sql_safe($message_event)."'
@@ -463,7 +531,7 @@ function usermessage_check_criteria($user, $message_event)
 						}
 					}
 			}
-			else if(!strcmp($m['once'],"one_instance")) //Detta kan bara gälla notiser och privatmess eftersom vi vet ju inte om användaren tagit emot e-post
+			else if(!strcmp($m['once'],"one_instance")) //Detta ska bara skickas "med jämna mellanrum"
 			{
 				if(in_array("insite_privmess",$sendby))
 				{
@@ -504,9 +572,23 @@ function usermessage_check_criteria($user, $message_event)
 					}
 				}
 			}
-			//Här skulle vi kunna ha en else för multiple, men i det fallet struntar vi i att kolla om vi skickat förut.
-			//Frågan är ju när det ska användas...?
-			
+			else if(!strcmp($m['once'],"multiple")) //Ska alltid skickas om kriterierna är uppfyllda, men inte om det har gått för kort tid sedan senast
+			{
+				$every_hours=usermessage_get_data("every_hours", $message_event);
+				$sql="SELECT COUNT(id) as nr 
+				FROM ".PREFIX."messages_to_users_sent 
+				WHERE message_event='".sql_safe($message_event)."' 
+				AND user='".sql_safe($user)."'
+				AND time > NOW() - INTERVAL ".sql_safe($every_hours)." HOUR;";
+				if($tt=mysql_query($sql))
+				{
+					if($t=mysql_fetch_assoc($tt))
+					{
+						if($t['nr']>0)
+							return FALSE;
+					}
+				}
+			}
 			
 			
 			//KOlla alla kriterier
@@ -517,12 +599,12 @@ function usermessage_check_criteria($user, $message_event)
 					WHERE ".sql_safe($c['user_column'])."=".sql_safe($user);
 				if($where!="")
 					$sql.=" AND (".$where.");";
-				// echo "<br />DEBUG1310: $sql";
-				// preprint($sql);
 				if($tt=mysql_query($sql))
 				{
 					if($t=mysql_fetch_assoc($tt))
 					{
+						if($c['count_required']==0)
+							$c['count_required']=1;
 						if($t['nr']<$c['count_required'])
 							return FALSE;
 					}
@@ -567,19 +649,21 @@ function usermessage_send_to_user($user, $message_event)
 					$adress.=", ";
 				$adress.=$email;
 			}
-				//Ge eventuellt belöning
-				if($m['reward']>0)
-					money_transaction(0, $user, $m['reward'], "Reward", $m['subject']);
-				//lägg in att detta skickats i messages_to_users_sent
-				$sql="INSERT INTO ".PREFIX."messages_to_users_sent SET
-				user='".sql_safe($user)."', 
-				message_event='".sql_safe($message_event)."',
-				adress='".$adress."'";
-				if(isset($privmess_id))
+			
+			//Ge eventuellt belöning
+			if($m['reward']>0)
+				money_transaction(0, $user, $m['reward'], "Reward", $m['subject']);
+			
+			//log successful sent in table messages_to_users_sent
+			$sql="INSERT INTO ".PREFIX."messages_to_users_sent SET
+			user='".sql_safe($user)."', 
+			message_event='".sql_safe($message_event)."',
+			adress='".$adress."'";
+			if(isset($privmess_id))
 				$sql.=", privmess_id=".sql_safe($privmess_id);
-				$sql.=";";
-				// echo "<br />DEBUG1753: $sql"; 
-				mysql_query($sql);
+			$sql.=";";
+			// echo "<br />DEBUG1753: $sql"; 
+			mysql_query($sql);
 		}
 	}
 }
