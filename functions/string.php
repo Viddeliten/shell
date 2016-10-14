@@ -130,4 +130,14 @@ function prestr($value)
 	return "<pre>".print_r($value,1)."</pre>";
 }
 
+//Get user defined constants
+function string_get_defined_constants()
+{
+	$const=get_defined_constants(true);
+	$r=array();
+	foreach($const['user'] as $key => $val)
+		$r[]=$key;
+	return $r;
+}
+
 ?>
