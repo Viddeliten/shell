@@ -3,7 +3,7 @@
 	The thought behind having this file is to only have to change html creating in one place when bootstrap updates	
 	ALL the functions just returns html in strings so they can be echoed or used in other ways. */
 	
-function html_rows($min_columns, $max_columns, $elements)
+function html_rows($min_columns, $max_columns, $elements, $element_class=NULL)
 {
 	$nr=count($elements);
 	
@@ -24,7 +24,7 @@ function html_rows($min_columns, $max_columns, $elements)
 		{
 			if($key%$columns==0 && $key!=0)
 				$return.= '</div><div class="row">';
-			$return.= '<div class="col-md-'.$col_size.'">';
+			$return.= '<div class="col-md-'.$col_size.''.($element_class==NULL ? "":" ".$element_class).'">';
 				$return.=$e;
 			$return.= '</div>';
 		}
