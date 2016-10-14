@@ -75,7 +75,7 @@ function usermessage_receive()
 			else
 			{
 				message_add_success_message(_("Message added"));
-				//L‰gg in criterier ocksÂ.
+				//L√§gg in criterier ocks√•.
 				usermessage_criteria_save($criteria_name, $_POST['criteria']);
 			}
 		}
@@ -98,7 +98,7 @@ function usermessage_get_emails_last_hour()
 function usermessage_admin_show_selecter_form()
 {
 	echo '<form method="post" class="form-inline">';
-	$sql="SELECT event, MAX(activated) as active FROM ".PREFIX."messages_to_users GROUP BY event ORDER BY active ASC;"; //Den senaste ‰r alltid den som g‰ller
+	$sql="SELECT event, MAX(activated) as active FROM ".PREFIX."messages_to_users GROUP BY event ORDER BY active ASC;"; //Den senaste √§r alltid den som g√§ller
 	// echo "<br />DEBUG2106: $sql";
 	if($mm=mysql_query($sql))
 	{
@@ -120,10 +120,10 @@ function usermessage_admin_show_selecter_form()
 
 function usermessage_admin_show_editer_form($event)
 {
-	//H‰mta allt
+	//H√§mta allt
 	if(!isset($_POST['id']))
 	{
-		//H‰mta den senaste
+		//H√§mta den senaste
 		$sql="SELECT * FROM ".PREFIX."messages_to_users WHERE event='".sql_safe($event)."' ORDER BY activated DESC;";
 	}
 
@@ -144,7 +144,7 @@ function usermessage_admin_show_editer_form($event)
 
 function usermessage_admin_show_form($SOURCE)
 {
-	//event 	subject 	message 	criteria 	reward 	once om detta meddelandet ska skickas bara en gÂng och inte varje gÂng nÂgot ‰r uppfyllt	activated 
+	//event 	subject 	message 	criteria 	reward 	once om detta meddelandet ska skickas bara en g√•ng och inte varje g√•ng n√•got √§r uppfyllt	activated 
 	if(isset($SOURCE['sendby']))
 	{
 		if(is_array($SOURCE['sendby']))
@@ -269,7 +269,7 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 	
 	// echo "<br />checkarr:<pre>".print_r($checkarr,1)."</pre>";
 	
-	//Kolla att alla i databasen ska vara d‰r
+	//Kolla att alla i databasen ska vara d√§r
 	$sql="SELECT id, table_name, user_column, table_where, count_required FROM  ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."';";
 	if($cc=mysql_query($sql))
 	{
@@ -509,7 +509,7 @@ function usermessage_check_criteria($user, $message_event)
 {
 	// echo "<br />DEBUG1248: usermessage_check_criteria($user, $message_event)";
 	
-	//H‰mta alla kriterier frÂn den senast sparade av den typen av event
+	//H√§mta alla kriterier fr√•n den senast sparade av den typen av event
 	$sql="SELECT criteria_name, once, sendby FROM ".PREFIX."messages_to_users WHERE event='".sql_safe($message_event)."' ORDER BY activated DESC LIMIT 0,1;";
 	// echo "<br />DEBUG1310: $sql";
 	if($mm=mysql_query($sql))
@@ -518,9 +518,9 @@ function usermessage_check_criteria($user, $message_event)
 		{
 			$criteria=usermessage_get_criterias($m['criteria_name']);
 			
-			//Kolla om de ‰r uppfyllda genom att fˆrsˆka hitta ett villkor som inte ‰r uppfyllt
+			//Kolla om de √§r uppfyllda genom att f√∂rs√∂ka hitta ett villkor som inte √§r uppfyllt
 			
-			//Kolla om det bara ska skickas en gÂng, och redan ‰r skickat
+			//Kolla om det bara ska skickas en g√•ng, och redan √§r skickat
 			$sql="";
 			$sendby=explode(",",$m['sendby']);
 			
@@ -544,7 +544,7 @@ function usermessage_check_criteria($user, $message_event)
 						}
 					}
 			}
-			else if(!strcmp($m['once'],"one_instance")) //Detta ska bara skickas "med j‰mna mellanrum"
+			else if(!strcmp($m['once'],"one_instance")) //Detta ska bara skickas "med j√§mna mellanrum"
 			{
 				if(in_array("insite_privmess",$sendby))
 				{
@@ -585,7 +585,7 @@ function usermessage_check_criteria($user, $message_event)
 					}
 				}
 			}
-			else if(!strcmp($m['once'],"multiple")) //Ska alltid skickas om kriterierna ‰r uppfyllda, men inte om det har gÂtt fˆr kort tid sedan senast
+			else if(!strcmp($m['once'],"multiple")) //Ska alltid skickas om kriterierna √§r uppfyllda, men inte om det har g√•tt f√∂r kort tid sedan senast
 			{
 				$every_hours=usermessage_get_data("every_hours", $message_event);
 				$sql="SELECT COUNT(id) as nr 
@@ -624,10 +624,10 @@ function usermessage_check_criteria($user, $message_event)
 				}
 			}
 				
-			return TRUE; //Vi kunde inte hitta nÂgon orsak att inte skicka meddelandet
+			return TRUE; //Vi kunde inte hitta n√•gon orsak att inte skicka meddelandet
 		}
 	}
-	return FALSE; //NÂgot gick snett med databasen och vi kunde inte ta reda pÂ nÂgonting
+	return FALSE; //N√•got gick snett med databasen och vi kunde inte ta reda p√• n√•gonting
 }
 
 function usermessage_send_to_user($user, $message_event)
@@ -647,7 +647,7 @@ function usermessage_send_to_user($user, $message_event)
 			$sendby=explode(",",$m['sendby']);
 			if(in_array("insite_privmess", $sendby))
 			{
-				//Skicka ett ingame-meddelande till anv‰ndaren med meddelandet
+				//Skicka ett ingame-meddelande till anv√§ndaren med meddelandet
 				$privmess_id=privmess_send(0, $user, $m['subject'], $m['message'], FALSE);
 				$adress.="insite_privmess";
 			}
@@ -667,7 +667,7 @@ function usermessage_send_to_user($user, $message_event)
 				$adress.=$email;
 			}
 			
-			//Ge eventuellt belˆning
+			//Ge eventuellt bel√∂ning
 			if($m['reward']>0)
 				money_transaction(0, $user, $m['reward'], "Reward", $m['subject']);
 			
