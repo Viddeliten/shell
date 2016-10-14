@@ -63,7 +63,7 @@ function login_check()
 					login_custom_first_login($user['id']);
 			}
 			else
-				add_message(_("Login successfull"));
+				message_add_success_message(_("Login successfull"));
 			
 			$_SESSION[PREFIX.'user_id']=$user['id'];
 			$_SESSION[PREFIX.'username']=$user['username'];

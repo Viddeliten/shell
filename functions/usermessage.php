@@ -74,7 +74,7 @@ function usermessage_receive()
 			}
 			else
 			{
-				add_message(_("Message added"));
+				message_add_success_message(_("Message added"));
 				//Lägg in criterier också.
 				usermessage_criteria_save($criteria_name, $_POST['criteria']);
 			}
