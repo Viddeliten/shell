@@ -165,10 +165,12 @@ function usermessage_admin_show_form($SOURCE)
 			<label for="subject_text"><?php echo _("Subject:"); ?></label>
 			<input id="subject_text" class="form-control" type="text" value="<?php if(isset($SOURCE['subject'])) echo $SOURCE['subject']; ?>" name="subject">
 		</div>
-		<div class="form-group">
-			<label for="message"><?php echo _("message:"); ?></label>
-			<textarea class="form-control" name="message"><?php if(isset($SOURCE['message']))  echo $SOURCE['message']; ?></textarea>
-		</div>
+		<?php
+		echo html_form_textarea("message_textarea", _("message:"), "message", (isset($SOURCE['message'])?$SOURCE['message']:""));
+		
+		//Display all constants that can be used
+		echo html_rows(1, 1, array("<h4>"._("Available constants")."</h4>[".implode("] [",string_get_defined_constants())."]"), "well");
+		?>
 		<div class="form-group">
 			<label for="reward"><?php echo _("Reward (on site currency, if any):"); ?></label>
 			<input class="form-control" type="text" value="<?php if(isset($SOURCE['reward'])) echo $SOURCE['reward']; ?>" name="reward">
@@ -263,11 +265,9 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 					}
 				}
 			}
-			$checkarr[]=$c['table_name'].",".$c['user_column'].",".$c['table_where'].",".$c['count_required'];
+			$checkarr[]=$c['table_name'].",".$c['user_column'].",".$c['table_where'].",".($c['count_required']?$c['count_required']:0);
 		}
 	}
-	
-	// echo "<br />checkarr:<pre>".print_r($checkarr,1)."</pre>";
 	
 	//Kolla att alla i databasen ska vara där
 	$sql="SELECT id, table_name, user_column, table_where, count_required FROM  ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."';";
@@ -278,8 +278,6 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 			if(!in_array($c['table_name'].",".$c['user_column'].",".$c['table_where'].",".$c['count_required'], $checkarr))
 			{
 				$sql="DELETE FROM ".PREFIX."criteria WHERE id=".$c['id'].";";
-				// echo "<br />$sql
-				// <br />!in_array(".$c['table_name'].",".$c['user_column'].",".$c['table_where'].",".$c['count_required'].", ".print_r($checkarr,1)."))";
 				mysql_query($sql);
 			}
 		}
@@ -531,7 +529,7 @@ function usermessage_check_criteria($user, $message_event)
 					FROM ".PREFIX."messages_to_users_sent 
 					WHERE message_event='".sql_safe($message_event)."'
 					AND user='".sql_safe($user)."';";
-					
+
 					if($sql!="")
 					{
 						if($tt=mysql_query($sql))
@@ -553,6 +551,7 @@ function usermessage_check_criteria($user, $message_event)
 						WHERE subject='".sql_safe(usermessage_get_subject($message_event))."'
 						AND user='".sql_safe($user)."'
 						AND opened IS NULL;";
+
 					if($sql!="")
 					{
 						if($tt=mysql_query($sql))
@@ -572,6 +571,7 @@ function usermessage_check_criteria($user, $message_event)
 						WHERE event='".sql_safe($message_event)."'
 						AND user='".sql_safe($user)."'
 						AND closed IS NULL;";
+
 					if($sql!="")
 					{
 						if($tt=mysql_query($sql))
@@ -593,6 +593,7 @@ function usermessage_check_criteria($user, $message_event)
 				WHERE message_event='".sql_safe($message_event)."' 
 				AND user='".sql_safe($user)."'
 				AND time > NOW() - INTERVAL ".sql_safe($every_hours)." HOUR;";
+
 				if($tt=mysql_query($sql))
 				{
 					if($t=mysql_fetch_assoc($tt))
@@ -612,6 +613,7 @@ function usermessage_check_criteria($user, $message_event)
 					WHERE ".sql_safe($c['user_column'])."=".sql_safe($user);
 				if($where!="")
 					$sql.=" AND (".$where.");";
+
 				if($tt=mysql_query($sql))
 				{
 					if($t=mysql_fetch_assoc($tt))
@@ -632,8 +634,6 @@ function usermessage_check_criteria($user, $message_event)
 
 function usermessage_send_to_user($user, $message_event)
 {
-	// echo "<br />DEBUG1303: usermessage_send_to_user($user, $message_event)";
-	
 	$sql="SELECT type, subject, message, once, reward, sendby FROM ".PREFIX."messages_to_users WHERE event='".sql_safe($message_event)."' ORDER BY activated DESC LIMIT 0,1";
 	if($mm=mysql_query($sql))
 	{
@@ -643,17 +643,19 @@ function usermessage_send_to_user($user, $message_event)
 			if(usermessage_get_emails_last_hour()>NUMBER_OF_EMAIL_NOTIFY && in_array("email", $sendby))
 				return 0;
 			
+			$message=usermessage_text_processing($m['message'], $user);
+			
 			$adress="";
 			$sendby=explode(",",$m['sendby']);
 			if(in_array("insite_privmess", $sendby))
 			{
 				//Skicka ett ingame-meddelande till användaren med meddelandet
-				$privmess_id=privmess_send(0, $user, $m['subject'], $m['message'], FALSE);
+				$privmess_id=privmess_send(0, $user, $m['subject'], $message, FALSE);
 				$adress.="insite_privmess";
 			}
 			if(in_array("insite_notice", $sendby))
 			{
-				notice_send($user, $message_event, $m['type'], $m['subject'], $m['message']);
+				notice_send($user, $message_event, $m['type'], $m['subject'], $message);
 				if($adress!="")
 					$adress.=", ";
 				$adress.="insite_notice";
@@ -661,7 +663,7 @@ function usermessage_send_to_user($user, $message_event)
 			if(in_array("email", $sendby))
 			{
 				$email=user_get_email($user);
-				mailer_send_mail($adress, user_get_name($user), $m['subject'], $m['message']);
+				mailer_send_mail($adress, user_get_name($user), $m['subject'], $message);
 				if($adress!="")
 					$adress.=", ";
 				$adress.=$email;
@@ -683,5 +685,54 @@ function usermessage_send_to_user($user, $message_event)
 			mysql_query($sql);
 		}
 	}
+}
+
+function usermessage_text_processing($entered_message, $user)
+{
+	$message=str_replace("USER_ID",$user,$entered_message);
+	$message=str_replace("USER_NAME",user_get_name($user),$message);
+	
+	$defined_constants=string_get_defined_constants();
+	
+	foreach($defined_constants as $const)
+	{
+		$message=str_replace("[".$const."]",constant($const),$message);
+	}
+	
+	//Find and handle functions
+	$pattern="/FUNCTION:[a-z0-9_]*[(][a-zA-Z0-9_\s,]*[)]/";
+	if(preg_match($pattern,$message, $function))
+	{
+		foreach($function as $f)
+		{
+			//Remove FUNCTION:
+			$func=str_replace("FUNCTION:","",$f);
+			//Get function name
+			$arr=explode("(", $func);
+			$function_name=$arr[0];
+			//Get parameters
+			$params=explode(",",str_replace(" ","",str_replace(")","",$arr[1])));
+			//fix some values
+			foreach($params as $key => $val)
+			{
+				if(!strcmp(strtolower($val),"true"))
+					$params[$key]=true;
+				else if(!strcmp(strtolower($val),"false"))
+					$params[$key]=false;
+				else if(!strcmp(strtolower($val),"null"))
+					$params[$key]=NULL;
+				else if(is_numeric($val))
+					$params[$key]=(int)$val;				
+				else if(preg_match('/[0-9,.\s]*/',$val))
+					$params[$key]=(float)$val;				
+			}
+			
+			//Call the function and replace the function call with the return value
+			$returned=call_user_func_array($function_name, $params);
+			$message=str_replace($f,$returned,$message);
+		}
+	}
+	
+	return $message;
 }
 ?>
