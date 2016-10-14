@@ -52,6 +52,7 @@ define('CUSTOM_PAGES_ARRAY',serialize(array(
 define('CUSTOM_SETTINGS',serialize(array(
 	"flattr"	=>	array(	"some_object" => _("Some object"))
 	)));
+define('NUMBER_OF_EMAIL_NOTIFY',100); //How many emails usermessage system is allowed to sent each hour
 
 /****************************************************/
 /*		Optional properties to add to body tag		*/	

@@ -82,6 +82,19 @@ function usermessage_receive()
 	}
 }
 
+function usermessage_get_emails_last_hour()
+{
+	$sql="SELECT COUNT(id) as nr FROM messages_to_users_sent WHERE adress LIKE '%@%' AND time > NOW() - INTERVAL 1 HOUR;";
+	if($nn=mysql_query($sql))
+	{
+		if($n=mysql_fetch_assoc($nn))
+		{
+			return $n['nr'];
+		}
+	}
+	return NULL;
+}
+
 function usermessage_admin_show_selecter_form()
 {
 	echo '<form method="post" class="form-inline">';
@@ -626,6 +639,10 @@ function usermessage_send_to_user($user, $message_event)
 	{
 		if($m=mysql_fetch_array($mm))
 		{
+			//Check if we should skip this. If it should be sent by email and we have sent too many in the last hour
+			if(usermessage_get_emails_last_hour()>NUMBER_OF_EMAIL_NOTIFY && in_array("email", $sendby))
+				return 0;
+			
 			$adress="";
 			$sendby=explode(",",$m['sendby']);
 			if(in_array("insite_privmess", $sendby))
