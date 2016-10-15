@@ -663,7 +663,7 @@ function usermessage_send_to_user($user, $message_event)
 			if(in_array("email", $sendby))
 			{
 				$email=user_get_email($user);
-				mailer_send_mail($adress, user_get_name($user), $m['subject'], $message);
+				mailer_send_mail($email, user_get_name($user), $m['subject'], $message);
 				if($adress!="")
 					$adress.=", ";
 				$adress.=$email;

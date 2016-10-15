@@ -24,7 +24,7 @@ function mailer_send_mail($email, $receiver_name="", $subject, $message)
 	<br />".SITE_NAME."
 	<br />"._("Presented by Vidde Webb")."
 	<br />Tel: +46 (0)73 50 66 879 - www.viddewebb.se</a></p>
-	<p>www.facebook.com/ViddeWebb - www.twitter.com/Vidde - www.flattr.com/profile/vidde</p>";
+	<p>github.com/Viddeliten - www.facebook.com/ViddeWebb - www.twitter.com/Vidde - www.flattr.com/profile/vidde</p>";
 	
 $headers = 	"From: ". mb_encode_mimeheader(SITE_NAME) . " <".CONTACT_EMAIL."> \n" .
 "Reply-To: ". mb_encode_mimeheader(SITE_NAME) . " <".CONTACT_EMAIL."> \n" .
