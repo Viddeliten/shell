@@ -3,7 +3,42 @@
 	The thought behind having this file is to only have to change html creating in one place when bootstrap updates	
 	ALL the functions just returns html in strings so they can be echoed or used in other ways. */
 	
-function html_rows($min_columns, $max_columns, $elements, $element_class=NULL)
+function html_tag($tag_type, $text, $class=NULL)
+{
+	$the_text=str_ireplace("\n","<br />",$text);
+	$the_text=str_ireplace("<br /><br />","</p></p>",$the_text);
+	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').'>'.$the_text.'</'.$tag_type.'>';
+}
+
+function html_link($url, $text, $class=NULL)
+{
+	$the_text=str_ireplace("\n","<br />",$text);
+	$the_text=str_ireplace("<br /><br />","</p></p>",$the_text);
+	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class).'>'.$the_text.'</a>';
+}
+	
+// Returns rows of elements.
+// All elements in first layers will be one row each
+// Extra row is created if there is too many elements in one row
+function html_rows($min_columns, $max_columns, $elements, $element_class=NULL, $row_class=NULL)
+{
+	$return="";
+	if(!empty($elements))
+	{
+		foreach($elements as $key => $e)
+		{
+			if(!is_array($e))
+				$element=array($e);
+			else
+				$element=$e;
+			
+			$return.=html_row($min_columns, $max_columns, $element, $element_class, $row_class);
+		}
+	}
+	return $return;
+}
+
+function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $row_class=NULL)
 {
 	$nr=count($elements);
 	
@@ -15,21 +50,45 @@ function html_rows($min_columns, $max_columns, $elements, $element_class=NULL)
 		$columns=$nr;
 	
 	$col_size=(int)(12/$columns);
+	$col_sm_size=(int)(12/$min_columns);
 		
 	$return="";
 	if(!empty($elements))
 	{
-		$return.='<div class="row">';
+		$return.='<div class="row'.($row_class==NULL ? "":" ".$row_class).'">';
 		foreach($elements as $key => $e)
 		{
 			if($key%$columns==0 && $key!=0)
 				$return.= '</div><div class="row">';
-			$return.= '<div class="col-md-'.$col_size.''.($element_class==NULL ? "":" ".$element_class).'">';
-				$return.=$e;
-			$return.= '</div>';
+			$return.= html_element($col_size, $col_sm_size, $e, $element_class);
 		}
 		$return.='</div>';
 	}
+	return $return;
+}
+
+function html_elements($col_size, $col_sm_size, $elements, $element_class=NULL)
+{
+	$return="";
+	foreach($elements as $e)
+	{
+		if(is_array($e))
+			$return.=html_elements($col_size, $col_sm_size, $e);
+		else
+			$return.=html_element($col_size, $col_sm_size, $e, $element_class);
+	}
+	return $return;
+}
+
+function html_element($col_size, $col_sm_size, $element, $element_class=NULL)
+{
+	$return="";
+	$return.= '<div class="col-md-'.$col_size.' col-xs-'.$col_sm_size.''.($element_class==NULL ? "":" ".$element_class).'">';
+	if(is_array($element))
+		$return.=html_elements(12,12,$element);
+	else
+		$return.=$element;
+	$return.= '</div>';
 	return $return;
 }
 	
