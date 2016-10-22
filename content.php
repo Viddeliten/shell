@@ -13,7 +13,7 @@ else if(isset($_GET['lostpassword']))
 {
 	login_password_recovery_display();
 }
-else if(isset($_GET['p']))
+else if(isset($_REQUEST['p']))
 {
 	if(custom_page_display())
 	{
