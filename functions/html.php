@@ -6,7 +6,7 @@
 function html_tag($tag_type, $text, $class=NULL)
 {
 	$the_text=str_ireplace("\n","<br />",$text);
-	$the_text=str_ireplace("<br /><br />","</p></p>",$the_text);
+	$the_text=str_ireplace("<br /><br />","</p><p>",$the_text);
 	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').'>'.$the_text.'</'.$tag_type.'>';
 }
 
@@ -92,12 +92,19 @@ function html_element($col_size, $col_sm_size, $element, $element_class=NULL)
 	return $return;
 }
 	
-function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL)
+function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL, $class=NULL, $helptext=NULL)
 {
-	return '<div class="form-group">
-			<label for="'.$input_id.'">'.$label.'</label>
-			<input type="'.$type.'" class="form-control" id="'.$input_id.'" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'">
-		</div>';
+	return ($type!="hidden" ? '<div class="form-group">' : "").
+			($label!==NULL ? '<label for="'.$input_id.'">'.$label.'</label>':'').
+			'<input type="'.$type.'" '.
+			       ($type!="hidden" ? 'class="form-control'.($class!==NULL ? " ".$class :"").'" ' :"").
+				   'id="'.$input_id.'" '.
+				   'placeholder="'.$placeholder.'" '.
+				   'name="'.$name.'" '.
+				   'value="'.$value.'" '.
+				   ($helptext!==NULL ?  'aria-describedby="'.$input_id.'helpBlock"' : "").' />'.
+			($helptext!==NULL ? '<span id="'.$input_id.'helpBlock" class="help-block">'.$helptext.'</span>' :"").
+		($type!="hidden" ?'</div>':"");
 }
 
 function html_form_textarea($input_id, $label, $name, $value, $placeholder=NULL)
