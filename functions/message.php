@@ -24,9 +24,13 @@ function message_display_messages_and_errors()
 	}
 }
 
-function message_print_message($message)
+function message_print_message($message, $return=false)
 {
-	echo "<div class=\"message_box well\">".$message."</div>";
+	$message="<div class=\"message_box well\">".$message."</div>";
+	if($return)
+		return $message;
+	else
+		echo $message;
 }
 function message_print_success_message($message)
 {
