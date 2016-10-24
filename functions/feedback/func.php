@@ -1603,7 +1603,7 @@ function feedback_display_body($id, $hidden=FALSE)
 			echo "<div id=\"feedback_body_".$id."\" ".$hide_str." class=\"feedback_body col-lg-12\">";
 				//Text
 				$text_body=sql_safe(str_replace("\r\n","<br />",str_replace("\r\n\r\n","</p><p>",$d['text'])));
-				echo "<div class=\"col-lg-9 feedback_text\"><p>".$text_body."</p>";
+				echo "<div class=\"col-lg-9 feedback_text\">".html_tag("p",$text_body);
 				echo "</div>";
 				
 				//Side thing with buttons

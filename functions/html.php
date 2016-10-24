@@ -7,6 +7,15 @@ function html_tag($tag_type, $text, $class=NULL)
 {
 	$the_text=str_ireplace("\n","<br />",$text);
 	$the_text=str_ireplace("<br /><br />","</p><p>",$the_text);
+	//Look for urls
+	if(preg_match_all("/(?<=\s|^)[a-zA-Z]+:\/\/[a-zA-Z0-9-_]*[\.[a-zA-Z0-9-_]*]*[a-zA-Z0-9-_\?=&\/]*($|\b)/", $the_text, $matches))
+	{
+		foreach($matches[0] as $m)
+		{
+			$the_text=str_replace($m,string_get_link_from_url($m),$the_text);
+		}
+	}
+	
 	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').'>'.$the_text.'</'.$tag_type.'>';
 }
 
