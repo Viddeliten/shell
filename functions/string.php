@@ -21,9 +21,11 @@ function password_generate($len)
 	return $pass;
 }
 
-function string_get_link_from_url($url)
+function string_get_link_from_url($url, $get_title=true)
 {
-	$link_text=string_get_title_from_url($url);
+	$link_text="link";
+	if($get_title)
+		$link_text=string_get_title_from_url($url);
 	if($link_text=="")
 		$link_text=_("link");
 	return '<a href="'.$url.'">'.$link_text.'</a>';

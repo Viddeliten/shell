@@ -3,16 +3,19 @@
 	The thought behind having this file is to only have to change html creating in one place when bootstrap updates	
 	ALL the functions just returns html in strings so they can be echoed or used in other ways. */
 	
-function html_tag($tag_type, $text, $class=NULL)
+function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false)
 {
 	$the_text=str_ireplace("\n","<br />",$text);
 	$the_text=str_ireplace("<br /><br />","</p><p>",$the_text);
 	//Look for urls
-	if(preg_match_all("/(?<=\s|^)[a-zA-Z]+:\/\/[a-zA-Z0-9-_]*[\.[a-zA-Z0-9-_]*]*[a-zA-Z0-9-_\?=&\/]*($|\b)/", $the_text, $matches))
+	if(strpos($the_text, "://")!==FALSE)
 	{
-		foreach($matches[0] as $m)
+		if(preg_match_all("/(\s|^)[a-zA-Z]+:\/\/[a-zA-Z0-9-_]*[\.[a-zA-Z0-9-_]*]*[a-zA-Z0-9-_\?=&\/]*($|\b)/", $the_text, $matches))
 		{
-			$the_text=str_replace($m,string_get_link_from_url($m),$the_text);
+			foreach($matches[0] as $m)
+			{
+				$the_text=str_replace($m,string_get_link_from_url(trim($m), $get_link_titles),$the_text);
+			}
 		}
 	}
 	
