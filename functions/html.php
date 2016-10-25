@@ -3,23 +3,14 @@
 	The thought behind having this file is to only have to change html creating in one place when bootstrap updates	
 	ALL the functions just returns html in strings so they can be echoed or used in other ways. */
 	
-function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false)
+function html_tag($tag_type, &$text, $class=NULL, $get_link_titles=false)
 {
-	$the_text=str_ireplace("\n","<br />",$text);
-	$the_text=str_ireplace("<br /><br />","</p><p>",$the_text);
+	$text=str_ireplace("\n","<br />",$text);
+	$text=str_ireplace("<br /><br />","</p><p>",$text);
 	//Look for urls
-	if(strpos($the_text, "://")!==FALSE)
-	{
-		if(preg_match_all("/(\s|^)[a-zA-Z]+:\/\/[a-zA-Z0-9-_]*[\.[a-zA-Z0-9-_]*]*[a-zA-Z0-9-_\?=&\/]*($|\b)/", $the_text, $matches))
-		{
-			foreach($matches[0] as $m)
-			{
-				$the_text=str_replace($m,string_get_link_from_url(trim($m), $get_link_titles),$the_text);
-			}
-		}
-	}
-	
-	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').'>'.$the_text.'</'.$tag_type.'>';
+	string_replace_urls_with_links($text, $get_link_titles);
+
+	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').'>'.$text.'</'.$tag_type.'>';
 }
 
 function html_link($url, $text, $class=NULL)

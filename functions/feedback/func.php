@@ -1602,8 +1602,11 @@ function feedback_display_body($id, $hidden=FALSE)
 			echo '<div class="row">';
 			echo "<div id=\"feedback_body_".$id."\" ".$hide_str." class=\"feedback_body col-lg-12\">";
 				//Text
-				$text_body=sql_safe(str_replace("\r\n","<br />",str_replace("\r\n\r\n","</p><p>",$d['text'])));
-				echo "<div class=\"col-lg-9 feedback_text\">".html_tag("p",$text_body);
+				$text_body=$d['text'];
+				echo "<div class=\"col-lg-9 feedback_text\">".html_tag("p",$text_body, NULL, true);
+				//Update body text
+				if(strcmp($text_body,$d['text']))
+					feedback_update($d['id'],"text", $text_body);
 				echo "</div>";
 				
 				//Side thing with buttons
@@ -1726,5 +1729,13 @@ function feedback_get_main_parent($id)
 		}
 	}
 	return $id;
+}
+
+function feedback_update($feedback_id,$column, $new_data)
+{
+	$sql="UPDATE ".PREFIX."feedback 
+	SET ".sql_safe($column)."='".sql_safe($new_data)."' 
+	WHERE id=".sql_safe($feedback_id).";";
+	mysql_query($sql);
 }
 ?>

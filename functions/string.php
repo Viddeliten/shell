@@ -150,4 +150,15 @@ function string_get_defined_constants()
 	return $r;
 }
 
+function string_replace_urls_with_links(&$the_text, $get_link_titles=false)
+{
+	if(preg_match_all("/(\s|^|\n|\r)[a-zA-Z]+:\/\/[a-zA-Z0-9-_]*[\.[a-zA-Z0-9-_]*]*[a-zA-Z0-9-_\?=&\/]*($|\b)/", $the_text, $matches))
+	{
+		foreach($matches[0] as $m)
+		{
+			$the_text=str_replace(trim($m) ,string_get_link_from_url(trim($m), $get_link_titles),$the_text);
+		}
+	}
+}
+
 ?>
