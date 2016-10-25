@@ -13,6 +13,7 @@ require_once("../flattr.php");
 require_once("../spam.php");
 require_once("../string.php");
 require_once("../language.php");
+require_once("../html.php");
 require_once("../comment/func.php");
 require_once("../db_connect.php");
 //From Feedback
