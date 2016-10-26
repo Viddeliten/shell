@@ -9,6 +9,9 @@ function html_tag($tag_type, &$text, $class=NULL, $get_link_titles=false)
 	$text=str_ireplace("<br /><br />","</p><p>",$text);
 	//Look for urls
 	string_replace_urls_with_links($text, $get_link_titles);
+	
+	//Break long words
+	string_break_long_words($text);
 
 	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').'>'.$text.'</'.$tag_type.'>';
 }
