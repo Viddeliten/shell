@@ -9,6 +9,9 @@ function html_tag($tag_type, &$text, $class=NULL, $get_link_titles=false)
 	$text=str_ireplace("<br /><br />","</p><p>",$text);
 	//Look for urls
 	string_replace_urls_with_links($text, $get_link_titles);
+	
+	//Break long words
+	string_break_long_words($text);
 
 	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').'>'.$text.'</'.$tag_type.'>';
 }
@@ -114,7 +117,8 @@ function html_form_textarea($input_id, $label, $name, $value, $placeholder=NULL)
 {
 	return '<div class="form-group">
 			<label for="'.$input_id.'">'.$label.'</label>
-			<textarea class="form-control autoExpanding" id="'.$input_id.'" placeholder="'.$placeholder.'" name="'.$name.'">'.$value.'</textarea>
+			<textarea class="form-control autoExpanding" id="'.$input_id.'" placeholder="'.$placeholder.'" name="'.$name.'">'
+			.string_html_to_text($value).'</textarea>
 		</div>';
 }
 

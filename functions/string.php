@@ -161,4 +161,28 @@ function string_replace_urls_with_links(&$the_text, $get_link_titles=false)
 	}
 }
 
+function string_break_long_words(&$text)
+{
+	if(preg_match_all("/[\S]{32}/",$text, $matches))
+	{
+		foreach($matches[0] as $m)
+		{
+			$new_word=$m;
+			for($i=1;$i*32+$i-1<strlen($m);$i++)
+			{
+				$new_word=substr($new_word,($i-1)*32,32)."\n".substr($new_word,$i*32,strlen($new_word)-$i*32);
+			}
+			$text=str_replace($m,$new_word,$text);
+		}		
+	}
+}
+
+function string_html_to_text($text)
+{
+	$text=str_ireplace("</p><p>","<br /><br />",$text);
+	$text=str_ireplace("<br />","\n",$text);
+	return $text;
+
+}
+
 ?>

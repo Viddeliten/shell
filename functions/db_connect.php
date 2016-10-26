@@ -91,4 +91,16 @@ function sql_get_columns($selected_table)
 	}
 	return $t;
 }
+
+/********************************************************/
+/*		Function:sql_update								*/
+/*		updates single column in specified table		*/
+/********************************************************/
+function sql_update($table, $column, $new_data, $id)
+{
+	$sql="UPDATE ".sql_safe($table)."
+	SET ".sql_safe($column)."='".sql_safe($new_data)."' 
+	WHERE id=".sql_safe($id).";";
+	mysql_query($sql);
+}
 ?>
