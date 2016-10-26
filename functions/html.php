@@ -117,7 +117,8 @@ function html_form_textarea($input_id, $label, $name, $value, $placeholder=NULL)
 {
 	return '<div class="form-group">
 			<label for="'.$input_id.'">'.$label.'</label>
-			<textarea class="form-control autoExpanding" id="'.$input_id.'" placeholder="'.$placeholder.'" name="'.$name.'">'.$value.'</textarea>
+			<textarea class="form-control autoExpanding" id="'.$input_id.'" placeholder="'.$placeholder.'" name="'.$name.'">'
+			.string_html_to_text($value).'</textarea>
 		</div>';
 }
 
