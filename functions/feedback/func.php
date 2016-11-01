@@ -1603,7 +1603,7 @@ function feedback_display_body($id, $hidden=FALSE)
 			echo "<div id=\"feedback_body_".$id."\" ".$hide_str." class=\"feedback_body col-lg-12\">";
 				//Text
 				$text_body=$d['text'];
-				echo "<div class=\"col-lg-9 feedback_text\">".html_tag("p",$text_body, NULL, true);
+				echo "<div class=\"col-lg-9 feedback_text\">".html_tag_text_ref("p",$text_body, NULL, true);
 				//Update body text
 				if(strcmp($text_body,$d['text']))
 					feedback_update($d['id'],"text", $text_body);
