@@ -3,7 +3,13 @@
 	The thought behind having this file is to only have to change html creating in one place when bootstrap updates	
 	ALL the functions just returns html in strings so they can be echoed or used in other ways. */
 	
-function html_tag($tag_type, &$text, $class=NULL, $get_link_titles=false)
+function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false)
+{
+	$the_text=$text;
+	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles);
+}
+
+function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=false)
 {
 	$text=str_ireplace("\n","<br />",$text);
 	$text=str_ireplace("<br /><br />","</p><p>",$text);
