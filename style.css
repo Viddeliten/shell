@@ -449,3 +449,53 @@ background: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.2));
 
 border-radius: 30px;
 }
+
+/****************************/
+/*		Vertical menu		*/
+/****************************/
+/* #sidebar-wrapper
+{
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+} */
+.navbar.vertical
+{
+	background-color: #B3CECB;
+}
+.navbar.vertical ul
+{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.navbar.vertical ul li
+{
+	border-bottom: 1px solid #7a8d8b;
+}
+
+.navbar.vertical ul li a
+{
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+	display: block;
+}
+.vertical .navbar-header, #vertical-nav
+{
+	width: 100%;
+}
+
+.navbar.vertical .navbar-brand
+{
+	padding-right: 0;
+}
+.navbar.vertical .navbar-toggle
+{	
+	border-color: #2e6fc366;
+}
+
+.navbar.vertical .navbar-toggle .icon-bar
+{
+	background-color: #2e6fc366;
+}

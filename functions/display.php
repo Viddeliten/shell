@@ -38,6 +38,32 @@ function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=tru
 	<?php 
 }
 
+/********************************************************************/
+/*		Function: display_menu_vertical								*/
+/*		Inspired by https://codepen.io/j_holtslander/pen/XmpMEp		*/
+/********************************************************************/
+function display_menu_vertical($menu_items, $menu_header_name=SITE_NAME)
+{
+		?>
+	<nav class="navbar vertical">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#vertical-nav" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="<?php echo SITE_URL; ?>"><?php echo $menu_header_name; ?></a>
+			</div>
+			 <div id="vertical-nav" class="collapse navbar-collapse">
+				 <ul class="vertical-nav">
+					<?php display_menu_pages($menu_items); ?>
+				</ul>
+			</div>
+	</nav>
+	<?php	
+}
+
 function display_friend_request_drop_menu()
 {
 	
@@ -94,6 +120,38 @@ function display_footer()
 function display_custom_pages_menu()
 {
 	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
+	display_menu_pages($custom_pages);
+/* 	$logged_in_level=login_check_logged_in_mini();
+	
+	// echo "<pre>".print_r($custom_pages,1)."</pre>";
+	
+	foreach($custom_pages as $name => $content)
+	{
+		if((!isset($content['req_user_level']) || $content['req_user_level']<1 || $logged_in_level>=$content['req_user_level']) && strcmp($content['slug'],"admin"))
+		{
+			if(!isset($content['subpages']) || empty($content['subpages']))
+			{
+				echo '<li ><a href="'.SITE_URL.'/?p='.$content['slug'].'" >'._($name).'</a></li>';
+			}
+			else
+			{
+				echo '<li class="dropdown">
+					  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'._($name).'<span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">';
+					  foreach($content['subpages'] as $s_name => $s_content)
+					  {
+							if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
+								echo '<li ><a href="'.SITE_URL.'/?p='.$content['slug'].'&amp;s='.$s_content['slug'].'" >'._($s_name).'</a></li>';
+					  }
+				echo '</ul>
+					</li>';
+			}
+		}
+	} */
+}
+
+function display_menu_pages($custom_pages)
+{
 	$logged_in_level=login_check_logged_in_mini();
 	
 	// echo "<pre>".print_r($custom_pages,1)."</pre>";
