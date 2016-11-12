@@ -38,13 +38,13 @@
 
 	if(function_exists('meta_title_and_description')) meta_title_and_description(); ?>
    
-    <link rel="icon" href="<?php echo CUSTOM_CONTENT_PATH; ?>/favicon.ico">
+    <link rel="icon" href="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH; ?>/favicon.ico">
 
     <!-- Bootstrap core CSS -->
-    <link href="bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo SITE_URL."/"; ?>bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Shell template style -->
-    <link href="style.css" rel="stylesheet">
+    <link href="<?php echo SITE_URL."/"; ?>style.css" rel="stylesheet">
 
 	<!-- Custom style -->
     <link href="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH; ?>/style.css" rel="stylesheet">
@@ -122,7 +122,7 @@
         var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
         s.type = 'text/javascript';
         s.async = true;
-        s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+        s.src = '//api.flattr.com/js/0.6/load.js?mode=auto';
         t.parentNode.insertBefore(s, t);
     })();
 /* ]]> */</script>
@@ -134,19 +134,19 @@
 	
 	<script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
 
-	<script src="functions/functions.js?v=150901"></script>
+	<script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>functions/functions.js?v=150901"></script>
 	<script src="//viddewebb.se/_commons/js/basic.js"></script>
 
 	<?php if(file_exists(CUSTOM_CONTENT_PATH.'/functions/java.js')) { ?>
-		<script src="<?php echo CUSTOM_CONTENT_PATH; ?>/functions/java.js?v=<?php echo time(); ?>"></script> <?php } else echo "<!--".CUSTOM_CONTENT_PATH.'/functions/java.js does not exist -->'; ?>
+		<script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/".CUSTOM_CONTENT_PATH; ?>/functions/java.js?v=<?php echo time(); ?>"></script> <?php } else echo "<!--".CUSTOM_CONTENT_PATH.'/functions/java.js does not exist -->'; ?>
 	<script src='https://www.google.com/recaptcha/api.js'></script>
 	
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="bootstrap-3.3.4-dist/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-3.3.4-dist/js/ie10-viewport-bug-workaround.js"></script>
 
 <?php
  //Clearfix just in case
