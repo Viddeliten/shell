@@ -33,6 +33,6 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 function api_feedback()
 {
 	$feedback=feedback_get_array((isset($_REQUEST['from']) ? $_REQUEST['from'] : 0), (isset($_REQUEST['to']) ? $_REQUEST['to'] : 10));
-	echo serialize($feedback);
+	echo json_encode($feedback);
 }
 ?>
