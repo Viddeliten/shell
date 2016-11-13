@@ -665,13 +665,13 @@ function user_friend_request($requested_by, $user_id)
 	if(!empty($req) && $req['requested_by']==$user_id && (!strcmp($req['status'],'DESIRED') || !strcmp($req['status'],'FORBIDDEN')))
 	{
 		$sql="UPDATE ".PREFIX." user_friend SET status='ACCEPTED' WHERE id=".sql_safe($req['id']).";";
-		if(message_try_mysql($sql,6071814, _("Friend request accepted")))
+		if(message_try_mysql($sql,6071814, _("Friend request accepted"))!==FALSE)
 			return true;
 	}
 	else if(empty($req))
 	{
 		$sql="INSERT INTO ".PREFIX."user_friend SET requested_by=".sql_safe($requested_by).", user=".sql_safe($user_id).";";
-		if(message_try_mysql($sql,6171728, _("Friend request sent")))
+		if(message_try_mysql($sql,6171728, _("Friend request sent"))!==FALSE)
 			return true;
 	}
 	message_add_error(_("Befriending unsuccessful"));
