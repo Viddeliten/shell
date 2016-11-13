@@ -1651,15 +1651,15 @@ function feedback_display_body($id, $hidden=FALSE)
 			echo "<div id=\"feedback_body_".$id."\" ".$hide_str." class=\"feedback_body col-lg-12\">";
 				//Text
 				$text_body=$d['text'];
-				echo "<div class=\"col-lg-9 feedback_text\">".html_tag_text_ref("p",$text_body, NULL, true);
+				echo "<div class=\"col-sm-8 feedback_text\">".html_tag_text_ref("p",$text_body, NULL, true);
 				//Update body text
 				if(strcmp($text_body,$d['text']))
 					feedback_update($d['id'],"text", $text_body);
 				echo "</div>";
 				
 				//Side thing with buttons
-				echo "<div class=\"col-lg-3\">";
-					echo "<div class=\"col-lg-12\" id=\"feedback_".$id."_flattr\">";
+				echo "<div class=\"col-sm-4\">";
+					echo "<div class=\"col-md-4  col-lg-12 right\" id=\"feedback_".$id."_flattr\">";
 						//Eventuellt Flattr-knapp
 						// echo "<p>Eventuellt Flattr-knapp</p>";
 						if($d['user']!=NULL)
@@ -1674,21 +1674,22 @@ function feedback_display_body($id, $hidden=FALSE)
 							flattr_button_show($d['flattrID'], SITE_URL."?p=feedback&amp;id=".$d['id'] , feedback_get_title($id)." - a feedback post on ".SITE_NAME, $d['text'], 'compact', 'en_GB');
 						}
 					echo "</div>";
-					echo "<div class=\"col-lg-12\">";
+					echo "<div class=\"col-md-4  col-lg-12 right\">";
 						//Plus-knapp
 						echo "<div class=\"plusone\">";
 							// echo "<p>Plus-knapp</p>";
 							echo "<form method=\"post\">";
 							echo "<input type=\"submit\" name=\"feedback_plusone\" value=\"+".($d['plusones']+1)."\">
 								<input type=\"hidden\" name=\"id\" value=\"".$d['id']."\">";
-							echo "<br />".$d['plusones']." +1's";
 							echo "</form>";
 						echo "</div>";
 					echo "</div>";
-					echo "<div class=\"col-lg-12\">";
+					echo "<div class=\"col-md-4 col-lg-12 right\">";
 						//Kolla om det är användarens feedback.
 						if($d['user']==NULL || (isset($_SESSION[PREFIX.'user_id']) && strcmp($d['user'],$_SESSION[PREFIX.'user_id'])))
+						{
 							spam_show_clicker($d['id'], "feedback");
+						}
 					echo "</div>";
 				echo "</div>";
 			echo "</div>";
