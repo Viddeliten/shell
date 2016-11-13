@@ -203,7 +203,7 @@ function feedback_recieve()
 		{	
 			if($_SESSION[SESSION_user_logged_in]>=5)
 			{
-				$sql="UPDATE ".PREFIX."feedback SET resolved='".date("YmdHis")."' WHERE id=".sql_safe($_POST['id']).";";
+				$sql="UPDATE ".PREFIX."feedback SET resolved=NOW() WHERE id=".sql_safe($_POST['id']).";";
 				if(mysql_query($sql))
 				{
 					$sql="DELETE FROM ".PREFIX."plusone WHERE typ='feedback' AND plus_for=".sql_safe($_POST['id']).";";
@@ -587,7 +587,7 @@ function feedback_get_is_checked_in($id)
 	// echo $sql;
 	if($ff=mysql_query($sql))
 	{
-		if($f=mysql_fetch_array($ff))
+		if($f=mysql_fetch_assoc($ff))
 		{
 			return $f['checked_in'];
 		}
@@ -706,13 +706,13 @@ function feedback_status_show($id, $accepted=NULL, $checked_in=NULL, $resolved=N
 	echo '<p>';
 	// echo '<p>';
 	if($not_implemented!=NULL)
-		echo "[".sprintf(_("Marked not implemented %s"),date("y-m-d",strtotime($not_implemented)))."]";
+		echo "[".sprintf(_("Marked not implemented %s"),date("Y-m-d",strtotime($not_implemented)))."]";
 	else if($resolved!=NULL)
-		echo "[".sprintf(_("Solution live %s"),date("y-m-d",strtotime($resolved)))."]";
+		echo "[".sprintf(_("Solution live %s"),date("Y-m-d",strtotime($resolved)))."]";
 	else if($checked_in!=NULL)
-		echo "[".sprintf(_("Solution checked in %s"),date("y-m-d",strtotime($resolved)))."]";
+		echo "[".sprintf(_("Solution checked in %s"),date("Y-m-d",strtotime($checked_in)))."]";
 	else if($accepted!=NULL)
-		echo "[".sprintf(_("Accepted %s"),date("y-m-d",strtotime($accepted)))."]";
+		echo "[".sprintf(_("Accepted %s"),date("Y-m-d",strtotime($accepted)))."]";
 	echo '</p>';
 
 	//Visa admin-knappar
@@ -1450,7 +1450,9 @@ function feedback_get_droplist($exclude_id, $droplist_id)
 function feedback_set_accepted($id)
 {
 	//Accept the feedback
-	$sql="UPDATE ".PREFIX."feedback SET not_implemented=NULL, accepted='".date("YmdHis")."', resolved=NULL WHERE id=".sql_safe($id).";";
+	$sql="UPDATE ".PREFIX."feedback SET not_implemented=NULL, accepted='".date("YmdHis")."', resolved=NULL
+	WHERE id=".sql_safe($id)."
+	AND accepted IS NULL;";
 	mysql_query($sql);
 	
 	//Set parent to accepted
@@ -1487,7 +1489,9 @@ function feedback_set_unaccepted($id)
 function feedback_set_checked_in($id)
 {
 	//Check in the feedback
-	$sql="UPDATE ".PREFIX."feedback SET not_implemented=NULL, checked_in='".date("YmdHis")."', accepted=IFNULL(accepted, NOW()) WHERE id=".sql_safe($id).";";
+	$sql="UPDATE ".PREFIX."feedback SET not_implemented=NULL, checked_in='".date("YmdHis")."', accepted=IFNULL(accepted, NOW())
+	WHERE id=".sql_safe($id).
+	" AND checked_in IS NULL;";
 	mysql_query($sql);
 	
 	//Check in any children
@@ -1504,7 +1508,9 @@ function feedback_set_checked_in($id)
 function feedback_set_resolved($id)
 {
 	//Resolve the feedback
-	$sql="UPDATE ".PREFIX."feedback SET not_implemented=NULL, resolved='".date("YmdHis")."' WHERE id=".sql_safe($id).";";
+	$sql="UPDATE ".PREFIX."feedback SET not_implemented=NULL, resolved='".date("YmdHis")."'
+	WHERE id=".sql_safe($id)."
+	AND resolved IS NULL;";
 	mysql_query($sql);
 	
 	//Resolve any children
@@ -1529,7 +1535,9 @@ function feedback_set_all_checked_in_as_resolved()
 function feedback_set_not_implemented($id)
 {
 	//Resolve the feedback
-	$sql="UPDATE ".PREFIX."feedback SET not_implemented='".date("YmdHis")."', resolved=NULL, accepted=NULL WHERE id=".sql_safe($id).";";
+	$sql="UPDATE ".PREFIX."feedback SET not_implemented='".date("YmdHis")."', resolved=NULL, accepted=NULL
+	WHERE id=".sql_safe($id)."
+	AND not_implemented IS NULL;";
 	mysql_query($sql);
 	
 	//Resolve any children
