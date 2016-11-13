@@ -91,6 +91,8 @@ if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && 
 		{
 			$sql="UPDATE ".PREFIX."feedback SET merged_with=".sql_safe($_GET['extra'])." WHERE id=".sql_safe($_GET['id']).";";
 			mysql_query($sql);
+			if(feedback_get_is_accepted($_GET['id']))
+				feedback_set_accepted($_GET['id']);
 			feedback_display_merge_form($_GET['id'], $_GET['div_id']);
 		}
 		else if($_GET['operation']=="unmerge")
