@@ -149,3 +149,28 @@ function html_tooltip($tip_text)
 {
 	return '<a class="helpmarker" href=# title="'.$tip_text.'">?</a>';
 }
+
+function html_table_from_array($array)
+{
+	$r="<table class=\"table table-striped table-condensed\">
+	<tr>";
+	$keys=array();
+	foreach($array[0] as $key => $val)
+	{
+		$r.="<th>$key</th>";
+		$keys[]=$key;
+	}
+	$r.="</tr>";
+	foreach($array as $a)
+	{
+		$r.="<tr>";
+		foreach($keys as $k)
+		{
+			$r.="<td>".$a[$k]."</td>";
+		}
+		$r.="</tr>";
+	}
+	$r.="</table>";
+	return $r;
+}
+?>

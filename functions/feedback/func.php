@@ -21,7 +21,7 @@
 define('REL_STR',
 "plusones
 +IFNULL((TIMESTAMPDIFF(MINUTE,created,CURDATE())/(365*144)),0)
-+IFNULL((TIMESTAMPDIFF(MINUTE,accepted,CURDATE())/(365*144)),0)
++IFNULL((TIMESTAMPDIFF(MINUTE,accepted,CURDATE())/(365*144))+10,0)
 -IFNULL((TIMESTAMPDIFF(MINUTE,checked_in,CURDATE())/(365*144)),0)
 -IFNULL((TIMESTAMPDIFF(MINUTE,resolved,CURDATE())/(365*144)),0)
 -IFNULL((TIMESTAMPDIFF(MINUTE,not_implemented,CURDATE())/(365*144)),0)
@@ -1737,5 +1737,18 @@ function feedback_update($feedback_id,$column, $new_data)
 	SET ".sql_safe($column)."='".sql_safe($new_data)."' 
 	WHERE id=".sql_safe($feedback_id).";";
 	mysql_query($sql);
+}
+
+function feedback_get_array($from, $to)
+{
+	$r=array();
+	if($ff=feedback_get_list_relevant($from, $to))
+	{
+		while($f=mysql_fetch_assoc($ff))
+		{
+			$r[]=$f;
+		}
+	}
+	return $r;
 }
 ?>

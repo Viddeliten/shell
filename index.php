@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+<?php
+if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['p']),"api"))
+{
+	include("functions/api.php");
+	return TRUE;
+}
+?><!DOCTYPE html>
 <html lang="en">
 <?php session_start(); ?>
 <?php setlocale(LC_NUMERIC, 'en_US'); ?>

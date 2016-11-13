@@ -185,4 +185,19 @@ function string_html_to_text($text)
 
 }
 
+function string_array_multisort(&$array, $sort_by, $order=SORT_ASC)
+{
+	// array_multisort($sort1, SORT_DESC,
+			// $sort2, SORT_DESC, 
+			// $horses);
+	$sortarr=array();
+	foreach($array as $a)
+	{
+		$sortarr[]=$a[$sort_by];
+	}
+	array_multisort($sortarr, $order,
+			$array);
+}
+
+
 ?>
