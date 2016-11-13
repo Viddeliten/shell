@@ -1790,6 +1790,9 @@ function feedback_update($feedback_id,$column, $new_data)
 
 function feedback_get_array($from, $to)
 {
+	feedback_count_children();
+	feedback_count_plusone();
+	feedback_count_children();
 	$r=array();
 	if($ff=feedback_get_list_relevant($from, $to))
 	{
