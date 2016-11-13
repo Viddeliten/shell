@@ -79,7 +79,14 @@ function display_friend_request_drop_menu()
 		{
 			$r[sprintf("Friend request from %s", user_get_name($request['requested_by']))]=array("slug" => "profile&amp;user=".$request['requested_by']);
 		}
-		display_dropdown_menu('<span class="glyphicon glyphicon-user"></span>',
+		if(!empty($r))
+		{
+			$nr=count($r);
+			$r_text=html_tag("span",$nr,"badge");
+		}
+		else
+			$r_text="";
+		display_dropdown_menu('<span class="glyphicon glyphicon-user"></span>'.$r_text,
 									"user",
 									$r);
 	}
