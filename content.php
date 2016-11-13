@@ -21,7 +21,10 @@ else if(isset($_REQUEST['p']))
 	}
 	else if(!strcmp($_GET['p'],"feedback"))
 	{
-		feedback_show();
+		if(isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['s']),"all"))
+			feedback_show_all();
+		else
+			feedback_show();
 	}
 	else if(!strcmp($_GET['p'],"news"))
 	{

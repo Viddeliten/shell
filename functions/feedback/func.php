@@ -251,6 +251,28 @@ function feedback_recieve()
 	}
 }
 
+function feedback_show_all()
+{
+	feedback_count_children();
+	feedback_count_comments();
+	
+	if(isset($_REQUEST['page']))
+		$page=(int)($_REQUEST['page']);
+	else
+		$page=1;
+
+	//what to show
+	$nr_per_page=20;
+	$from=($page-1)*$nr_per_page;
+	$to=$page*$nr_per_page-1;
+	
+	$total_pages=feedback_get_nr_total()/$nr_per_page;
+	
+	$feedbacks=feedback_get_array($from,$to);
+	feedback_display_headline_list_from_array($feedbacks, _("Feedback"), 1);
+
+	html_pagination_row("page", $total_pages);
+}
 function feedback_show()
 {
 	feedback_count_children();
@@ -260,6 +282,7 @@ function feedback_show()
 		<div class="col-lg-8">';
 	echo '<h1>'._("Feedback").'</h1>
 			<p>'._("Suggestions for improvements, bufixes and ideas!").'</p>';
+	echo html_action_button(SITE_URL."/feedback/all", _("List all feedbacks"));
 			
 	if(isset($_GET['id']))
 	{
@@ -1146,6 +1169,14 @@ function feedback_display_accepted($nr)
 	}
 }
 
+function feedback_get_nr_total()
+{
+	$sql="SELECT * FROM ".PREFIX."feedback 
+	WHERE is_spam<1
+	AND merged_with IS NULL";
+	mysql_query($sql);
+	return mysql_affected_rows();
+}
 function feedback_get_nr_ongoing()
 {
 	$sql="SELECT * FROM ".PREFIX."feedback 
@@ -1209,17 +1240,16 @@ function feedback_display_list_resolved($nr, $headline, $headlinesize)
 	feedback_display_headline_list($sql, $headline, $headlinesize);
 }
 
-function feedback_display_headline_list($sql, $headline, $headlinesize, $display_user=TRUE)
+function feedback_display_headline_list_from_array($feedback_array, $headline, $headlinesize, $display_user=TRUE)
 {
-	if($ff=mysql_query($sql))
+	if(!empty($feedback_array))
 	{
-		if(mysql_affected_rows()>0)
-			echo "<h".$headlinesize.">".$headline."</h".$headlinesize.">";
+		echo html_tag("h".$headlinesize, $headline);
 		echo "<div class=\"row\">";
 			echo "<div class=\"col-lg-12\">";
 			
 				echo '<ul class="list-group">';
-					while($f=mysql_fetch_array($ff))
+					foreach($feedback_array as $f)
 					{
 						echo '<li class="list-group-item feedback '.feedback_get_class($f['id']).'">';
 							feedback_display_specific_headline($f['id'], NULL, NULL, FALSE, $display_user, $headline); //, $parent);
@@ -1229,6 +1259,16 @@ function feedback_display_headline_list($sql, $headline, $headlinesize, $display
 			echo "</div>";
 		echo "</div>";
 	}
+}
+function feedback_display_headline_list($sql, $headline, $headlinesize, $display_user=TRUE)
+{
+	$feedback_array=array();
+	if($ff=mysql_query($sql))
+	{
+		while($f=mysql_fetch_array($ff))
+			$feedback_array[]=$f;
+	}
+	feedback_display_headline_list_from_array($feedback_array, $headline, $headlinesize, $display_user);
 }
 
 function feedback_display_list_not_implemented($nr, $headline, $headlinesize)

@@ -54,7 +54,11 @@ function run_html(path)
 function feedback_operation(operation, id, target_div_id, extra_element_id)
 {
 	// alert('onwards');
-	var adress='functions/feedback/operation.php?operation=' + operation + '&id=' + id +'&div_id=' + target_div_id ;
+	pathArray = location.href.split( '/' );
+	protocol = pathArray[0];
+	host = pathArray[2];
+	url = protocol + '//' + host;
+	var adress=url+'/functions/feedback/operation.php?operation=' + operation + '&id=' + id +'&div_id=' + target_div_id ;
 	// alert(adress);
 	if(extra_element_id)
 	{

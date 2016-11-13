@@ -140,6 +140,13 @@ function html_form_droplist($input_id, $label, $name, $options, $selected="", $o
 	return $return;
 }
 
+function html_action_button($target_link, $button_text)
+{
+	return '<form action="'.$target_link.'" method="post">'.
+		html_form_button("action",$button_text, "info").
+	'</form>';
+}
+
 function html_form_button($name, $value, $button_type="default")
 {
 	return '<input type="submit" name="'.$name.'" value="'.$value.'" class="btn btn-'.$button_type.'">';
@@ -172,5 +179,46 @@ function html_table_from_array($array)
 	}
 	$r.="</table>";
 	return $r;
+}
+
+function html_pagination_row($page_nr_name, $total_pages)
+{
+	echo '<div class="row center">
+		<nav>
+		  <ul class="pagination">';
+	if(!isset($_REQUEST[$page_nr_name]) || $_REQUEST[$page_nr_name]<1)
+		echo '<li class="disabled"> <a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
+	else
+		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $_REQUEST[$page_nr_name]-1).'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
+
+	
+	if(isset($_REQUEST[$page_nr_name]))
+		$pnr=$_REQUEST[$page_nr_name];
+	else
+		$pnr=0;
+	
+	for($i=($pnr-5);$i<$total_pages && $i<($pnr+5); $i++)
+	{
+		if($i>=0)
+		{
+			if($i==$pnr)
+			{
+				echo '<li class="active">
+					<a href="'.add_get_to_current_URL($page_nr_name, $i).'"><span class="sr-only">('._("current").')</span>'.($i+1).'</a>
+				</li>';
+			}
+			else
+				echo '<li><a href="'.add_get_to_current_URL($page_nr_name, $i).'">'.($i+1).'</a></li>';
+		}
+	}
+
+	if($i<=$total_pages)
+		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $i).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
+	else 
+		echo '<li class="disabled"> <a href="'.add_get_to_current_URL($page_nr_name, $i).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
+	echo '
+		  </ul>
+		</nav>
+	</div>';
 }
 ?>

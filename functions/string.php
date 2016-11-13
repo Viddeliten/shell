@@ -53,6 +53,44 @@ function curPageURL() {
  return $pageURL;
 }
 
+function add_get_to_current_URL($get_name, $value)
+{
+	$base_url=string_get_base_url(curPageURL());
+
+	$gets=array($get_name	=>	$value);
+	foreach($_GET as $name => $val)
+	{
+		if(strcmp($name,$get_name))
+			$gets[$name]=$val;
+	}
+	$return=$base_url;
+	if(isset($gets['p']))
+	{
+		$return.="/".$gets['p'];
+		unset($gets['p']);
+		if(isset($gets['s']))
+		{
+			$return.="/".$gets['s'];
+			unset($gets['s']);
+			if(isset($gets['id']))
+			{
+				$return.="/".$gets['id'];
+				unset($gets['id']);
+			}
+		}
+	}
+	if(!empty($gets))
+	{
+		$return.="?";
+		$r=array();
+		foreach($gets as $name => $val)
+		{
+			$r[]=$name."=".$val;
+		}
+		$return.=implode("&amp;",$r);
+	}
+	return $return;
+}
 function add_get_to_URL($get_name, $value, $url=NULL)
 {
 	if($url===NULL)
@@ -148,6 +186,13 @@ function string_get_defined_constants()
 	foreach($const['user'] as $key => $val)
 		$r[]=$key;
 	return $r;
+}
+
+function string_get_base_url($adress)
+{
+	if(preg_match_all("/^[a-zA-Z]+:\/\/[a-zA-Z0-9-_]*[\.[a-zA-Z0-9-_]*]*$/", $adress, $matches))
+		return $matches[0];
+	return NULL;
 }
 
 function string_replace_urls_with_links(&$the_text, $get_link_titles=false)
