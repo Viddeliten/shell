@@ -1658,7 +1658,7 @@ function feedback_display_body($id, $hidden=FALSE)
 				echo "</div>";
 				
 				//Side thing with buttons
-				echo "<div class=\"col-sm-4\">";
+				echo "<div class=\"col-sm-4 feedback_buttons\">";
 					echo "<div class=\"col-md-4  col-lg-12 right\" id=\"feedback_".$id."_flattr\">";
 						//Eventuellt Flattr-knapp
 						// echo "<p>Eventuellt Flattr-knapp</p>";

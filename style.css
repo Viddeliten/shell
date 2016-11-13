@@ -499,3 +499,8 @@ border-radius: 30px;
 {
 	background-color: #2e6fc366;
 }
+
+.feedback_buttons, .feedback_buttons .right
+{
+	padding: 0;
+}
