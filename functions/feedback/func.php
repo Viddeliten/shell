@@ -264,12 +264,12 @@ function feedback_show_all()
 	//what to show
 	$nr_per_page=20;
 	$from=($page-1)*$nr_per_page;
-	$to=$page*$nr_per_page-1;
+	$to=($page)*$nr_per_page;
 	
-	$total_pages=feedback_get_nr_total()/$nr_per_page;
+	$total_pages=ceil(feedback_get_nr_total()/$nr_per_page);
 	
 	$feedbacks=feedback_get_array($from,$to);
-	feedback_display_headline_list_from_array($feedbacks, _("Feedback"), 1);
+	feedback_display_headline_list_from_array($feedbacks, sprintf(_("Feedbacks page %s"),$page), 1);
 
 	html_pagination_row("page", $total_pages);
 }
@@ -452,6 +452,7 @@ function feedback_get_list_resolved($from, $to)
 
 function feedback_get_list_relevant($from, $to)
 {
+	$nr=$to-$from;
 	//Formel= plusones + dagar sedan accepterad
 	//ta inte med resolvade
 	//Visar de 20 mest "upptummade" feedback-texterna
@@ -469,8 +470,7 @@ function feedback_get_list_relevant($from, $to)
 		is_checked_in ASC,
 		is_resolved ASC,
 		".ORDER_STR."
-	LIMIT ".sql_safe($from).",".sql_safe($to).";";
-	// echo "<br />DEBUG: $sql";
+	LIMIT ".sql_safe($from).",".sql_safe($nr).";";
 	
 	return mysql_query($sql);
 }

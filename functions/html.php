@@ -195,20 +195,20 @@ function html_pagination_row($page_nr_name, $total_pages)
 	if(isset($_REQUEST[$page_nr_name]))
 		$pnr=$_REQUEST[$page_nr_name];
 	else
-		$pnr=0;
+		$pnr=1;
 	
 	for($i=($pnr-5);$i<$total_pages && $i<($pnr+5); $i++)
 	{
-		if($i>=0)
+		if($i>=1)
 		{
 			if($i==$pnr)
 			{
 				echo '<li class="active">
-					<a href="'.add_get_to_current_URL($page_nr_name, $i).'"><span class="sr-only">('._("current").')</span>'.($i+1).'</a>
+					<a href="'.add_get_to_current_URL($page_nr_name, $i).'"><span class="sr-only">('._("current").')</span>'.($i).'</a>
 				</li>';
 			}
 			else
-				echo '<li><a href="'.add_get_to_current_URL($page_nr_name, $i).'">'.($i+1).'</a></li>';
+				echo '<li><a href="'.add_get_to_current_URL($page_nr_name, $i).'">'.($i).'</a></li>';
 		}
 	}
 
