@@ -67,7 +67,9 @@ function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=F
 			else
 				message_add_success_message($success_message);
 		}
-		return mysql_insert_id();
+		$insert_id=mysql_insert_id();
+		$affected_rows=mysql_affected_rows();
+		return ($insert_id ? $insert_id: $affected_rows);
 	}
 	else
 	{
