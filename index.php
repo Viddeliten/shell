@@ -35,6 +35,7 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	require_once("functions/privmess.php");
 	require_once("functions/notice.php");
 	require_once("functions/html.php");
+	require_once("functions/rss.php");
 	
 	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
 		require_once(CUSTOM_CONTENT_PATH."/globals.php");
@@ -44,16 +45,16 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 
 	if(function_exists('meta_title_and_description')) meta_title_and_description(); ?>
    
-    <link rel="icon" href="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH; ?>/favicon.ico">
+    <link rel="icon" href="<?php echo CUSTOM_CONTENT_PATH; ?>/favicon.ico">
 
     <!-- Bootstrap core CSS -->
-    <link href="<?php echo SITE_URL."/"; ?>bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Shell template style -->
-    <link href="<?php echo SITE_URL."/"; ?>style.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 
 	<!-- Custom style -->
-    <link href="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH; ?>/style.css" rel="stylesheet">
+    <link href="<?php echo CUSTOM_CONTENT_PATH; ?>/style.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
