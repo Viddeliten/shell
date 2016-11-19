@@ -39,7 +39,7 @@ function sql_print_results($alldata)
 	echo "</table>";
 }
 
-function sql_get($sql, $array=false)
+function sql_get($sql, $array=false, $index_column=NULL)
 {
 	$return=array();
 	if($aa=mysql_query($sql))
@@ -55,7 +55,10 @@ function sql_get($sql, $array=false)
 		{
 			while($a=mysql_fetch_assoc($aa))
 			{
-				$return[]=$a;
+				if($index_column!==NULL && isset($a[$index_column]))
+					$return[$a[$index_column]]=$a;
+				else
+					$return[]=$a;
 			}
 		}
 	}

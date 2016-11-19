@@ -157,15 +157,26 @@ function html_tooltip($tip_text)
 	return '<a class="helpmarker" href=# title="'.$tip_text.'">?</a>';
 }
 
-function html_table_from_array($array)
+function html_table_from_array($array, $headlines=NULL)
 {
 	$r="<table class=\"table table-striped table-condensed\">
 	<tr>";
 	$keys=array();
-	foreach($array[0] as $key => $val)
+	if($headlines==NULL || empty($headlines))
 	{
-		$r.="<th>$key</th>";
-		$keys[]=$key;
+		foreach($array[0] as $key => $val)
+		{
+			$r.="<th>$key</th>";
+			$keys[]=$key;
+		}
+	}
+	else
+	{
+		foreach($headlines as $key => $headline)
+		{
+			$r.="<th>$headline</th>";
+			$keys[]=$key;
+		}
 	}
 	$r.="</tr>";
 	foreach($array as $a)
