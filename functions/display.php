@@ -110,7 +110,8 @@ function display_footer()
 	<div id="footer">
 		<div class="row">
 			<div class="col-md-8 center">
-				<p><?php echo _("This site is presented by"); ?></p>
+				<?php if(!defined('NotPresented')) { ?>
+				<p><?php echo _("This site is presented by"); ?></p> <?php } ?>
 				<a href="http://viddewebb.se"><img src="<?php echo SITE_URL."/"; ?>img/ViddeWebb-footer.png" alt="Vidde Webb"></a>
 			</div>
 			<div class="col-md-4 right">
