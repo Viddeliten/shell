@@ -2,7 +2,8 @@
 session_start();
 
 //These files should never be included, so we know where we are.
-define('ROOT_PATH',"../");
+if(!defined('ROOT_PATH'))
+	define('ROOT_PATH',"../");
 
 require_once(ROOT_PATH."functions/db_connect.php");
 require_once(ROOT_PATH."functions/login.php");
