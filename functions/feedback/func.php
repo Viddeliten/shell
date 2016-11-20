@@ -616,7 +616,7 @@ function feedback_list_print($data, $id_expanded=NULL)
 {
 	$inloggad=login_check_logged_in_mini();
 	
-	while($d=mysql_fetch_array($data)) 
+	while($d=@mysql_fetch_array($data)) 
 	{
 		$div_id="feedback_big_".$d['id'];
 		
