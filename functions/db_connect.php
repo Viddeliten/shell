@@ -106,4 +106,11 @@ function sql_update($table, $column, $new_data, $id)
 	WHERE id=".sql_safe($id).";";
 	mysql_query($sql);
 }
+
+function sql_get_single_from_id($table, $column, $id)
+{
+	$sql="SELECT ".sql_safe($column)." FROM ".sql_safe($table)." WHERE id=".sql_safe($id).";";
+	$r=sql_get($sql);
+	return $r[0][$column];
+}
 ?>
