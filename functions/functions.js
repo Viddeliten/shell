@@ -30,6 +30,55 @@ function replace_html_div_inner(div_id_to, path)
 	return false;
 }
 
+function showhide(id)
+{
+   if(document.getElementById)
+   {
+      var obj = document.getElementById(id);
+   }
+   else if(document.all)
+   {
+      var obj = document.all(id);
+   }
+   
+   if(obj.style.display == 'none')
+   {
+      obj.style.display = '';
+   }
+   else
+   {
+      obj.style.display = 'none';
+   }
+}
+
+function show(id)
+{
+   if(document.getElementById)
+   {
+      var obj = document.getElementById(id);
+   }
+   else if(document.all)
+   {
+      var obj = document.all(id);
+   }
+
+   obj.style.display = '';
+}
+
+function hide(id)
+{
+   if(document.getElementById)
+   {
+      var obj = document.getElementById(id);
+   }
+   else if(document.all)
+   {
+      var obj = document.all(id);
+   }
+   
+  obj.style.display = 'none';
+}
+
 function run_html(path)
 {
 	// alert (path);
