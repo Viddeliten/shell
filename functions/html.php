@@ -119,6 +119,29 @@ function html_form_input($input_id, $label, $type, $name, $value, $placeholder=N
 		($type!="hidden" ?'</div>':"");
 }
 
+function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=NULL)
+{
+	$r='';
+	if(empty($options))
+		return $r;
+	
+	if($label!==NULL)
+		$r.=html_tag("p",html_tag("strong",$label));
+	foreach($options as $value => $option_label)
+	{
+		$r.='<div class="radio">
+		  <label>
+			<input type="radio" name="'.$name.'" id="'.$id."_".$value.'" value="'.$value.'" '.
+			($selected==$value ? ' checked="checked" ' : '').
+			(isset($onclick[$value]) ? 'onclick="'.$onclick[$value].'"' : '').
+			'>'.
+			$option_label.
+		  '</label>
+		</div>';
+	}
+	return $r;
+}
+
 function html_form_textarea($input_id, $label, $name, $value, $placeholder=NULL)
 {
 	return '<div class="form-group">
@@ -150,6 +173,24 @@ function html_action_button($target_link, $button_text)
 function html_form_button($name, $value, $button_type="default")
 {
 	return '<input type="submit" name="'.$name.'" value="'.$value.'" class="btn btn-'.$button_type.'">';
+}
+
+function html_button($button_text, $class="btn btn-default", $onclick=NULL)
+{
+	return '<button '.($class!==NULL ? 'class="'.$class.'"' : '')
+					.($onclick!==NULL ? ' onclick="'.$onclick.'"' : '')
+			.'>'
+			.$button_text
+			.'</button>';
+}
+
+function html_form_add_div($div_id, $button_text, $path, $button_class="btn btn-default")
+{
+	$r='<div id="'.$div_id.'">';
+	$r.=html_button($button_text, $button_class, "replace_html_div('".$div_id."', '".$path."'); return false;");
+	$r.='</div>';
+	return $r;
+
 }
 
 function html_tooltip($tip_text)
