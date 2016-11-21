@@ -62,6 +62,8 @@ function sql_get($sql, $array=false, $index_column=NULL)
 			}
 		}
 	}
+	else
+		html_tag("p",mysql_error(),"error");
 	return $return;
 }
 
