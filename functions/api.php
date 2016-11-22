@@ -1,12 +1,7 @@
 <?php
-require_once("config.php"); 
-require_once("functions/feedback/func.php");
-	require_once("functions/db_connect.php");
-	require_once("functions/string.php");
-	require_once("functions/language.php");
 
-if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
-	require_once(CUSTOM_CONTENT_PATH."/globals.php");
+define('ROOT_PATH',"./");
+require_once("operation/op_includer.php");
 
 if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['p']),"api"))
 {
@@ -24,7 +19,10 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 			api_feedback();
 		break;
 		default:
-			echo "Unknown command";
+			if(!function_exists("api_custom"))
+				echo "Unknown command";
+			else if(!api_custom())
+				echo "Unknown command";
 	}
 	
 	db_close($conn);
