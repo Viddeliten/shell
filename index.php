@@ -138,6 +138,9 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 <!-- Google Analytics -->
 <?php echo GoogleAnalyticsCode; ?>
 <!-- End Google Analytics -->
+
+<?php //Pingdom script
+echo PINGDOM_SCRIPT; ?>
 	
 	<script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
 

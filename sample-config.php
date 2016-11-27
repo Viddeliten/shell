@@ -47,7 +47,11 @@ define('SITE_OWNER_FLATTR_ID', "");
 //The code you get from Google Analytics to include in all pages ou want to track
 define("GoogleAnalyticsCode","");
 
-
+/********************************/
+/*		Pingdom					*/
+/********************************/
+// If you have code from Pingdom, put it here
+define('PINGDOM_SCRIPT', "");
 
 /********************************/
 /*		Some strings			*/
