@@ -3,13 +3,13 @@
 	The thought behind having this file is to only have to change html creating in one place when bootstrap updates	
 	ALL the functions just returns html in strings so they can be echoed or used in other ways. */
 	
-function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false)
+function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id=NULL)
 {
 	$the_text=$text;
-	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles);
+	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles, $div_id);
 }
 
-function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=false)
+function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=false, $div_id=NULL)
 {
 	$text=str_ireplace("\n","<br />",$text);
 	$text=str_ireplace("<br /><br />","</p><p>",$text);
@@ -19,7 +19,7 @@ function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=fals
 	//Break long words
 	string_break_long_words($text);
 
-	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').'>'.$text.'</'.$tag_type.'>';
+	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').($div_id==NULL ? "":' id="'.$div_id.'"').'>'.$text.'</'.$tag_type.'>';
 }
 
 function html_link($url, $text, $class=NULL)
@@ -104,9 +104,9 @@ function html_element($col_size, $col_sm_size, $element, $element_class=NULL)
 	return $return;
 }
 	
-function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL, $class=NULL, $helptext=NULL)
+function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL, $class=NULL, $helptext=NULL, $class=NULL, $onchange=NULL)
 {
-	return ($type!="hidden" ? '<div class="form-group">' : "").
+	return ($type!="hidden" ? '<div class="form-group'.($class!==NULL ?  " ".$class : "").'">' : "").
 			($label!==NULL ? '<label for="'.$input_id.'">'.$label.'</label>':'').
 			'<input type="'.$type.'" '.
 			       ($type!="hidden" ? 'class="form-control'.($class!==NULL ? " ".$class :"").'" ' :"").
@@ -114,7 +114,9 @@ function html_form_input($input_id, $label, $type, $name, $value, $placeholder=N
 				   'placeholder="'.$placeholder.'" '.
 				   'name="'.$name.'" '.
 				   'value="'.$value.'" '.
-				   ($helptext!==NULL ?  'aria-describedby="'.$input_id.'helpBlock"' : "").' />'.
+				   ($helptext!==NULL ?  'aria-describedby="'.$input_id.'helpBlock"' : "").
+				   ($onchange!==NULL ?  'onchange="'.$onchange.'" ' : "").
+				   ' />'.
 			($helptext!==NULL ? '<span id="'.$input_id.'helpBlock" class="help-block">'.$helptext.'</span>' :"").
 		($type!="hidden" ?'</div>':"");
 }
@@ -163,9 +165,18 @@ function html_form_droplist($input_id, $label, $name, $options, $selected="", $o
 	return $return;
 }
 
-function html_action_button($target_link, $button_text)
+function html_action_button($target_link, $button_text, $hidden_values=NULL)
 {
+	$h="";
+	if(!empty($hidden_values))
+	{
+		foreach($hidden_values as $name => $value)
+		{
+			$h.=html_form_input(NULL, NULL, "hidden", $name, $value);
+		}
+	}
 	return '<form action="'.$target_link.'" method="post">'.
+		$h.
 		html_form_button("action",$button_text, "info").
 	'</form>';
 }
