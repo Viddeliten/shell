@@ -75,4 +75,12 @@ function language_save_selected($language)
 	
 	//Save in db
 }
+
+function language_get_choice()
+{
+	if(isset($_SESSION['language']) && !strcmp($_SESSION['language'],"sv_SE"))
+		return "se";
+	else
+		return "en";
+}
 ?>
