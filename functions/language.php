@@ -12,6 +12,8 @@ function language_setup()
 	}
 	else
 	{
+		$_SESSION['language']="sv_SE";
+		
 		//Try to fetch preffered
 		if(isset($_SESSION['language']))
 		{
@@ -19,31 +21,33 @@ function language_setup()
 		}
 		else
 		{
-			ini_set('default_socket_timeout', 1);
-			$l=unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip='.$_SERVER['REMOTE_ADDR']));
-			ini_set('default_socket_timeout', 30);
-			// echo "<pre>".print_r($l,1)."</pre>";
-			if(empty($l))
+			if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+				$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+			else
 			{
-				if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-					$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-				else
+				ini_set('default_socket_timeout', 1);
+				$l=unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip='.$_SERVER['REMOTE_ADDR']));
+				ini_set('default_socket_timeout', 30);
+				if(empty($l))
 					$lang = "";
-				switch ($lang){
-					case "sv":
-					case "no":
-					case "dk":
-						$language="sv_SE";
-						break;        
-					default:
-						$language=DEFAULT_LANGUAGE;
-						break;
-				}
+				else if(!strcmp($l['geoplugin_countryCode'],"SE"))
+					$lang="sv";
+				else if(!strcmp($l['geoplugin_countryCode'],"GB"))
+					$lang="en";
 			}
-			else if(!strcmp($l['geoplugin_countryCode'],"SE"))
-				$language="sv_SE";
-			else if(!strcmp($l['geoplugin_countryCode'],"GB"))
-				$language="en_GB";
+			switch ($lang){
+				case "en":
+					$language="en_GB";
+					break;
+				case "sv":
+				case "no":
+				case "dk":
+					$language="sv_SE";
+					break;        
+				default:
+					$language=DEFAULT_LANGUAGE;
+					break;
+			}
 			// echo $language;
 			ini_set('default_socket_timeout', 15);
 		}
