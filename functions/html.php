@@ -104,12 +104,12 @@ function html_element($col_size, $col_sm_size, $element, $element_class=NULL)
 	return $return;
 }
 	
-function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL, $class=NULL, $helptext=NULL, $class=NULL, $onchange=NULL)
+function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL, $input_class=NULL, $helptext=NULL, $group_class=NULL, $onchange=NULL)
 {
-	return ($type!="hidden" ? '<div class="form-group'.($class!==NULL ?  " ".$class : "").'">' : "").
+	return ($type!="hidden" ? '<div class="form-group'.($group_class!==NULL ?  " ".$group_class : "").'">' : "").
 			($label!==NULL ? '<label for="'.$input_id.'">'.$label.'</label>':'').
 			'<input type="'.$type.'" '.
-			       ($type!="hidden" ? 'class="form-control'.($class!==NULL ? " ".$class :"").'" ' :"").
+			       ($type!="hidden" ? 'class="form-control'.($input_class!==NULL ? " ".$input_class :"").'" ' :"").
 				   'id="'.$input_id.'" '.
 				   'placeholder="'.$placeholder.'" '.
 				   'name="'.$name.'" '.
