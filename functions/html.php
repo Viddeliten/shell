@@ -121,6 +121,18 @@ function html_form_input($input_id, $label, $type, $name, $value, $placeholder=N
 		($type!="hidden" ?'</div>':"");
 }
 
+function html_form_checkbox($label, $id, $name, $checked=NULL, $required=FALSE, $onclick=NULL)
+{
+	return '<div class="checkbox">
+    <label>
+      <input type="checkbox" id="'.$id.'" name="'.$name.'"'.
+	  ($checked ? ' checked="checked"' : '').
+	  ($onclick!==NULL ? ' onclick="'.$onclick.'"' : '').
+	  ($required ? ' required' : '').
+		'> '.$label.'
+    </label>
+  </div>';
+}
 function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=NULL)
 {
 	$r='';
