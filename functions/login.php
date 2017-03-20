@@ -132,6 +132,7 @@ function login_get_user()
 {
 	if(login_check_logged_in_mini()>0)
 		return $_SESSION[PREFIX.'user_id'];
+	return FALSE;
 }
 
 function login_check_logged_in_mini()

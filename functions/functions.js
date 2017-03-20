@@ -30,6 +30,14 @@ function replace_html_div_inner(div_id_to, path)
 	return false;
 }
 
+function get_base_url()
+{
+	pathArray = location.href.split( '/' );
+	protocol = pathArray[0];
+	host = pathArray[2];
+	return protocol + '//' + host;
+}
+
 function showhide(id)
 {
    if(document.getElementById)

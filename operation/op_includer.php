@@ -16,8 +16,10 @@ require_once(ROOT_PATH."functions/rss_class.php");
 require_once(ROOT_PATH."functions/privmess.php");
 require_once(ROOT_PATH."functions/user.php");
 require_once(ROOT_PATH."functions/html.php");
+require_once(ROOT_PATH."functions/feedback/func.php");
 
 require_once(ROOT_PATH."config.php");
+require_once(FUNC_PATH."config.php");
 
 if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
 	require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
