@@ -18,6 +18,7 @@
 // +IF(children && children_rel,((children_rel/children)*(children/5)),0)
 // +(1-size/4)*3"
 // );	
+/*
 define('REL_STR',
 "plusones
 +IFNULL((TIMESTAMPDIFF(MINUTE,created,CURDATE())/(365*144)),0)
@@ -28,6 +29,25 @@ define('REL_STR',
 +(comments/10)
 +IF(children && children_rel,((children_rel/children)*(children/5)),0)
 +(1-size/4)*3"
+); */
+
+define('REL_STR',
+"
+IF((plusones
++IFNULL((TIMESTAMPDIFF(MINUTE,created,CURDATE())/(365*144)),0)
++IFNULL((TIMESTAMPDIFF(MINUTE,accepted,CURDATE())/(365*144))+10,0)
+-IFNULL((TIMESTAMPDIFF(MINUTE,checked_in,CURDATE())/(365*144)),0)
+-IFNULL((TIMESTAMPDIFF(MINUTE,resolved,CURDATE())/(365*144)),0)
+-IFNULL((TIMESTAMPDIFF(MINUTE,not_implemented,CURDATE())/(365*144)),0)
++(comments/10)
++(1-size/4)*3)>children_rel, (plusones
++IFNULL((TIMESTAMPDIFF(MINUTE,created,CURDATE())/(365*144)),0)
++IFNULL((TIMESTAMPDIFF(MINUTE,accepted,CURDATE())/(365*144))+10,0)
+-IFNULL((TIMESTAMPDIFF(MINUTE,checked_in,CURDATE())/(365*144)),0)
+-IFNULL((TIMESTAMPDIFF(MINUTE,resolved,CURDATE())/(365*144)),0)
+-IFNULL((TIMESTAMPDIFF(MINUTE,not_implemented,CURDATE())/(365*144)),0)
++(comments/10)
++(1-size/4)*3) , children_rel)"
 );
 
 define('ORDER_STR', "IF(not_implemented,1,0) ASC, IF(resolved,resolved,30000101000000) DESC, IF(checked_in,checked_in,30000101000000) DESC, IF(accepted,1,0) DESC, rel DESC");
@@ -915,7 +935,7 @@ function feedback_count_children()
 function feedback_add_children_to_parents($id, $rel=0)
 {
 	//Add one to children
-	$sql="UPDATE ".PREFIX."feedback SET children=children+1, children_rel=children_rel+".sql_safe($rel)." WHERE id=".sql_safe($id).";";
+	$sql="UPDATE ".PREFIX."feedback SET children=children+1, children_rel=IF(children_rel>".sql_safe($rel).", children_rel, ".sql_safe($rel).") WHERE id=".sql_safe($id).";";
 	mysql_query($sql);
 	//add to all parents too.
 	$sql="SELECT merged_with FROM ".PREFIX."feedback WHERE id=".sql_safe($id)." AND merged_with IS NOT NULL;";
@@ -1260,6 +1280,7 @@ function feedback_display_headline_list_from_array($feedback_array, $headline, $
 		echo "</div>";
 	}
 }
+
 function feedback_display_headline_list($sql, $headline, $headlinesize, $display_user=TRUE)
 {
 	$feedback_array=array();
@@ -1339,6 +1360,26 @@ function feedback_is_merged($id)
 		if($f=mysql_fetch_array($ff))
 		{
 			return $f['merged_with'];
+		}
+	}
+	return NULL;
+}
+
+function feedback_get_rel($id)
+{
+	$sql="SELECT 
+	".REL_STR."	as rel
+	FROM ".PREFIX."feedback 
+	WHERE id=".sql_safe($id).";";
+	// preprint($sql);
+	if($ff=mysql_query($sql))
+	{
+		if(mysql_affected_rows()>0)
+		{
+			if($f=mysql_fetch_array($ff))
+			{
+				return $f['rel'];
+			}
 		}
 	}
 	return NULL;
