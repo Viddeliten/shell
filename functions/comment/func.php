@@ -8,50 +8,28 @@ function comment_receive()
 	
 	if(isset($_POST['addcomment']))
 	{
-		// echo preprint($_POST);
-		// echo "<br />DEBUG1832: isset(\$_POST['addcomment']))";
-		//Om man inte är inloggad måste man ange captcha
-		if($inloggad<1 && !isset($_POST['addcomment_captcha']))
+		/********************************************/
+		/*				Captcha check				*/
+		/********************************************/
+		if(login_check_logged_in_mini()<1 && isset($_POST['g-recaptcha-response']))
+			$response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+
+		if(login_check_logged_in_mini()<1 && (!isset($response) || $response['success'] != true))
 		{
-			//Kanske hämta det man kommenterar på här sen... ?
-			echo "<h2>Adding comment</h2><form method=\"post\">";
-			//Släng med postat data...
-			echo "<p>Name: ".$_POST['nick']."<input type=\"hidden\" name=\"nick\" value=\"".$_POST['nick']."\">";
-			echo "<br />Email: ".$_POST['email']."<input type=\"hidden\" name=\"email\" value=\"".$_POST['email']."\">";
-			echo "<br />Website: ".$_POST['url']."<input type=\"hidden\" name=\"url\" value=\"".$_POST['url']."\">";
-			echo "<br />Flattr ID: ".$_POST['flattrID']."<input type=\"hidden\" name=\"flattrID\" value=\"".$_POST['flattrID']."\"></p>";
-			echo "<p>Comment:<br />".$_POST['comment']."<input type=\"hidden\" name=\"comment\" value=\"".$_POST['comment']."\"></p>";
-
-			echo "<input type=\"hidden\" name=\"id\" value=\"".$_POST['id']."\">";
-			echo "<input type=\"hidden\" name=\"type\" value=\"".$_POST['type']."\">";
-			echo "<input type=\"hidden\" name=\"addcomment\" value=\"".$_POST['addcomment']."\">";
-
-		
-			//Visa captcha
-			require_once('functions/recaptchalib.php');
-			echo recaptcha_get_html(ReCaptcha_publickey);
-			echo "<p>Log in to get rid of the need of captchas...</p>";
-
-			echo "<input type=\"submit\" name=\"addcomment_captcha\" value=\""._("Send")."\">";
-			echo "</form>";
+			if(isset($response) && !strcmp($response['error-codes'][0],'missing-input-response'))
+			{
+				//Human was a robot or forgot to check captcha
+				add_error(_("Feedback could not be posted.<br />Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
+			}
+			else
+				add_error(_("Feedback could not be posted.<br />You do not appear to be human. Feeling ok?"));
+			preprint($response, "captcha response");
 		}
-		else if($inloggad<1 && isset($_POST['addcomment_captcha']))
+		else
 		{
-			require_once('functions/recaptchalib.php');
-			$resp = recaptcha_check_answer (ReCaptcha_privatekey,
-							$_SERVER["REMOTE_ADDR"],
-							$_POST["recaptcha_challenge_field"],
-							$_POST["recaptcha_response_field"]);
-		}
+			// Captcha or login passed
 
-		if ($inloggad<1 && isset($_POST['addcomment_captcha']) && !$resp->is_valid)
-		{
-			// What happens when the CAPTCHA was entered incorrectly
-			die ("The reCAPTCHA wasn't entered correctly. Go back and try it again." .
-			 "(reCAPTCHA said: " . $resp->error . ")");
-		}		
-		else if ($inloggad>0 || (isset($_POST['addcomment_captcha']) && $resp->is_valid))//Om man är inloggad eller har skrivit rätt captcha
-		{		
+			//Check login
 			if(login_check_logged_in_mini()>0)
 			{
 				$user=$_SESSION[PREFIX."user_id"];
@@ -160,6 +138,7 @@ function comment_form_show($id, $type, $beforetext)
 		<input type="hidden" name="id" value="<?php echo $id; ?>">
 		<input type="hidden" name="type" value="<?php echo $type; ?>">
 		<textarea name="comment" class="form-control"></textarea>
+		<div class="g-recaptcha" data-sitekey="<?php echo ReCaptcha_publickey; ?>"></div>
 		<input type="submit" name="addcomment" value="<?php echo _("Send"); ?>" class="form-control">
 	</form>
 	<?php

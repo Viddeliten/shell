@@ -54,87 +54,78 @@ define('ORDER_STR', "IF(not_implemented,1,0) ASC, IF(resolved,resolved,300001010
 
 function feedback_recieve()
 {
-	
 	if(isset($_POST['postfeedback']) && $_POST['text']!="")
 	{
-		// if(login_check_logged_in_mini()<1)
-		// {
-			// require_once('functions/recaptchalib.php');
-			// $resp = recaptcha_check_answer (ReCaptcha_privatekey,
-							// $_SERVER["REMOTE_ADDR"],
-							// $_POST["recaptcha_challenge_field"],
-							// $_POST["recaptcha_response_field"]);
-		// }
-		
-		if(isset($_POST['g-recaptcha-response']))
-			$captcha=$_POST['g-recaptcha-response'];
+		/********************************************/
+		/*				Captcha check				*/
+		/********************************************/
+		if(login_check_logged_in_mini()<1 && isset($_POST['g-recaptcha-response']))
+			$response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
 
-		if (login_check_logged_in_mini()<1 && !$captcha)
+		if(login_check_logged_in_mini()<1 && (!isset($response) || $response['success'] != true))
 		{
-			// What happens when the CAPTCHA was entered incorrectly
-			die ("NO!!! The reCAPTCHA wasn't entered correctly. Go back and try it again." .
-			 "(reCAPTCHA said: " . $_POST['g-recaptcha-response'] . ")");
+			if(isset($response) && !strcmp($response['error-codes'][0],'missing-input-response'))
+			{
+				//Human was a robot or forgot to check captcha
+				add_error(_("Feedback could not be posted.<br />Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
+			}
+			else
+				add_error(_("Feedback could not be posted.<br />You do not appear to be human. Feeling ok?"));
+			preprint($response, "captcha response");
 		}
 		else
 		{
-			if(login_check_logged_in_mini()<1)
-				$response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
-			if(login_check_logged_in_mini()<1 && $response['success'] == false)
+			// Captcha or login passed
+			
+			//Check login
+			if(login_check_logged_in_mini()>0)
 			{
-			  echo '<h2>'._("You do not appear to be human. Feeling ok?").'</h2>';
+				$user="'".sql_safe($_SESSION[PREFIX.'user_id'])."'";
 			}
 			else
 			{
-				// Your code here to handle a successful verification
-				if(login_check_logged_in_mini()>0)
-				{
-					$user="'".sql_safe($_SESSION[PREFIX.'user_id'])."'";
-				}
-				else
-				{
-					$user='NULL';
-					
-				}
-				$IP=$_SERVER['REMOTE_ADDR'];
+				$user='NULL';
 				
-				$sql="INSERT INTO ".PREFIX."feedback SET
-				subject='".sql_safe($_POST['subject'])."',
-				text='".sql_safe($_POST['text'])."',
-				user=".$user.",
-				IP='".sql_safe($IP)."';";
-				// echo "<br />DEBUG 2133: $sql";
-				mysql_query($sql);
-				$id=mysql_insert_id();
-				define('MESS', "<p><strong>You have submitted the following message.</strong></p>
-				<h3>".sql_safe($_POST['subject'])."</h3>
-				<p>".sql_safe($_POST['text'])."</p>
-				<p><a href=\"?p=feedback&amp;id=$id\">[Permalink]</a></p>
-				<p><strong>Thankyou for your input!</strong></p>");
+			}
+			$IP=$_SERVER['REMOTE_ADDR'];
+			
+			$sql="INSERT INTO ".PREFIX."feedback SET
+			subject='".sql_safe($_POST['subject'])."',
+			text='".sql_safe($_POST['text'])."',
+			user=".$user.",
+			IP='".sql_safe($IP)."';";
+			// echo "<br />DEBUG 2133: $sql";
+			mysql_query($sql);
+			$id=mysql_insert_id();
+			define('MESS', "<p><strong>You have submitted the following message.</strong></p>
+			<h3>".sql_safe($_POST['subject'])."</h3>
+			<p>".sql_safe($_POST['text'])."</p>
+			<p><a href=\"?p=feedback&amp;id=$id\">[Permalink]</a></p>
+			<p><strong>Thankyou for your input!</strong></p>");
 
-				if(isset($_POST['nick']))
-				{
-					$sql="UPDATE ".PREFIX."feedback SET nick='".sql_safe($_POST['nick'])."'
-					WHERE id=$id;";
-					mysql_query($sql);
-				}
-				if(isset($_POST['email']))
-				{
-					$sql="UPDATE ".PREFIX."feedback SET email='".sql_safe($_POST['email'])."'
-					WHERE id=$id;";
-					mysql_query($sql);
-				}
-				if(isset($_POST['url']))
-				{
-					$sql="UPDATE ".PREFIX."feedback SET url='".sql_safe($_POST['url'])."'
-					WHERE id=$id;";
-					mysql_query($sql);
-				}
-				if(isset($_POST['flattrID']))
-				{
-					$sql="UPDATE ".PREFIX."feedback SET flattrID='".sql_safe($_POST['flattrID'])."'
-					WHERE id=$id;";
-					mysql_query($sql);
-				}
+			if(isset($_POST['nick']))
+			{
+				$sql="UPDATE ".PREFIX."feedback SET nick='".sql_safe($_POST['nick'])."'
+				WHERE id=$id;";
+				mysql_query($sql);
+			}
+			if(isset($_POST['email']))
+			{
+				$sql="UPDATE ".PREFIX."feedback SET email='".sql_safe($_POST['email'])."'
+				WHERE id=$id;";
+				mysql_query($sql);
+			}
+			if(isset($_POST['url']))
+			{
+				$sql="UPDATE ".PREFIX."feedback SET url='".sql_safe($_POST['url'])."'
+				WHERE id=$id;";
+				mysql_query($sql);
+			}
+			if(isset($_POST['flattrID']))
+			{
+				$sql="UPDATE ".PREFIX."feedback SET flattrID='".sql_safe($_POST['flattrID'])."'
+				WHERE id=$id;";
+				mysql_query($sql);
 			}
 		}
 	}
