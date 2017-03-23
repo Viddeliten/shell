@@ -71,7 +71,6 @@ function feedback_recieve()
 			}
 			else
 				add_error(_("Feedback could not be posted.<br />You do not appear to be human. Feeling ok?"));
-			preprint($response, "captcha response");
 		}
 		else
 		{
@@ -1225,7 +1224,7 @@ function feedback_display_list($size, $nr, $headline, $headlinesize)
 	-- AND merged_with IS NULL
 	ORDER BY ".ORDER_STR."
 	LIMIT ".sql_safe($nr).";";
-	// echo preprint($sql);
+
 	feedback_display_headline_list($sql, $headline, $headlinesize);
 	
 }
@@ -1242,7 +1241,7 @@ function feedback_display_list_checked_in($nr, $headline, $headlinesize, $displa
 	if($nr>0)
 		$sql.="
 		LIMIT ".sql_safe($nr).";";
-	// echo preprint($sql);
+
 	feedback_display_headline_list($sql, $headline, $headlinesize, $display_user);
 }
 
@@ -1369,7 +1368,7 @@ function feedback_get_rel($id)
 	".REL_STR."	as rel
 	FROM ".PREFIX."feedback 
 	WHERE id=".sql_safe($id).";";
-	// preprint($sql);
+
 	if($ff=mysql_query($sql))
 	{
 		if(mysql_affected_rows()>0)

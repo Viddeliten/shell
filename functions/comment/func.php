@@ -19,11 +19,10 @@ function comment_receive()
 			if(isset($response) && !strcmp($response['error-codes'][0],'missing-input-response'))
 			{
 				//Human was a robot or forgot to check captcha
-				add_error(_("Feedback could not be posted.<br />Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
+				add_error(_("Comment could not be posted.<br />Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
 			}
 			else
 				add_error(_("Feedback could not be posted.<br />You do not appear to be human. Feeling ok?"));
-			preprint($response, "captcha response");
 		}
 		else
 		{
