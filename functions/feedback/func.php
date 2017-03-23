@@ -305,9 +305,12 @@ function feedback_show()
 	echo html_action_button(SITE_URL."/feedback/all", _("List all feedbacks"));
 	
 	//Show progress bar for reported bugs and required feedback since last version
-	feedback_display_progressbar(1);
-	feedback_display_progressbar(2);
-			
+	if(login_check_logged_in_mini()>1) //Only show to admins
+	{
+		feedback_display_progressbar(1);
+		feedback_display_progressbar(2);
+	}
+	
 	if(isset($_GET['id']))
 	{
 		//Om vi ska visa en specifik feedback, så gör vi det här.
