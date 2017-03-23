@@ -303,6 +303,10 @@ function feedback_show()
 	echo '<h1>'._("Feedback").'</h1>
 			<p>'._("Suggestions for improvements, bufixes and ideas!").'</p>';
 	echo html_action_button(SITE_URL."/feedback/all", _("List all feedbacks"));
+	
+	//Show progress bar for reported bugs and required feedback since last version
+	feedback_display_progressbar(1);
+	feedback_display_progressbar(2);
 			
 	if(isset($_GET['id']))
 	{
@@ -1843,5 +1847,43 @@ function feedback_get_array($from, $to)
 		}
 	}
 	return $r;
+}
+
+//Show progress bar for reported bugs and required feedback since last version
+function feedback_display_progressbar($size)
+{
+	//Number of completed feedbacks since last version
+	$sql="SELECT COUNT(f.id) as nr
+	FROM ".PREFIX."feedback f
+	LEFT JOIN ".PREFIX."version_done vd ON vd.done_id=f.id AND done_type='feedback'
+	WHERE f.size=".sql_safe($size)."
+	AND (f.checked_in IS NOT NULL OR f.resolved IS NOT NULL)
+	AND vd.version IS NULL;";
+	$result=sql_get($sql);
+	$nr=$result[0]['nr'];
+	
+	//Number of all feedbacks since last version
+	$sql="SELECT COUNT(f.id) as nr
+	FROM ".PREFIX."feedback f
+	LEFT JOIN ".PREFIX."version_done vd ON vd.done_id=f.id AND done_type='feedback'
+	WHERE f.size=".sql_safe($size)."
+	AND (f.not_implemented IS NULL)
+	AND vd.version IS NULL;";
+	$result=sql_get($sql);
+	$total=$result[0]['nr'];
+	
+	$percent=round(($nr/$total)*100);
+	
+	//Get correct text
+	if($size==1)
+		$size_text=_("bugs");
+	else if($size==2)
+		$size_text=_("required");
+	else
+		$size_text="";
+	
+	echo html_tag("h4",sprintf(_("Progress %s"), $size_text));
+	echo html_progress_bar($percent);
+	echo html_tag("p","(".$nr."/".$total.")","smalltext");
 }
 ?>

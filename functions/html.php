@@ -296,4 +296,12 @@ function html_pagination_row($page_nr_name, $total_pages)
 		</nav>
 	</div>';
 }
+
+//Wrapper since this was apparently already done in message.php
+function html_progress_bar($percent)
+{
+	return message_progress_bar($percent);
+}
+
+
 ?>
