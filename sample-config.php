@@ -29,10 +29,10 @@ define("db_user", "");
 define("db_host", "localhost"); //If database is on same server as web files, leave this line as it is.
 define("db_name", "");
 
-/********************************/
-/*		Globals for captcha		*/
-/*	Go to https://www.google.com/recaptcha/intro/index.html and get these codes		*/
-/********************************/
+/********************************************************************************************/
+/*		Globals for captcha																	*/
+/*	Go to https://www.google.com/recaptcha/intro/index.html and get these codes	(v2)		*/
+/********************************************************************************************/
 define("ReCaptcha_privatekey",""); // Secret key
 define("ReCaptcha_publickey",""); // Site key
 
