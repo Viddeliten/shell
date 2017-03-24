@@ -136,8 +136,11 @@ function comment_form_show($id, $type, $beforetext)
 
 		<input type="hidden" name="id" value="<?php echo $id; ?>">
 		<input type="hidden" name="type" value="<?php echo $type; ?>">
-		<textarea name="comment" class="form-control"></textarea>
-		<div class="g-recaptcha" data-sitekey="<?php echo ReCaptcha_publickey; ?>"></div>
+		<?php echo html_form_textarea($type."_comment_textarea_".$id, _("Comment:"), "comment", ""); ?>
+		<?php if(login_check_logged_in_mini()<1)
+		{
+			?><div class="g-recaptcha" data-sitekey="<?php echo ReCaptcha_publickey; ?>"></div><?php
+		} ?>
 		<input type="submit" name="addcomment" value="<?php echo _("Send"); ?>" class="form-control">
 	</form>
 	<?php
