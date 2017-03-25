@@ -91,12 +91,17 @@ function add_error_mysql($error_code,$sql, $mysql_error)
 {
 	add_error(sprintf(_("Error code %s<br />SQL: %s<br />ERROR: %s"),$error_code, $sql, $mysql_error));
 }
-function message_add_message($message)
+function message_add_message($message, $headline=NULL)
 {
-	add_message($message);
+	add_message($message, ($headline!=NULL ? $headline : NULL));
 }
-function add_message($message)
+function add_message($message_body, $headline=NULL)
 {
+	if($headline!=NULL)
+		$message=html_tag("h2", $headline).html_tag("p",$message_body);
+	else
+		$message=$message_body;
+	
 	if(!defined('MESS'))
 		define('MESS', $message);
 	else

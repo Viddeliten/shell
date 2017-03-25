@@ -151,6 +151,13 @@ h1.panel-title
 {
 	font-size: 180%;
 }
+
+.posted.feedback
+{
+	background-color: white;
+    padding: 0.1em 1em;
+    box-shadow: inset 0px 0px 5px 0px rgba(0, 0, 0, 0.62);
+}
 .panel.feedback
 {
 	margin-top: 1em;

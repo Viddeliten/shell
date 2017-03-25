@@ -96,11 +96,12 @@ function feedback_recieve()
 			// echo "<br />DEBUG 2133: $sql";
 			mysql_query($sql);
 			$id=mysql_insert_id();
-			define('MESS', "<p><strong>You have submitted the following message.</strong></p>
-			<h3>".sql_safe($_POST['subject'])."</h3>
-			<p>".sql_safe($_POST['text'])."</p>
-			<p><a href=\"?p=feedback&amp;id=$id\">[Permalink]</a></p>
-			<p><strong>Thankyou for your input!</strong></p>");
+			$message_body=html_tag("div", "<h3>".sql_safe($_POST['subject'])."</h3>
+			<p>".$_POST['text']."</p>", "posted feedback").
+			"<p><a href=\"?p=feedback&amp;id=$id\">["._("Permanent link to your feedback")."]</a></p>
+			<p><strong>Thankyou for your input!</strong></p>";
+			
+			message_add_message($message_body, _("You have submitted the following"));
 
 			if(isset($_POST['nick']))
 			{

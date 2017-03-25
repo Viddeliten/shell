@@ -11,7 +11,8 @@ function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id
 
 function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=false, $div_id=NULL)
 {
-	$text=str_ireplace("\n","<br />",$text);
+	$text=str_replace("\n", "<br />", $text);
+	$text=str_ireplace("\r","<br />",$text);
 	$text=str_ireplace("<br /><br />","</p><p>",$text);
 	//Look for urls
 	string_replace_urls_with_links($text, $get_link_titles);
