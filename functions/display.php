@@ -139,7 +139,7 @@ function display_menu_pages($custom_pages)
 	
 	foreach($custom_pages as $name => $content)
 	{
-		if((!isset($content['req_user_level']) || $content['req_user_level']<1 || $logged_in_level>=$content['req_user_level']) && strcmp($content['slug'],"admin"))
+		if((!isset($content['req_user_level']) || $content['req_user_level']<1 || $logged_in_level>=$content['req_user_level']) && (!isset($content['slug']) || strcmp($content['slug'],"admin")))
 		{
 			if(isset($content['url']))
 			{
