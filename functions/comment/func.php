@@ -352,7 +352,7 @@ function comment_display_single($comment_id, $max_length=NULL)
 							echo '<a href="'.$c['url'].'">';
 						if($c['email']!=NULL)
 						{
-							echo "<img class=\"left_avatar leftfloat\"  src=\"http://www.gravatar.com/avatar/".md5( strtolower( trim( $c['email'] ) ) )."?s=60\" />" ;
+							echo "<img class=\"left_avatar leftfloat\"  src=\"https://www.gravatar.com/avatar/".md5( strtolower( trim( $c['email'] ) ) )."?s=60\" />" ;
 						}
 						if($c['url']!=NULL)
 							echo '</a>';

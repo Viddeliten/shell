@@ -1019,7 +1019,7 @@ function feedback_show_latest_short($antal=3, $length=150, $headline_size=2)
 						
 					if(!isset($im) || $im['img_thumb']==NULL)
 					{
-						echo "<div class=\"left_avatar\"><img src=\"http://www.gravatar.com/avatar/".md5( strtolower( trim( user_get_email($f['user']) ) ) )."?s=60\" /></div>" ;
+						echo "<div class=\"left_avatar\"><img src=\"https://www.gravatar.com/avatar/".md5( strtolower( trim( user_get_email($f['user']) ) ) )."?s=60\" /></div>" ;
 					}
 					// echo "<div class=\"date\">Posted by <a href=\"?p=user&amp;user=".$f['user']."\"><strong>".user_get_name($f['user'])."</strong></a> at ";
 				}
@@ -1028,7 +1028,7 @@ function feedback_show_latest_short($antal=3, $length=150, $headline_size=2)
 					//Kolla om vi har en gravatar
 					if($f['email']!=NULL)
 					{
-						echo "<img class=\"left_avatar\"  src=\"http://www.gravatar.com/avatar/".md5( strtolower( trim( $f['email'] ) ) )."?s=60\" />" ;
+						echo "<img class=\"left_avatar\"  src=\"https://www.gravatar.com/avatar/".md5( strtolower( trim( $f['email'] ) ) )."?s=60\" />" ;
 					}
 
 					// if($f['url']!=NULL)
