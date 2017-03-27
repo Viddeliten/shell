@@ -12,6 +12,7 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	//Connecta till databasen
 	$conn=db_connect(db_host, db_name, db_user, db_pass);
 
+	header('Content-Type: application/json'); //We always send json type things, right?
 	
 	switch($_REQUEST['s'])
 	{
