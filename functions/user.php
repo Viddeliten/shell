@@ -161,7 +161,7 @@ function user_get_avatar_path($user_id, $width=60)
 	if(file_exists("img/avatar/".$user_id.".png"))
 		return "img/avatar/".$user_id.".png";
 	else
-		return "http://www.gravatar.com/avatar/".md5( strtolower( trim( user_get_email($user_id) ) ) )."?s=".$width;
+		return "https://www.gravatar.com/avatar/".md5( strtolower( trim( user_get_email($user_id) ) ) )."?s=".$width;
 		// return "img/no_avatar.png";
 }
 function user_get_email($id)
