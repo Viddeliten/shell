@@ -1141,8 +1141,11 @@ function feedback_display_specific_headline($id, $div_id, $source_div=NULL, $exp
 						echo "<div class=\"col-sm-2 feedback_author\">
 							".feedback_get_author_link($id)."
 						</div>";
+						$next_with=2;
 					}
-					echo "<div class=\"col-sm-2 small smalldate feedback_time\">
+					else
+						$next_with=4;
+					echo "<div class=\"col-sm-".$next_with." small smalldate feedback_time\">
 						<a href=\"".SITE_URL."?p=feedback&amp;id=".$id."\">".date("Y-m-d H:i" , strtotime($d['created']))."</a>
 					</div>
 				</div>";
