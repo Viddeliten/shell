@@ -1,5 +1,13 @@
 <?php
 
+// 1=bugfix, 2=required, 3=small improvement, 4=big thing, 0=unset
+define("SIZE_SUGGESTED", -1);
+define("SIZE_UNSET", 0);
+define("SIZE_BUG", 1);
+define("SIZE_REQUIRED", 2);
+define("SIZE_SMALL_CHANGE", 3);
+define("SIZE_BIG_CHANGE", 4);
+
 // define('REL_STR', "((plusones*3)
 	// +((".date("YmdHis")."-IFNULL(accepted,".date("YmdHis")."))/86400)
 	// +((".date("YmdHis")."-IFNULL(created,".date("YmdHis")."))/86400)
@@ -320,7 +328,7 @@ function feedback_show()
 		else
 		{
 			//Visa några okategoriserade SOM länkar! Bara rubriker!
-			feedback_display_list(0, 5, _("Uncategorized"), 2);
+			feedback_display_list(SIZE_UNSET, 5, _("Uncategorized"), 2);
 			
 			$ongoing=feedback_get_nr_ongoing();
 			if($ongoing>0)
@@ -332,17 +340,17 @@ function feedback_show()
 			else if(login_check_logged_in_mini()>0 && user_get_level($_SESSION[PREFIX.'user_id'])>1)
 			{
 				//Visa några föreslagna
-				feedback_display_list(-1, 3, _("Suggested"), 2);
+				feedback_display_list(SIZE_SUGGESTED, 3, _("Suggested"), 2);
 			}
 			
 			//Visa några bugfixar SOM länkar! Bara rubriker!
-			feedback_display_list(1, 5, _("Reported bugs"), 2);
+			feedback_display_list(SIZE_BUG, 5, _("Reported bugs"), 2);
 			//Visa några required SOM länkar! Bara rubriker!
-			feedback_display_list(2, 5, _("Required"), 2);
+			feedback_display_list(SIZE_REQUIRED, 5, _("Required"), 2);
 			//Visa några små SOM länkar! Bara rubriker!
-			feedback_display_list(3, 5, _("Small improvements"), 2);
+			feedback_display_list(SIZE_SMALL_CHANGE, 5, _("Small improvements"), 2);
 			//Visa några bugfixar SOM länkar! Bara rubriker!
-			feedback_display_list(4, 5, _("Big changes"), 2);
+			feedback_display_list(SIZE_BIG_CHANGE, 5, _("Big changes"), 2);
 			//Visa några lösta
 			feedback_display_list_resolved(10, _("Resolved"), 2);
 			feedback_display_list_not_implemented(5, _("Will not be done"), 2);
@@ -1219,16 +1227,19 @@ function feedback_display_list($size, $nr, $headline, $headlinesize)
 	WHERE is_spam<1
 	AND merged_with IS NULL
 	";
-	if($size!=-1)
+	if($size!=SIZE_SUGGESTED)
 		$sql.="AND size=".sql_safe($size);
 	$sql.="
 	AND resolved IS NULL
 	AND checked_in IS NULL
 	AND not_implemented IS NULL
 	-- AND merged_with IS NULL
-	ORDER BY ".ORDER_STR."
+	ORDER BY ";
+	if($size==SIZE_SUGGESTED) //If size does not matter, we are suggesting. We should list feedbacks with size<SMALL_CHANGE (bugs and required) first
+		$sql.="IF(size < ".SIZE_SMALL_CHANGE.",1,0) DESC, ";
+	$sql.=ORDER_STR."
 	LIMIT ".sql_safe($nr).";";
-
+	
 	feedback_display_headline_list($sql, $headline, $headlinesize);
 	
 }
@@ -1872,9 +1883,9 @@ function feedback_display_progressbar($size)
 	$percent=round(($nr/$total)*100);
 	
 	//Get correct text
-	if($size==1)
+	if($size==SIZE_BUG)
 		$size_text=_("bugs");
-	else if($size==2)
+	else if($size==SIZE_REQUIRED)
 		$size_text=_("required");
 	else
 		$size_text="";
