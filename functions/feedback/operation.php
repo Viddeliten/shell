@@ -140,7 +140,10 @@ function f_op_get_display_id($div_id)
 
 function f_op_display_new_feedback($feedback_id, $target_div)
 {
-	$the_new_id=feedback_get_main_parent($feedback_id);
+	if(f_op_get_display_id($target_div)!=$feedback_id)
+		$the_new_id=feedback_get_main_parent($feedback_id);
+	else
+		$the_new_id=$feedback_id;
 
 	$size=f_op_get_div_size($target_div);
 	if($size=="big")

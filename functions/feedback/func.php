@@ -726,7 +726,7 @@ function feedback_status_show($id, $accepted=NULL, $checked_in=NULL, $resolved=N
 
 	echo "<div id=\"".$div_id."\">";
 		
-	echo '<form method="post" class="form-inline">';
+	echo '<form method="post" class="form-inline" action="'.SITE_URL.'/feedback">';
 	echo "<input type=\"hidden\" name=\"id\" value=\"".$id."\">";
 	//Skriv först ut status.
 	echo '<p>';
@@ -762,7 +762,7 @@ function feedback_status_show($id, $accepted=NULL, $checked_in=NULL, $resolved=N
 	{
 		if($checked_in==NULL && $resolved==NULL)
 		{
- 			echo "<button class=\"form-control btn-info\" id=\"feedback_checked_in_".$id."\" onclick=\"feedback_operation('feedback_check_in',".$id.", '".$parent_div."'); return false;\">"._("Solution is checked in")."</button>";
+ 			echo "<button class=\"form-control btn-info\" id=\"feedback_checked_in_".$id."\" onclick=\"feedback_operation('feedback_check_in',".$id.", '".$parent_div."'); return true;\">"._("Solution is checked in")."</button>";
 		}
 		else if($resolved==NULL)
 		{
