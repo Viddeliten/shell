@@ -51,6 +51,18 @@ else if(isset($_REQUEST['p']))
 	{
 		user_display_settings();
 	}
+	else if(!strcmp($_GET['p'],"users"))
+	{
+		if(isset($_GET['s']))
+		{
+			if(!strcmp($_GET['s'],"active"))
+			{
+				echo "<h1>"._("Active users")."</h1>";
+				user_display_active_users(FALSE);
+				return TRUE;
+			}
+		}
+	}
 	else if(!strcmp($_GET['p'],"admin"))
 	{
 		if(login_check()>1)

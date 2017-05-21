@@ -582,8 +582,13 @@ function user_display_active_users($include_reputation=TRUE)
 		$other_sort_order="asc";
 	
 	//Visa användarna
-	$sql="select id, username, regdate, lastlogin, reputation from ".PREFIX."user WHERE inactive IS NULL AND lastlogin IS NOT NULL order by ".$sort." ".$sort_order.";";
-	// echo "<br />$sql";
+	$sql="SELECT
+		id, username, regdate, lastlogin, reputation 
+		FROM ".PREFIX."user
+		WHERE inactive IS NULL 
+		AND lastlogin IS NOT NULL 
+		AND blocked IS NULL
+		ORDER BY ".$sort." ".$sort_order.";";
 	$users=mysql_query($sql);
 	echo "<table class=\"table table-striped\">";
 	//Rubriker
