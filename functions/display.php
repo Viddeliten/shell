@@ -70,7 +70,8 @@ function display_friend_request_drop_menu()
 	if(login_check_logged_in_mini()<1)
 		return 0;
 	
-	$requests=user_friend_get_requests($_SESSION['user_id']);
+	if(isset($_SESSION[PREFIX.'user_id']))
+		$requests=user_friend_get_requests($_SESSION[PREFIX.'user_id']);
 	
 	if(!empty($requests))
 	{
