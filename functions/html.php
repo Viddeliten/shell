@@ -93,10 +93,11 @@ function html_elements($col_size, $col_sm_size, $elements, $element_class=NULL)
 	return $return;
 }
 
-function html_element($col_size, $col_sm_size, $element, $element_class=NULL)
+function html_element($col_md_size, $col_xs_size, $element, $element_class=NULL)
 {
+	$col_sm_size=(int)(12/(((12/$col_xs_size)+(12/$col_md_size))/2));
 	$return="";
-	$return.= '<div class="col-md-'.$col_size.' col-xs-'.$col_sm_size.''.($element_class==NULL ? "":" ".$element_class).'">';
+	$return.= '<div class="col-md-'.$col_md_size.' col-sm-'.$col_sm_size.' col-xs-'.$col_xs_size.''.($element_class==NULL ? "":" ".$element_class).'">';
 	if(is_array($element))
 		$return.=html_elements(12,12,$element);
 	else
