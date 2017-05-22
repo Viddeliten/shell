@@ -592,29 +592,25 @@ function user_display_active_users($include_reputation=TRUE)
 	$users=mysql_query($sql);
 	echo "<table class=\"table table-striped\">";
 	//Rubriker
-	echo "<tr>
-			<th></th>
-			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"username") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "name"))."\">"._("Name")."</a></th>"; 
+	echo "<tr>".
+			"<th></th>".
+			"<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"username") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "name"))."\">"._("Name")."</a></th>"; 
 	if($include_reputation)
-	echo "
-			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"reputation") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "reputation"))."\">"._("Reputation points")."</a></th>";
-	echo "
-			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"regdate") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "registered"))."\">"._("Registered")."</a></th>
-			<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"lastlogin") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "lastlogin"))."\">"._("Last logged in")."</a></th>
-	</tr>";
+	echo "<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"reputation") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "reputation"))."\">"._("Reputation points")."</a></th>";
+	echo "<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"regdate") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "registered"))."\">"._("Registered")."</a></th>".
+		 "<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"lastlogin") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "lastlogin"))."\">"._("Last logged in")."</a></th>".
+	"</tr>";
 	
 	for($i=1;$u=mysql_fetch_array($users);$i++)
 	{
-		echo "<tr>
-				<td>$i</td>
-				<td>".user_get_link($u['id'])."</td>";
+		echo "<tr>".
+				"<td>$i</td>".
+			"<td>".user_get_link($u['id'])."</td>";
 		if($include_reputation)
-			echo "
-				<td>$u[reputation]</td>";
-		echo "
-				<td>".date("Y-m-d H:i",strtotime($u['regdate']))."</td>
-				<td>".date("Y-m-d H:i",strtotime($u['lastlogin']))."</td>
-			</tr>";
+			echo "<td>$u[reputation]</td>";
+		echo "<td>".date("Y-m-d H:i",strtotime($u['regdate']))."</td>".
+			 "<td>".date("Y-m-d H:i",strtotime($u['lastlogin']))."</td>".
+			"</tr>";
 	}
 	echo "</table>";
 }
