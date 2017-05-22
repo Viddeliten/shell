@@ -90,6 +90,11 @@ function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $r
 		$columns=$nr;
 	
 	$col_size=(int)(12/$columns);
+	if($col_size<=2)
+		$col_md_size=ceil($col_size*1.5);
+	else
+		$col_md_size=$col_size;
+	
 	$col_sm_size=(int)(12/$min_columns);
 		
 	$return="";
@@ -100,7 +105,7 @@ function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $r
 		{
 			if($key%$columns==0 && $key!=0)
 				$return.= '</div><div class="row">';
-			$return.= html_element($col_size, $col_sm_size, $e, $element_class);
+			$return.= html_element($col_md_size, $col_sm_size, $e, $element_class, $col_size);
 		}
 		$return.='</div>';
 	}
