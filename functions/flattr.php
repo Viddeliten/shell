@@ -45,9 +45,8 @@ function flattr_get_flattrID($user_id)
 		{
 			return $u['flattrID'];
 		}
-		return NULL;
 	}
-	return 0;
+	return FALSE;
 }
 
 function flattr_get_button_code($user_id, $flattr_id, $type, $url, $title, $description)
@@ -86,7 +85,7 @@ function flattr_set_flattrID($user_id, $flattr_id)
 	if(strcmp($flattr_id,$current_id))
 	{
 		//set it
-		if($current_id===NULL)
+		if($current_id===FALSE)
 			$sql="INSERT INTO ".PREFIX."flattr SET flattrID='".sql_safe($flattr_id)."', user_id='".sql_safe($user_id)."';";
 		else
 			$sql="UPDATE ".PREFIX."flattr SET flattrID='".sql_safe($flattr_id)."' WHERE user_id='".sql_safe($user_id)."';";
