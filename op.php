@@ -26,4 +26,6 @@ switch($_REQUEST['f'])
 		break;
 }
 
-db_close($connection);	
+db_close($connection);
+
+?>
