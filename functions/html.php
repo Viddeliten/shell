@@ -51,6 +51,33 @@ function html_rows($min_columns, $max_columns, $elements, $element_class=NULL, $
 	return $return;
 }
 
+function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=NULL)
+{
+	$return='<div class="row'.($row_class==NULL ? "":" ".$row_class).'">';
+	foreach($lg_sizes as $key => $val)
+	{
+		$col_lg_size=$val;
+		if($col_lg_size<3 || 12-$col_lg_size<3)
+		{
+			$col_md_size=12;
+		}
+		else
+			$col_md_size=$val;
+
+		if($col_lg_size<6 || 12-$col_lg_size<6)
+		{
+			$col_sm_size=12;
+		}
+		else
+			$col_sm_size=$val;
+
+		$col_xs_size=12; //Always make it full columns on mobile for now
+
+		$return.= html_tag("div", $elements[$key], "col-lg-".$col_lg_size." col-md-".$col_md_size." col-sm-".$col_sm_size." col-xs-".$col_xs_size);
+	}
+	$return.='</div>';
+	return $return;
+}
 function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $row_class=NULL)
 {
 	$nr=count($elements);
@@ -80,24 +107,25 @@ function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $r
 	return $return;
 }
 
-function html_elements($col_size, $col_sm_size, $elements, $element_class=NULL)
+function html_elements($col_size, $col_xs_size, $elements, $element_class=NULL)
 {
 	$return="";
 	foreach($elements as $e)
 	{
 		if(is_array($e))
-			$return.=html_elements($col_size, $col_sm_size, $e);
+			$return.=html_elements($col_size, $col_xs_size, $e);
 		else
-			$return.=html_element($col_size, $col_sm_size, $e, $element_class);
+			$return.=html_element($col_size, $col_xs_size, $e, $element_class);
 	}
 	return $return;
 }
 
-function html_element($col_md_size, $col_xs_size, $element, $element_class=NULL)
+function html_element($col_md_size, $col_xs_size, $element, $element_class=NULL, $col_lg_size=NULL)
 {
-	$col_sm_size=(int)(12/(((12/$col_xs_size)+(12/$col_md_size))/2));
+	// preprint(array($col_md_size, $col_xs_size, $element, $element_class, $col_lg_size),"DEBUGhtml_element");
+	$col_sm_size=(int)(12/(ceil(6/($col_xs_size))+ceil(6/($col_md_size))));
 	$return="";
-	$return.= '<div class="col-md-'.$col_md_size.' col-sm-'.$col_sm_size.' col-xs-'.$col_xs_size.''.($element_class==NULL ? "":" ".$element_class).'">';
+	$return.= '<div class="col-md-'.$col_md_size.' col-sm-'.$col_sm_size.' col-xs-'.$col_xs_size.''.($col_lg_size==NULL ? "":" col-lg-".$col_lg_size).''.($element_class==NULL ? "":" ".$element_class).'">';
 	if(is_array($element))
 		$return.=html_elements(12,12,$element);
 	else

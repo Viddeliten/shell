@@ -274,8 +274,7 @@ function comments_show_comments_and_replies($id, $type)
 	else
 		echo "
 		<a id=\"".$type."comments".$id."\"";
-	echo " 
-			onClick=\"showhide('comments".$id."');showhide('".$type."comments".$id."');\" class=\"commentclicker\" href=\"#comment\">
+	echo "onClick=\"showhide('comments".$id."');showhide('".$type."comments".$id."');\" class=\"commentclicker\" href=\"#comment\">
 				[-"._("Show comments")." ($nrcomments)-]
 		</a>
 	</p>";
