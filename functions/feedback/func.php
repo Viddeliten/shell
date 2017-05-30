@@ -147,6 +147,10 @@ function feedback_recieve()
 				feedback_set_all_checked_in_as_resolved();
 			}
 		}
+		if(isset($_POST['feedback_check_in']))
+		{
+			feedback_set_checked_in($_POST['id']);
+		}
 		if(isset($_POST['feedback_plusone']))
 		{
 			// echo "<br />DEBUG1938: plusone on ".$_POST['id'];
@@ -762,7 +766,7 @@ function feedback_status_show($id, $accepted=NULL, $checked_in=NULL, $resolved=N
 	{
 		if($checked_in==NULL && $resolved==NULL)
 		{
- 			echo "<button class=\"form-control btn-info\" id=\"feedback_checked_in_".$id."\" onclick=\"feedback_operation('feedback_check_in',".$id.", '".$parent_div."'); return true;\">"._("Solution is checked in")."</button>";
+ 			echo '<input type="submit" name="feedback_check_in" class="form-control btn-info" id=\"feedback_checked_in_".$id."\" onclick=\"return true;\" value="'._("Solution is checked in").'" />';
 		}
 		else if($resolved==NULL)
 		{
@@ -1880,7 +1884,10 @@ function feedback_display_progressbar($size)
 	$result=sql_get($sql);
 	$total=$result[0]['nr'];
 	
-	$percent=round(($nr/$total)*100);
+	if($total!=0)
+		$percent=round(($nr/$total)*100);
+	else
+		$percent=100;
 	
 	//Get correct text
 	if($size==SIZE_BUG)
