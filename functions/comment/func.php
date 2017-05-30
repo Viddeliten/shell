@@ -256,8 +256,10 @@ function comment_show_comments($id, $type)
 	return $nr;
 }
 
-function comments_show_comments_and_replies($id, $type)
+function comments_show_comments_and_replies($id, $type, $print=TRUE)
 {
+	ob_start();
+
 	if(isset($_GET['comment'])) //we are on a link to a specific comment
 		echo "<div id=\"comments".$id."\">";
 	else
@@ -278,6 +280,13 @@ function comments_show_comments_and_replies($id, $type)
 				[-"._("Show comments")." ($nrcomments)-]
 		</a>
 	</p>";
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($print)
+		echo $contents;
+	else
+		return $contents;
 }
 
 function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlist")
