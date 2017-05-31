@@ -291,8 +291,9 @@ function feedback_show_all()
 	
 	$total_pages=ceil(feedback_get_nr_total()/$nr_per_page);
 	
-	$feedbacks=feedback_get_array($from,$to);
-	feedback_display_headline_list_from_array($feedbacks, sprintf(_("Feedbacks page %s"),$page), 1);
+	//Get and display suggested
+	$sql=feedback_get_sql(SIZE_SUGGESTED, $nr_per_page, $from);
+	feedback_display_headline_list($sql, sprintf(_("Feedbacks page %s"),$page), 1);
 
 	html_pagination_row("page", $total_pages);
 }
@@ -1222,11 +1223,9 @@ function feedback_get_nr_ongoing()
 	return mysql_affected_rows();
 }
 
-//Visa några nya SOM länkar! Bara rubriker!
-function feedback_display_list($size, $nr, $headline, $headlinesize)
+function feedback_get_sql($size, $nr, $offset=0)
 {
-	
-	$sql="SELECT id, ".REL_STR." as rel
+	$sql="SELECT feedback.*, ".REL_STR." as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND merged_with IS NULL
@@ -1242,10 +1241,17 @@ function feedback_display_list($size, $nr, $headline, $headlinesize)
 	if($size==SIZE_SUGGESTED) //If size does not matter, we are suggesting. We should list feedbacks with size<SMALL_CHANGE (bugs and required) first
 		$sql.="IF(size < ".SIZE_SMALL_CHANGE.",1,0) DESC, ";
 	$sql.=ORDER_STR."
-	LIMIT ".sql_safe($nr).";";
+	LIMIT ".sql_safe($offset).", ".sql_safe($nr).";";
+	
+	return $sql;
+}
+
+//Visa några nya SOM länkar! Bara rubriker!
+function feedback_display_list($size, $nr, $headline, $headlinesize, $offset=0)
+{
+	$sql=feedback_get_sql($size, $nr, $offset);
 	
 	feedback_display_headline_list($sql, $headline, $headlinesize);
-	
 }
 
 function feedback_display_list_checked_in($nr, $headline, $headlinesize, $display_user=TRUE)

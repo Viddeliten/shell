@@ -42,7 +42,25 @@ function api_get($url)
 
 function api_feedback()
 {
-	$feedback=feedback_get_array((isset($_REQUEST['from']) ? $_REQUEST['from'] : 0), (isset($_REQUEST['to']) ? $_REQUEST['to'] : 5));
+	//Calculate number per page
+	$nr_per_page=5; //Default number
+	if(isset($_REQUEST['to']))
+	{
+		if(isset($_REQUEST['from']))
+		{
+			$nr_per_page=$_REQUEST['to']-$_REQUEST['from'];
+		}
+		else
+			$nr_per_page=$_REQUEST['to'];
+	}
+	
+	//Get sql
+	$sql=feedback_get_sql(SIZE_SUGGESTED, $nr_per_page, (isset($_REQUEST['from']) ? $_REQUEST['from'] : 0));
+	
+	//Fetch array
+	$feedback=sql_get($sql, true);
+	
+	//Print json encoded
 	echo json_encode($feedback);
 }
 ?>
