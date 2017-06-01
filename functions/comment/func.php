@@ -276,7 +276,7 @@ function comments_show_comments_and_replies($id, $type, $print=TRUE)
 		
 	if(login_check_logged_in_mini()>0)
 		comment_form_show($id, $type, _("Add a comment:"));
-	else if(strcmp($_GET['p'],"add_comment"))
+	else if(!isset($_GET['p']) || strcmp($_GET['p'],"add_comment"))
 		echo html_link(comment_get_link_add_comment($id, $type), _("Add a comment"));
 	
 	echo "</div>";
@@ -433,6 +433,14 @@ function comment_get_link($id, $link_id=NULL)
 	{
 		if($c=mysql_fetch_array($cc))
 		{
+			//try to get custom link first
+			if(function_exists("link_get_custom_comment_link"))
+			{
+				$custom_comment_link = link_get_custom_comment_link($c['id'], $c['comment_type'], $c['comment_on']);
+				if($custom_comment_link!=NULL)
+					return $custom_comment_link;
+			}
+			
 			// echo "<br />DEBUG2056: ".$c['comment_type'];
 			if(!strcmp($c['comment_type'],"comment"))
 			{
@@ -447,14 +455,12 @@ function comment_get_link($id, $link_id=NULL)
 					return user_get_link_url($c['comment_on'])."&amp;comment#anchor_comment_".$link_id;
 				else if(!strcmp($c['comment_type'],"news"))
 					return news_get_link_url($c['comment_on'])."&amp;comment#anchor_comment_".$link_id;
-				else if(!strcmp($c['comment_type'],"stable"))
-					return stable_get_link_url($c['comment_on'])."&amp;comment#anchor_comment_".$link_id;
 				else
 					return SITE_URL."?p=".$c['comment_type']."&amp;".$c['comment_type']."=".$c['comment_on']."&amp;comment#anchor_comment_".$link_id;
 			}
 		}
 	}
-
+	
 	return NULL;
 }
 
