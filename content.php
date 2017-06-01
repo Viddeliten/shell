@@ -19,6 +19,31 @@ else if(isset($_REQUEST['p']))
 	{
 		//Do nothing else. =)
 	}
+	else if(!strcmp($_GET['p'],"add_comment"))
+	{
+		$type=$_GET['s'];
+		
+		switch($type)
+		{
+			case "comment":
+				echo html_tag("div",comment_display_single($_GET['id'], NULL, FALSE),"comment");
+				break;
+			case "news":
+				news_show();
+				break;
+			case "feedback":
+				$ff=feedback_get_list_specific($_GET['id']);
+				feedback_list_print($ff);
+				break;
+			default:
+				//try to find a custom function maybe?
+				$_GET['p']=$type;
+				
+				if(!custom_page_display())
+					echo html_tag("p",sprintf(_("Content: %s #%s"),sql_safe($type), sql_safe($_GET['id'])));
+		}
+		comment_form_show($_GET['id'], $type, _("Comment on this"));
+	}
 	else if(!strcmp($_GET['p'],"feedback"))
 	{
 		if(isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['s']),"all"))

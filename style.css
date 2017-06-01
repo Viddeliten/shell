@@ -250,7 +250,8 @@ li.list-group-item.feedback
 	border-right: 1px solid #8C8C8C;
 }
 
-.news_post .date
+/* .news_post  */
+.news_post .date, .date
 {
 	border-bottom: 1px solid #8C8C8C;
 	font-size: 80%;

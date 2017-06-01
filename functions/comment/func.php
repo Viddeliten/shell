@@ -24,6 +24,10 @@ function comment_receive()
 			else
 				add_error(_("Feedback could not be posted.<br />You do not appear to be human. Feeling ok?"));
 		}
+		else if(!is_numeric($_POST['id']))
+		{
+			message_add_error(sprintf(_("Unable to find instance to comment on. Invalid id '%s'"), $_POST['id']));
+		}
 		else
 		{
 			// Captcha or login passed
@@ -120,8 +124,16 @@ function comment_receive()
 
 function comment_form_show($id, $type, $beforetext)
 {
+	if(login_check_logged_in_mini()<1 && !strcmp($type,"comment"))
+	{
 	?>
-	<form method="post">
+		<form method="post" action="<?php echo comment_get_link($id); ?>">
+	<?php } else if(login_check_logged_in_mini()<1) { ?>
+		<form method="post" action="<?php echo SITE_URL."/".$type."/id/".$id; ?>">
+	<?php } else { ?>
+		<form method="post">
+	<?php } ?>
+	
 		<h3><?php echo $beforetext ?></h3>
 	<?php
 	if(login_check_logged_in_mini()<1)
@@ -233,15 +245,9 @@ function comment_show_comments($id, $type)
 			}
 			else
 			{
-				//Om man inte är inloggad ska man kunna svara med captcha
-
-				echo "<a class=\"button\" onClick=\"showhide('replyto".$c['id']."');\" href=\"#reply\">"._("Reply")."</a>";
-				echo "<div id=\"replyto".$c['id']."\" style=\"display:none\">";
-				comment_form_show($c['id'], "comment", "");
-				echo "</div>";
+				//Om man inte är inloggad ska man kunna svara med captcha på separat sida
+				echo html_link(comment_get_link_add_comment($c['id'], "comment"), _("Reply"));
 			}
-			
-			
 		
 			//Skriv ut svar på denna
 			//echo "<br />DEBUG: $nr + comment_show_comments = ";
@@ -267,7 +273,12 @@ function comments_show_comments_and_replies($id, $type, $print=TRUE)
 		
 		echo "<p><a class=\"comments".$id." commentclicker\" onClick=\"showhide('comments".$id."');showhide('".$type."comments".$id."');\" class=\"commentclicker\" href=\"#comment\">[-"._("Hide comments")."-]</a></p>"; //toggle-pryl! =)
 		$nrcomments=comment_show_comments($id, $type);
+		
+	if(login_check_logged_in_mini()>0)
 		comment_form_show($id, $type, _("Add a comment:"));
+	else if(strcmp($_GET['p'],"add_comment"))
+		echo html_link(comment_get_link_add_comment($id, $type), _("Add a comment"));
+	
 	echo "</div>";
 	echo "<p>";
 	if(isset($_GET['comment'])) //we are on a link to a specific comment
@@ -280,6 +291,7 @@ function comments_show_comments_and_replies($id, $type, $print=TRUE)
 				[-"._("Show comments")." ($nrcomments)-]
 		</a>
 	</p>";
+	
 	$contents = ob_get_contents();
 	ob_end_clean();
 	
@@ -320,8 +332,9 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlis
 	}
 }
 
-function comment_display_single($comment_id, $max_length=NULL)
+function comment_display_single($comment_id, $max_length=NULL, $print=TRUE)
 {
+	ob_start();
 	$sql="SELECT 
 					id,
 					comment_type,
@@ -395,6 +408,19 @@ function comment_display_single($comment_id, $max_length=NULL)
 				echo "</div>";
 		}
 	}
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($print)
+		echo $contents;
+	else
+		return $contents;
+}
+
+function comment_get_link_add_comment($id, $type)
+{
+	return SITE_URL."/add_comment/".$type."/".$id;
 }
 
 function comment_get_link($id, $link_id=NULL)
@@ -420,7 +446,7 @@ function comment_get_link($id, $link_id=NULL)
 					// return SITE_URL."?comment&amp;p=user&amp;user=".$c['comment_on']."#anchor_comment_".$link_id;
 					return user_get_link_url($c['comment_on'])."&amp;comment#anchor_comment_".$link_id;
 				else if(!strcmp($c['comment_type'],"news"))
-					return news_get_link_url($c['comment_on'])."#anchor_comment_".$link_id;
+					return news_get_link_url($c['comment_on'])."&amp;comment#anchor_comment_".$link_id;
 				else if(!strcmp($c['comment_type'],"stable"))
 					return stable_get_link_url($c['comment_on'])."&amp;comment#anchor_comment_".$link_id;
 				else
