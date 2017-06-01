@@ -304,15 +304,21 @@ function feedback_show()
 	
 	echo '<div class="row">
 		<div class="col-lg-8">';
-	echo '<h1>'._("Feedback").'</h1>
-			<p>'._("Suggestions for improvements, bufixes and ideas!").'</p>';
-	echo html_action_button(SITE_URL."/feedback/all", _("List all feedbacks"));
+	echo '<h1>'._("Feedback").'</h1>';
 	
-	//Show progress bar for reported bugs and required feedback since last version
-	if(login_check_logged_in_mini()>1) //Only show to admins
+	// If we are NOT showing a specific feedback, show a little text, button for listing all feedbacks and progress bars
+	if(!isset($_GET['id']))
 	{
-		feedback_display_progressbar(1);
-		feedback_display_progressbar(2);
+		echo '
+				<p>'._("Suggestions for improvements, bufixes and ideas!").'</p>';
+		echo html_action_button(SITE_URL."/feedback/all", _("List all feedbacks"));
+		
+		//Show progress bar for reported bugs and required feedback since last version
+		if(login_check_logged_in_mini()>1) //Only show to admins
+		{
+			feedback_display_progressbar(1);
+			feedback_display_progressbar(2);
+		}
 	}
 	
 	if(isset($_GET['id']))
