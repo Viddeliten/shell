@@ -217,6 +217,11 @@ function user_get_link($user_id)
 		return "<a href=\"".user_get_link_url($user_id)."\">".user_get_name($user_id)."</a>";
 }
 
+function user_get_link_address($user_id)
+{
+	return user_get_link_url($user_id);
+}
+
 function user_get_id_from_username($username)
 {
 	$sql="SELECT id FROM ".PREFIX."user WHERE username='".sql_safe($username)."';";

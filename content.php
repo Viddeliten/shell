@@ -25,6 +25,9 @@ else if(isset($_REQUEST['p']))
 		
 		switch($type)
 		{
+			case "user":
+				user_display_profile($_GET['id']);
+				break;
 			case "comment":
 				echo html_tag("div",comment_display_single($_GET['id'], NULL, FALSE),"comment");
 				break;

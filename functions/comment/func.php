@@ -124,15 +124,24 @@ function comment_receive()
 
 function comment_form_show($id, $type, $beforetext)
 {
+	echo '<div class="comment_form">';
+	
+	$action_url="";
+	
 	if(login_check_logged_in_mini()<1 && !strcmp($type,"comment"))
 	{
+		$action_url=comment_get_link($id);
+	}
+	else if(!strcmp($type,"user"))
+	{
+		$action_url=user_get_link_address($id);
+	}
+	else if(login_check_logged_in_mini()<1)
+	{
+		$action_url=SITE_URL."/".$type."/id/".$id;
+	}
 	?>
-		<form method="post" action="<?php echo comment_get_link($id); ?>">
-	<?php } else if(login_check_logged_in_mini()<1) { ?>
-		<form method="post" action="<?php echo SITE_URL."/".$type."/id/".$id; ?>">
-	<?php } else { ?>
-		<form method="post">
-	<?php } ?>
+	<form method="post" <?php echo ($action_url!="" ? 'action="'.$action_url.'"' : ""); ?>">
 	
 		<h3><?php echo $beforetext ?></h3>
 	<?php
@@ -156,6 +165,7 @@ function comment_form_show($id, $type, $beforetext)
 		<input type="submit" name="addcomment" value="<?php echo _("Send"); ?>" class="form-control">
 	</form>
 	<?php
+	echo '</div>';
 }
 
 function comment_show_comments($id, $type)
