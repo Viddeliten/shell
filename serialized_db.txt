@@ -113,7 +113,7 @@ a:18:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE
   `opened` datetime DEFAULT NULL,
   `deleted` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:10;a:2:{s:5:"Table";s:4:"user";s:12:"Create Table";s:712:"CREATE TABLE IF NOT EXISTS `user` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:10;a:2:{s:5:"Table";s:4:"user";s:12:"Create Table";s:747:"CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `regdate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lastlogin` datetime DEFAULT NULL,
@@ -124,6 +124,7 @@ a:18:{i:0;a:2:{s:5:"Table";s:7:"comment";s:12:"Create Table";s:851:"CREATE TABLE
   `level` int(11) NOT NULL DEFAULT '1' COMMENT 'vilka rättigheter användaren har beror på denna siffra',
   `reputation` int(11) NOT NULL DEFAULT '0' COMMENT 'Used by some sites to value users',
   `inactive` datetime DEFAULT NULL,
+  `blocked` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:11;a:2:{s:5:"Table";s:11:"user_friend";s:12:"Create Table";s:529:"CREATE TABLE IF NOT EXISTS `user_friend` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
