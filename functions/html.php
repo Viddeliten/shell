@@ -256,7 +256,7 @@ function html_tooltip($tip_text)
 	return '<a class="helpmarker" href=# title="'.$tip_text.'">?</a>';
 }
 
-function html_table_from_array($array, $headlines=NULL)
+function html_table_from_array($array, $headlines=NULL, $silent_columns=array())
 {
 	$r="<table class=\"table table-striped table-condensed\">
 	<tr>";
@@ -265,8 +265,11 @@ function html_table_from_array($array, $headlines=NULL)
 	{
 		foreach($array[0] as $key => $val)
 		{
-			$r.="<th>$key</th>";
-			$keys[]=$key;
+			if(!in_array($key,$silent_columns))
+			{
+				$r.="<th>$key</th>";
+				$keys[]=$key;
+			}
 		}
 	}
 	else
@@ -283,7 +286,10 @@ function html_table_from_array($array, $headlines=NULL)
 		$r.="<tr>";
 		foreach($keys as $k)
 		{
-			$r.="<td>".$a[$k]."</td>";
+			if(!in_array($k,$silent_columns))
+			{
+				$r.="<td>".$a[$k]."</td>";
+			}
 		}
 		$r.="</tr>";
 	}
