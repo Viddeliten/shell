@@ -12,7 +12,7 @@ function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=tru
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a id="navbar-site-name" class="navbar-brand" href="<?php echo SITE_URL; ?>"><?php echo ($icon_path!==NULL? '<img src="'.$icon_path.'"/>' : SITE_NAME); ?></a>
+          <a id="navbar-site-name" class="navbar-brand" href="<?php echo SITE_URL; ?>"><?php echo ($icon_path!==NULL? '<img src="'.SITE_URL.'/'.$icon_path.'"/>' : SITE_NAME); ?></a>
 		  <?php version_show_linked_number("v", 'navbar-brand'); ?>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
