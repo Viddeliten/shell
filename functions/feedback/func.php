@@ -1231,7 +1231,7 @@ function feedback_get_nr_ongoing()
 
 function feedback_get_sql($size, $nr, $offset=0)
 {
-	$sql="SELECT feedback.*, ".REL_STR." as rel
+	$sql="SELECT ".PREFIX."feedback.*, ".REL_STR." as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND merged_with IS NULL
@@ -1256,7 +1256,6 @@ function feedback_get_sql($size, $nr, $offset=0)
 function feedback_display_list($size, $nr, $headline, $headlinesize, $offset=0)
 {
 	$sql=feedback_get_sql($size, $nr, $offset);
-	
 	feedback_display_headline_list($sql, $headline, $headlinesize);
 }
 
