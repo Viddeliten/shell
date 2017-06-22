@@ -297,25 +297,30 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array())
 	return $r;
 }
 
-function html_pagination_row($page_nr_name, $total_pages)
+function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1)
 {
-	echo '<div class="row center">
-		<nav>
-		  <ul class="pagination">';
-	if(!isset($_REQUEST[$page_nr_name]) || $_REQUEST[$page_nr_name]<1)
-		echo '<li class="disabled"> <a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
-	else
-		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $_REQUEST[$page_nr_name]-1).'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
-
 	
 	if(isset($_REQUEST[$page_nr_name]))
 		$pnr=$_REQUEST[$page_nr_name];
 	else
-		$pnr=1;
+		$pnr=$first_page_number;
+
+	echo '<div class="row center">
+		<nav>
+		  <ul class="pagination">';
 	
-	for($i=($pnr-5);$i<$total_pages && $i<($pnr+5); $i++)
+	// if we are further along than 5 pages in, put a link to first page
+	if($pnr-5>$first_page_number)
+		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $first_page_number).'" aria-label="First"><span aria-hidden="true">|&laquo;</span></a></li>';
+	
+	if($pnr<$first_page_number)
+		echo '<li class="disabled"> <a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
+	else if($pnr>$first_page_number)
+		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $_REQUEST[$page_nr_name]-1).'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
+
+	for($i=($pnr-5);$i<=$total_pages && $i<($pnr+5); $i++)
 	{
-		if($i>=1)
+		if($i>=$first_page_number)
 		{
 			if($i==$pnr)
 			{
@@ -328,10 +333,15 @@ function html_pagination_row($page_nr_name, $total_pages)
 		}
 	}
 
-	if($i<=$total_pages)
-		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $i).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
+	if($pnr<$total_pages)
+		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
 	else 
-		echo '<li class="disabled"> <a href="'.add_get_to_current_URL($page_nr_name, $i).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
+		echo '<li class="disabled"> <a href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
+	
+	
+	if($i<$total_pages)
+		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $total_pages).'" aria-label="Next"><span aria-hidden="true">&raquo;|</span></a></li>';	
+	
 	echo '
 		  </ul>
 		</nav>
