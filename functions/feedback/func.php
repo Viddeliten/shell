@@ -58,7 +58,11 @@ IF((plusones
 +(1-size/4)*3) , children_rel)"
 );
 
-define('ORDER_STR', "IF(not_implemented,1,0) ASC, IF(resolved,resolved,30000101000000) DESC, IF(checked_in,checked_in,30000101000000) DESC, IF(accepted,1,0) DESC, rel DESC");
+define('ORDER_STR', "	IF(not_implemented,1,0) ASC, 
+						IF(resolved,resolved,30000101000000) DESC, 
+						IF(checked_in,checked_in,30000101000000) DESC, 
+						IF(accepted,1,0) DESC, 
+						rel DESC");
 
 function feedback_recieve()
 {
@@ -289,13 +293,14 @@ function feedback_show_all()
 	$from=($page-1)*$nr_per_page;
 	$to=($page)*$nr_per_page;
 	
-	$total_pages=ceil(feedback_get_nr_total()/$nr_per_page);
+	$total_feedbacks=feedback_get_nr_total();
+	$total_pages=ceil($total_feedbacks/$nr_per_page);
 	
 	//Get and display suggested
-	$sql=feedback_get_sql(SIZE_SUGGESTED, $nr_per_page, $from);
+	$sql=feedback_get_sql(SIZE_SUGGESTED, $nr_per_page, $from, FALSE, FALSE);
 	feedback_display_headline_list($sql, sprintf(_("Feedbacks page %s"),$page), 1);
 
-	html_pagination_row("page", $total_pages);
+	html_pagination_row("page", $total_pages, 1);
 }
 function feedback_show()
 {
@@ -1229,25 +1234,29 @@ function feedback_get_nr_ongoing()
 	return mysql_affected_rows();
 }
 
-function feedback_get_sql($size, $nr, $offset=0)
+function feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merged=TRUE)
 {
 	$sql="SELECT ".PREFIX."feedback.*, ".REL_STR." as rel
 	FROM ".PREFIX."feedback 
-	WHERE is_spam<1
-	AND merged_with IS NULL
-	";
+	WHERE is_spam<1 ";
+	if($no_merged)
+		$sql.=" AND merged_with IS NULL ";
 	if($size!=SIZE_SUGGESTED)
 		$sql.="AND size=".sql_safe($size);
+	if($only_unresolved)
+		$sql.="
+		AND resolved IS NULL
+		AND checked_in IS NULL
+		AND not_implemented IS NULL";
 	$sql.="
-	AND resolved IS NULL
-	AND checked_in IS NULL
-	AND not_implemented IS NULL
-	-- AND merged_with IS NULL
-	ORDER BY ";
+	ORDER BY ".ORDER_STR." ";
+		// IFNULL(accepted IS NULL, 0) DESC,
+		// IF(not_implemented IS NULL, 0) ASC,
+		// IF(resolved IS NULL, 0) ASC,
+		// IF(checked_in IS NULL, 0) DESC,";
 	if($size==SIZE_SUGGESTED) //If size does not matter, we are suggesting. We should list feedbacks with size<SMALL_CHANGE (bugs and required) first
-		$sql.="IF(size < ".SIZE_SMALL_CHANGE.",1,0) DESC, ";
-	$sql.=ORDER_STR."
-	LIMIT ".sql_safe($offset).", ".sql_safe($nr).";";
+		$sql.=", IF(size < ".SIZE_SMALL_CHANGE.",1,0) DESC ";
+	$sql.="LIMIT ".sql_safe($offset).", ".sql_safe($nr).";";
 	
 	return $sql;
 }
