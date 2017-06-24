@@ -1214,11 +1214,12 @@ function feedback_display_accepted($nr)
 	}
 }
 
-function feedback_get_nr_total()
+function feedback_get_nr_total($no_merged=FALSE)
 {
 	$sql="SELECT * FROM ".PREFIX."feedback 
-	WHERE is_spam<1
-	AND merged_with IS NULL";
+	WHERE is_spam<1 ";
+	if($no_merged)
+		$sql.=" AND merged_with IS NULL";
 	mysql_query($sql);
 	return mysql_affected_rows();
 }
