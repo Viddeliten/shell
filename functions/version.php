@@ -129,10 +129,12 @@ function version_show_linked_number($before_str, $link_class="")
 
 function version_show_latest($nr=10)
 {
+	$logged_in_level=login_check_logged_in_mini();	
+	
 	echo "<h3>"._("Changelog")."</h3>";
 	
 	//Om man är admin vill man se vad som är färdigt, men inte tillagt i en version
-	$logged_in_level=login_check();
+
 	if($logged_in_level>1) //login_check()>1)
 	{
 		version_add_unlinked_feedbacks_to_latest(NULL);
