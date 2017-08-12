@@ -93,10 +93,10 @@ else if(isset($_REQUEST['p']))
 	}
 	else if(!strcmp($_GET['p'],"admin"))
 	{
-		if(login_check()>1)
+		if(login_check_logged_in_mini()>1)
 			admin_display_contents();
 		else
-			echo login_check();
+			echo login_check_logged_in_mini();
 	}
 	else if(!strcmp($_GET['p'],"changelog"))
 	{
