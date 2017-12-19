@@ -43,6 +43,8 @@ function user_receive()
 			}
 			//Flattr choice. Allways do this!
 			flattr_set_flattr_choice($user_id, $_POST['flattr_choice']);
+			
+			user_set_custom_choices($_POST);
 		}
 	}
 	else if(isset($_POST['profile_save']))
@@ -367,6 +369,26 @@ function user_display_settings()
 				foreach($custom_settings['flattr'] as $custom_flattr_choice => $translation)
 					user_setting_flattr_display($user_id, $custom_flattr_choice, $translation);
 			}
+			
+			foreach($custom_settings as $cs => $val)
+			{
+				if(strcmp($cs,"flattr"))
+				{
+					echo '<strong>'.$cs.'</strong>';
+					foreach($val as $cc => $v)
+					{
+						echo '<div class="checkbox">';
+							echo '<label>
+								<input type="checkbox" name="'.$cs.'[]" value="'.$cc.'"';
+								// if(flattr_get_flattr_choice($user_id, "feedback"))
+									// echo ' checked';
+								echo '>
+								'.$v.'
+							  </label>';
+						echo '</div>';
+					}
+				}
+			}
 		}
 
 		//Save button
@@ -512,6 +534,13 @@ function user_set_password($user_id, $new_password)
 		else
 			add_error("New password could not be set: ".mysql_error());
 	}
+}
+
+function user_set_custom_choices($post)
+{
+	//First get what choices outside of flattr there is
+	
+	//Save the choices user has made
 }
 
 function user_name_exists($username)
