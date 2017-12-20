@@ -50,8 +50,11 @@ define('CUSTOM_PAGES_ARRAY',serialize(array(
 /*		Extra settings			*/
 /********************************/
 define('CUSTOM_SETTINGS',serialize(array(
-	"flattr"	=>	array(	"some_object" => _("Some object"))
-	)));
+	"flattr"	=>	array(	"some_object" => _("Some object")),
+	"My custom setting"	=>	array(	"some_setting" => _("Some setting you might want to have"),
+									"some_other_setting" => _("Some OTHER setting")
+								)
+)));
 define('NUMBER_OF_EMAIL_NOTIFY',100); //How many emails usermessage system is allowed to sent each hour
 
 //uncomment to remove "This site is presented by" (but not the ViddeWebb logo)

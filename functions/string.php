@@ -166,7 +166,7 @@ function string_slugify($text)
 }
 function string_unslugify($text)
 {
-	return ucfirst(str_replace("_"," ",$text));
+	return ucfirst(str_replace("-"," ",$text));
 }
 
 function preprint($value, $label="")
