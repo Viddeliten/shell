@@ -91,11 +91,13 @@ function user_display_dropdown()
           </ul>';
 }
 
-function user_get_all($type)
+function user_get_all($type, $limit=NULL)
 {
-	$sql="SELECT id FROM user";
+	$sql="SELECT id FROM ".PREFIX."user";
 	if(!strcmp($type,"active"))
-		$sql.=" WHERE lastlogin IS NOT NULL AND inactive IS NULL;";
+		$sql.=" WHERE lastlogin IS NOT NULL AND inactive IS NULL";
+	if($limit!==NULL)
+		$sql.=" ORDER BY RAND() LIMIT 0,".sql_safe($limit);
 	$r=array();
 	if($uu=mysql_query($sql))
 	{
@@ -566,6 +568,7 @@ function user_set_password($user_id, $new_password)
 function user_get_custom_setting_globals()
 {
 	$site_specific_user_settings=array();
+	require_once(CUSTOM_CONTENT_PATH."/globals.php");
 	
 	if(defined('CUSTOM_SETTINGS'))
 	{

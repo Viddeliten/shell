@@ -597,9 +597,9 @@ function usermessage_check_messages($user_id=NULL)
 	if($user_id!==NULL)
 		$users[]=$user_id;
 	else
-		$users=user_get_all("active");
+		$users=user_get_all("all", 20); //Used to be just active, but we want to send to inactives too. Limit to 20 because I think multiple messages can be sent if script runs too long and another script does too
 
-			$sql="SELECT event FROM ".PREFIX."messages_to_users GROUP BY event;";
+	$sql="SELECT event FROM ".PREFIX."messages_to_users GROUP BY event;";
 	if($mm=mysql_query($sql))
 	{
 		while($m=mysql_fetch_array($mm))
@@ -715,7 +715,9 @@ function usermessage_check_criteria($user, $message_event)
 					if($t=mysql_fetch_assoc($tt))
 					{
 						if($t['nr']>0)
+						{
 							return FALSE;
+						}
 					}
 				}
 			}
@@ -728,7 +730,9 @@ function usermessage_check_criteria($user, $message_event)
 				{
 					//User custom setting! Check if user has this setting
 					if(user_get_setting($user, array($c['user_column'] => $c['table_where']))!=$c['count_required'])
+					{
 						return FALSE;
+					}
 				}
 				else
 				{
@@ -737,14 +741,13 @@ function usermessage_check_criteria($user, $message_event)
 						WHERE ".sql_safe($c['user_column'])."=".sql_safe($user);
 					if($where!="")
 						$sql.=" AND (".$where.");";
-
 					if($tt=mysql_query($sql))
 					{
 						if($t=mysql_fetch_assoc($tt))
 						{
-							if($c['count_required']==0)
-								$c['count_required']=1;
-							if($t['nr']<$c['count_required'])
+							if($c['count_required']==0  && $t['nr']!=0)
+								return FALSE;
+							else if($t['nr']<$c['count_required'])
 								return FALSE;
 						}
 					}
