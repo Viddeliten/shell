@@ -127,7 +127,6 @@ function html_elements($col_size, $col_xs_size, $elements, $element_class=NULL)
 
 function html_element($col_md_size, $col_xs_size, $element, $element_class=NULL, $col_lg_size=NULL)
 {
-	// preprint(array($col_md_size, $col_xs_size, $element, $element_class, $col_lg_size),"DEBUGhtml_element");
 	$col_sm_size=(int)(12/(ceil(6/($col_xs_size))+ceil(6/($col_md_size))));
 	$return="";
 	$return.= '<div class="col-md-'.$col_md_size.' col-sm-'.$col_sm_size.' col-xs-'.$col_xs_size.''.($col_lg_size==NULL ? "":" col-lg-".$col_lg_size).''.($element_class==NULL ? "":" ".$element_class).'">';

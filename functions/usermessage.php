@@ -178,19 +178,19 @@ function usermessage_admin_show_form($SOURCE)
 		<label><?php echo _("Once"); ?>:</label>
 		<div class="radio">
 			<label>
-				<input type="radio" name="once" value="once" <?php echo (!strcmp($SOURCE['once'],"once")? 'checked="checked"' :''); ?> />
+				<input type="radio" name="once" value="once" <?php echo (isset($SOURCE['once']) && !strcmp($SOURCE['once'],"once")? 'checked="checked"' :''); ?> />
 				<?php echo _("Once").html_tooltip(_("Will only be sent once per user. Once you have gotten this, you will never see it again.")); ?>
 			</label>
 		</div>
 		<div class="radio">
 			<label>
-				<input type="radio" name="once" value="one_instance" <?php echo (!strcmp($SOURCE['once'],"one_instance")? 'checked="checked"' :''); ?>/>
+				<input type="radio" name="once" value="one_instance" <?php echo (isset($SOURCE['once']) && !strcmp($SOURCE['once'],"one_instance")? 'checked="checked"' :''); ?>/>
 				<?php echo _("One at the time").html_tooltip(_("Sending all the time when the criteria is fullfilled, but only if there is not a current message about it. Only use for in site private messages and notices.")); ?>
 			</label>
 		</div>
 		<div class="radio">
 			<label>
-				<input type="radio" name="once" value="multiple" <?php echo (!strcmp($SOURCE['once'],"multiple")? 'checked="checked"' :''); ?>/>
+				<input type="radio" name="once" value="multiple" <?php echo (isset($SOURCE['once']) && !strcmp($SOURCE['once'],"multiple")? 'checked="checked"' :''); ?>/>
 				<?php echo _("Multiple times").html_tooltip(_("Sending every time criteria is fullfilled, but cares about minimum waiting time.")); ?>
 			</label>
 		</div>
@@ -239,33 +239,78 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 	{
 		if($c['table_name']!="")
 		{
-			// add_message("<pre>".print_r($c,1)."</pre>");
+			add_message("<pre>".print_r($c,1)."</pre>");
 			
 			//Check that it doesn't already exist
-			$sql="SELECT id 
-			FROM ".PREFIX."criteria
-				WHERE name='".sql_safe($criteria_name)."'
-				AND table_name='".sql_safe($c['table_name'])."'
-				AND user_column='".sql_safe($c['user_column'])."'
-				AND count_required='".sql_safe($c['count_required'])."'
-				AND table_where='".sql_safe($c['table_where'])."'";
-			if($dd=mysql_query($sql))
+			if(strcmp($c['table_name'],PREFIX."user_setting"))
 			{
-				if(mysql_affected_rows()<1)
+				$sql="SELECT id 
+				FROM ".PREFIX."criteria
+					WHERE name='".sql_safe($criteria_name)."'
+					AND table_name='".sql_safe($c['table_name'])."'
+					AND user_column='".sql_safe($c['user_column'])."'
+					AND count_required='".sql_safe($c['count_required'])."'
+					AND table_where='".sql_safe($c['table_where'])."'";
+			
+				if($dd=mysql_query($sql))
 				{
-					$sql="INSERT INTO ".PREFIX."criteria SET 
-					name='".sql_safe($criteria_name)."',
-					 table_name='".sql_safe($c['table_name'])."',
-					 user_column='".sql_safe($c['user_column'])."',
-					 count_required='".sql_safe($c['count_required'])."',
-					 table_where='".sql_safe($c['table_where'])."'";
-					 if(!mysql_query($sql))
+					if(mysql_affected_rows()<1)
 					{
-						add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
+						$sql="INSERT INTO ".PREFIX."criteria SET 
+						name='".sql_safe($criteria_name)."',
+						 table_name='".sql_safe($c['table_name'])."',
+						 user_column='".sql_safe($c['user_column'])."',
+						 count_required='".sql_safe($c['count_required'])."',
+						 table_where='".sql_safe($c['table_where'])."'";
+						 if(!mysql_query($sql))
+						{
+							add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
+						}
+					}
+				}
+				$checkarr[]=$c['table_name'].",".$c['user_column'].",".$c['table_where'].",".($c['count_required']?$c['count_required']:0);
+			}
+			else
+			{
+				//Custom settings!
+				foreach($c['custom_setting'] as $custom_setting_type => $custom_settings)
+				{
+					$user_column=$custom_setting_type;
+					foreach($custom_settings as $setting => $v)
+					{
+						$table_where=$setting;
+						$count_required=$v['value'];
+
+						$sql="SELECT id 
+						FROM ".PREFIX."criteria
+						WHERE name='".sql_safe($criteria_name)."'
+						AND table_name='".sql_safe($c['table_name'])."'
+						AND user_column='".sql_safe($user_column)."'
+						AND table_where='".sql_safe($table_where)."'
+						AND count_required='".sql_safe($count_required)."';";
+						
+						if($dd=mysql_query($sql))
+						{
+							if(mysql_affected_rows()<1)
+							{
+								$sql="INSERT INTO ".PREFIX."criteria SET 
+								name='".sql_safe($criteria_name)."',
+								 table_name='".sql_safe($c['table_name'])."',
+								 user_column='".sql_safe($user_column)."',
+								 count_required='".sql_safe($count_required)."',
+								 table_where='".sql_safe($table_where)."'";
+							
+								if(!mysql_query($sql))
+								{
+									add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
+								}
+							}
+						}
+						$checkarr[]=$c['table_name'].",".$user_column.",".$table_where.",".($count_required ? $count_required : 0);
 					}
 				}
 			}
-			$checkarr[]=$c['table_name'].",".$c['user_column'].",".$c['table_where'].",".($c['count_required']?$c['count_required']:0);
+
 		}
 	}
 	
@@ -330,11 +375,11 @@ function usermessage_criterias_form($nr_id, $criteria_name=NULL)
 		}
 		
 		if(empty($criterias))
-			$next_id=usermessage_criterias_form_row($nr_id);
+			$next_id=usermessage_criterias_form_row($nr_id, NULL, $criteria_name);
 		else
 		{
 			foreach($criterias as $key => $c)
-				$next_id=usermessage_criterias_form_row($key, $c);
+				$next_id=usermessage_criterias_form_row($key, $c, $criteria_name);
 		}
 		
 		?>
@@ -369,10 +414,10 @@ function usermessage_criterias_droplist($droplist_id_name)
 /************************************************************************/
 /*		Displays a row with form elements for usermessage criteria		*/
 /************************************************************************/
-function usermessage_criterias_form_row($nr_id, $SOURCE=NULL)
+function usermessage_criterias_form_row($nr_id, $SOURCE=NULL, $criteria_name=NULL)
 {
 	if($SOURCE==NULL)
-		$SOURCE=$_REQUEST['criteria'][$nr_id];
+		$SOURCE=(isset($_REQUEST['criteria'][$nr_id]) ? $_REQUEST['criteria'][$nr_id] : array());
 
 	$tables=sql_get_tables();
 	foreach($tables as $table)
@@ -382,30 +427,86 @@ function usermessage_criterias_form_row($nr_id, $SOURCE=NULL)
 	?>
 	<div class="form-inline">
 		<?php	
-		//Droplist with all tables
-		$path=SITE_URL.'/operation/condition_form.php/?1='.($nr_id).'&criteria['.$nr_id.'][table_name]'."='+this.value+'&criteria[".$nr_id."][table_where]='+document.getElementById('"."where_value_".$nr_id."').value+' ";
-		$onclick="replace_html_div('criteria_".$nr_id."', '$path'); return false;";
-		echo html_form_droplist(	"criteria_table_name_".$nr_id, 
-										_("Table name:"), 
-										"criteria[".$nr_id."][table_name]", 
-										$options, 
-										(isset($SOURCE['table_name'])?$SOURCE['table_name']:""),
-										$onclick);	
+		if(isset($SOURCE['table_name']) && !strcmp($SOURCE['table_name'], PREFIX."user_setting"))
+			$custom_option=TRUE;
+		else
+			$custom_option=FALSE;
 		
-		//Droplist with all columns in selected table
-		$selected_table=(isset($SOURCE['table_name'])? $SOURCE['table_name']:$options[0]);
-		$options=array();
-		$columns=sql_get_columns($selected_table);
-		foreach($columns as $column)
+		if(!$custom_option || !defined("CUSTOM_OPTION_ROW_0"))
 		{
-			$options[$column]=$column;
+			if($custom_option)
+				define("CUSTOM_OPTION_ROW_0",1);
+				
+			//Droplist with all tables
+			if(!$custom_option)
+				$path=SITE_URL.'/operation/condition_form.php/?1='.($nr_id).'&criteria['.$nr_id.'][table_name]'."='+this.value+'&criteria[".$nr_id."][table_where]='+document.getElementById('where_value_".$nr_id."').value+' ";
+			else
+				$path=SITE_URL.'/operation/condition_form.php/?1='.($nr_id).'&criteria['.$nr_id.'][table_name]'."='+this.value+'&criteria[".$nr_id."][table_where]=NULL ";
+
+			$onclick="replace_html_div('criteria_".$nr_id."', '$path'); return false;";
+			echo html_form_droplist(	"criteria_table_name_".$nr_id, 
+											_("Table name:"), 
+											"criteria[".$nr_id."][table_name]", 
+											$options, 
+											(isset($SOURCE['table_name']) ? $SOURCE['table_name'] : ""),
+											$onclick);	
 		}
-		echo html_form_droplist(	"criteria_user_column_".$nr_id, 
-										_("User column:"), 
-										"criteria[".$nr_id."][user_column]", 
-										$options, 
-										(isset($SOURCE['criteria'][$nr_id]['user_column'])?$SOURCE['criteria'][$nr_id]['user_column']:""));
-										
+		
+		if($custom_option)
+		{
+			if(!defined("CUSTOM_OPTION_ROW"))
+			{
+				define("CUSTOM_OPTION_ROW",1);
+
+				//Custom options! Then we show the form a little differently
+				$custom_settings=user_get_custom_setting_globals();
+				$current_custom_option=usermessage_get_custom_options($criteria_name);
+				
+				foreach($custom_settings as $cs_type => $cs_settings)
+				{
+					echo html_tag("h4", string_unslugify($cs_type));
+					$table_array=array();
+					// echo '<div class="form-group">';
+					foreach($cs_settings as $s => $label)
+					{
+						$checkbox = html_form_checkbox($label, //label
+								"custom_setting_".$nr_id."_".$cs_type."_".$s."_checkbox",//id
+								"criteria[".$nr_id."][custom_setting][".$cs_type."][".$s."]", //name
+								(isset($current_custom_option[$cs_type][$s]) ? TRUE : FALSE) //Checked ToDO: fixa så den är TRUE om det här valet är valt
+							);
+						$radio= html_form_radio(NULL, //_("Must be set/unset"), //label
+								"custom_setting_".$nr_id."_".$cs_type."_".$s."_radio", //id
+								"criteria[".$nr_id."][custom_setting][".$cs_type."][".$s."][value]", //name 
+								array(1 => "set", 0 => "unset"), 
+								(isset($current_custom_option[$cs_type][$s]) ? $current_custom_option[$cs_type][$s] : 1), //selected
+								NULL //onclick
+							);
+
+							$table_array[]=array(_("Checked (only checked settings matter)") => str_replace("\n","", $checkbox),
+											_("Must be")	=> $radio);
+					}
+					// echo html_tag("div",$checkbox,"form-group");
+					// echo '</div>';
+					
+					echo html_table_from_array($table_array); //, $headlines=NULL, $silent_columns=array());
+				}
+			}
+		}
+		else
+		{
+			//Droplist with all columns in selected table
+			$selected_table=(isset($SOURCE['table_name']) ? $SOURCE['table_name'] : "");
+			$options=array();
+			$columns=sql_get_columns($selected_table);
+			foreach($columns as $column)
+			{
+				$options[$column]=$column;
+			}
+			echo html_form_droplist(	"criteria_user_column_".$nr_id, 
+											_("User column:"), 
+											"criteria[".$nr_id."][user_column]", 
+											$options, 
+											(isset($SOURCE['user_column']) ? $SOURCE['user_column']:""));
 		?>
 		<div class="form-group">
 			<label for="where_value_<?php echo $nr_id; ?>"><?php echo _("WHERE:"); ?></label>
@@ -413,8 +514,9 @@ function usermessage_criterias_form_row($nr_id, $SOURCE=NULL)
 		</div>
 		<div class="form-group">
 			<label for="criteria_count_required_<?php echo $nr_id; ?>"><?php echo _("Count required:"); ?></label>
-			<input id="criteria_count_required_<?php echo $nr_id; ?>" class="form-control" type="text" value="<?php if(isset($c['count_required'])) echo $c['count_required']; ?>" name="criteria[<?php echo $nr_id; ?>][count_required]">
+			<input id="criteria_count_required_<?php echo $nr_id; ?>" class="form-control" type="text" value="<?php if(isset($SOURCE['count_required'])) echo $SOURCE['count_required']; ?>" name="criteria[<?php echo $nr_id; ?>][count_required]">
 		</div>
+		<?php } ?>						
 	</div>
 	<?php
 	return $nr_id+1;
@@ -458,11 +560,25 @@ function usermessage_get_data($data, $event)
 function usermessage_get_criterias($criteria_name)
 {
 	$ret=array();
-	if($cc=mysql_query("SELECT * FROM ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."';"))
+	if($cc=mysql_query("SELECT *
+		FROM ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."';"))
 	{
 		while($c=mysql_fetch_assoc($cc))
 		{
 			$ret[]=$c;
+		}
+	}
+	return $ret;
+}
+
+function usermessage_get_custom_options($criteria_name)
+{
+	$ret=array();
+	if($cc=mysql_query("SELECT user_column, table_where, count_required FROM ".PREFIX."criteria WHERE name='".sql_safe($criteria_name)."' AND table_name='".PREFIX."user_setting';"))
+	{
+		while($c=mysql_fetch_assoc($cc))
+		{
+			$ret[$c['user_column']][$c['table_where']]=$c['count_required'];
 		}
 	}
 	return $ret;
@@ -605,23 +721,32 @@ function usermessage_check_criteria($user, $message_event)
 			}
 			
 			
-			//KOlla alla kriterier
+			//Check all criteria
 			foreach($criteria as $c)
 			{
-				$where=$c['table_where'];
-				$sql="SELECT COUNT(*) as nr FROM ".sql_safe($c['table_name'])." 
-					WHERE ".sql_safe($c['user_column'])."=".sql_safe($user);
-				if($where!="")
-					$sql.=" AND (".$where.");";
-
-				if($tt=mysql_query($sql))
+				if(!strcmp($c['table_name'],PREFIX."user_setting"))
 				{
-					if($t=mysql_fetch_assoc($tt))
+					//User custom setting! Check if user has this setting
+					if(user_get_setting($user, array($c['user_column'] => $c['table_where']))!=$c['count_required'])
+						return FALSE;
+				}
+				else
+				{
+					$where=$c['table_where'];
+					$sql="SELECT COUNT(*) as nr FROM ".sql_safe($c['table_name'])." 
+						WHERE ".sql_safe($c['user_column'])."=".sql_safe($user);
+					if($where!="")
+						$sql.=" AND (".$where.");";
+
+					if($tt=mysql_query($sql))
 					{
-						if($c['count_required']==0)
-							$c['count_required']=1;
-						if($t['nr']<$c['count_required'])
-							return FALSE;
+						if($t=mysql_fetch_assoc($tt))
+						{
+							if($c['count_required']==0)
+								$c['count_required']=1;
+							if($t['nr']<$c['count_required'])
+								return FALSE;
+						}
 					}
 				}
 			}
