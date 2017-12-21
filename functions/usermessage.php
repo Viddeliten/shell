@@ -795,7 +795,7 @@ function usermessage_send_to_user($user, $message_event)
 					mailer_send_mail($email, user_get_name($user), $m['subject'], $message);
 				if($adress!="")
 					$adress.=", ";
-				$adress.=$email." (Not sent)";
+				$adress.=$email;
 				
 				if(!defined('USER_MESSAGE_MAIL_SENDING') || !USER_MESSAGE_MAIL_SENDING)
 					$adress." (Not sent)";
