@@ -9,6 +9,9 @@ function mailer_utf8($to, $subject = '(No subject)', $message = '', $header = ''
 
 function mailer_send_mail($email, $receiver_name="", $subject, $message)
 {
+	mt_srand(mktime());
+	sleep(mt_rand(1,5)); //Just do a random delay here to avoid email spamming the same second
+	
 	if($receiver_name!="")
 		$mess="<h1>Hej ".$receiver_name.",</h1>";
 	else

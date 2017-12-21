@@ -597,7 +597,7 @@ function usermessage_check_messages($user_id=NULL)
 	if($user_id!==NULL)
 		$users[]=$user_id;
 	else
-		$users=user_get_all("all", 50); //Used to be just active, but we want to send to inactives too. 
+		$users=user_get_all("all"); //Used to be just active, but we want to send to inactives too. 
 
 	$sql="SELECT event FROM ".PREFIX."messages_to_users GROUP BY event;";
 	if($mm=mysql_query($sql))
