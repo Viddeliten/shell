@@ -120,7 +120,7 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	
 	<?php 
 	}
-	usermessage_check_messages();
+	// usermessage_check_messages();
 	db_close($connection); ?>
 	
 	<!-- Flattr-stuff: -->
