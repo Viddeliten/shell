@@ -18,6 +18,8 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	 <meta name="author" content="">
 	<?php require_once("config.php"); 
 	
+	echo FLATTR_META_TAG;
+	
 	require_once("functions/login.php");
 	require_once("functions/db_connect.php");
 	require_once("functions/string.php");

@@ -42,6 +42,7 @@ define("ReCaptcha_publickey",""); // Site key
 /*			Flattr				*/
 /********************************/
 define('SITE_OWNER_FLATTR_ID', "");
+define('FLATTR_META_TAG','<meta name="flattr:id" content="someflattrcode">');
 
 /********************************/
 /*		Google analytics		*/
