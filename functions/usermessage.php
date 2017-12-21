@@ -791,10 +791,14 @@ function usermessage_send_to_user($user, $message_event)
 			if(in_array("email", $sendby))
 			{
 				$email=user_get_email($user);
-				mailer_send_mail($email, user_get_name($user), $m['subject'], $message);
+				if(defined('USER_MESSAGE_MAIL_SENDING') && USER_MESSAGE_MAIL_SENDING)  //Actually mailing temporarily disabled due to flooding breaking the mailserver
+					mailer_send_mail($email, user_get_name($user), $m['subject'], $message);
 				if($adress!="")
 					$adress.=", ";
-				$adress.=$email;
+				$adress.=$email." (Not sent)";
+				
+				if(!defined('USER_MESSAGE_MAIL_SENDING') || !USER_MESSAGE_MAIL_SENDING)
+					$adress." (Not sent)";
 			}
 			
 			//Ge eventuellt belöning
