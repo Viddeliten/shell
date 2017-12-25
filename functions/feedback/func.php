@@ -71,20 +71,7 @@ function feedback_recieve()
 		/********************************************/
 		/*				Captcha check				*/
 		/********************************************/
-		if(login_check_logged_in_mini()<1 && isset($_POST['g-recaptcha-response']))
-			$response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
-
-		if(login_check_logged_in_mini()<1 && (!isset($response) || $response['success'] != true))
-		{
-			if(isset($response) && !strcmp($response['error-codes'][0],'missing-input-response'))
-			{
-				//Human was a robot or forgot to check captcha
-				add_error(_("Feedback could not be posted.<br />Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
-			}
-			else
-				add_error(_("Feedback could not be posted.<br />You do not appear to be human. Feeling ok?"));
-		}
-		else
+		if(login_check_logged_in_mini()>0 || login_captcha_check())
 		{
 			// Captcha or login passed
 			
