@@ -95,10 +95,10 @@ function feedback_recieve()
 			// echo "<br />DEBUG 2133: $sql";
 			mysql_query($sql);
 			$id=mysql_insert_id();
-			$message_body=html_tag("div", "<h3>".sql_safe($_POST['subject'])."</h3>
-			<p>".$_POST['text']."</p>", "posted feedback").
-			"<p><a href=\"?p=feedback&amp;id=$id\">["._("Permanent link to your feedback")."]</a></p>
-			<p><strong>Thankyou for your input!</strong></p>";
+			$message_body=html_tag("div", html_tag("h3",sql_safe($_POST['subject'])).
+				html_tag("p", $_POST['text']), "posted feedback").
+				html_tag("p", feedback_get_link($id,"["._("Permanent link to your feedback")."]")).
+				html_tag("p", html_tag("strong", _("Thank you for your input!")));
 			
 			message_add_message($message_body, _("You have submitted the following"));
 
@@ -1431,13 +1431,20 @@ function feedback_get_attached_feedbacks($id)
 	return NULL;
 }
 
-function feedback_get_link($id)
+function feedback_get_link($id, $linktext=NULL)
 {
-	$title=feedback_get_title($id);
-	if($title==NULL)
-		$str="Feedback #$id";
+	if($linktext!=NULL)
+	{
+		$str=$linktext;
+	}
 	else
-		$str=$title;
+	{
+		$title=feedback_get_title($id);
+		if($title==NULL)
+			$str="Feedback #$id";
+		else
+			$str=$title;
+	}
 	return "<a href=\"".feedback_get_url($id)."\">$str</a>";
 }
 
