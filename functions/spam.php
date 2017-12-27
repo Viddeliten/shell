@@ -4,6 +4,8 @@ define('SPAM_POINTS',5);
 
 function spam_receive()
 {
+	login_check_logged_in_mini();
+	
 	//`spam_id``user``IP``type`
 	
 	if(isset($_POST['this_is_spam']))
@@ -13,19 +15,22 @@ function spam_receive()
 		{
 			foreach($_POST['id'] as $s_id)
 			{
-			
-			$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])." SET is_spam=2 WHERE id=".sql_safe($s_id).";";
-			echo "<br />DEBUG1827: $sql";
-			
-			if(mysql_query($sql))
-				add_message($_POST['type']." ".$s_id." marked as spam.");
-			else
-				add_error("There was some kind of error... (errorcode 1726)");	
+				$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])." 
+					SET is_spam=2 
+					WHERE id=".sql_safe($s_id).";";
+				
+				message_try_mysql($sql,
+					"085123", //Error code
+					sprintf(_("%s %s marked as spam"), $_POST['type'], $s_id)// success_message
+				);
 			}
 		}
 		else
 		{
-			$sql="INSERT INTO ".PREFIX."spam SET type='".sql_safe($_POST['type'])."', spam_id=".sql_safe($_POST['id']).", ";
+			$sql="INSERT INTO ".PREFIX."spam 
+				SET 
+					type='".sql_safe($_POST['type'])."', 
+					spam_id=".sql_safe($_POST['id']).", ";
 			//Om man är inloggad
 			if(isset($_SESSION[PREFIX.'user_id']))
 				$sql.="user=".sql_safe($_SESSION[PREFIX.'user_id']).";";
@@ -33,12 +38,10 @@ function spam_receive()
 			else
 				$sql.="IP='".sql_safe($_SERVER['REMOTE_ADDR'])."';";
 			
-			// echo "<br />DEBUG1012: $sql";
-			
-			if(mysql_query($sql))
-				add_message("Thank you for helping us keep the site spam-free!");
-			else
-				add_error("There was some kind of error... (errorcode 1727)");		
+			message_try_mysql($sql,
+				"084842", //Error code
+				_("Thank you for helping us keep the site spam-free!") // success_message
+			);
 		}
 	}
 	
@@ -50,18 +53,21 @@ function spam_receive()
 			foreach($_POST['id'] as $s_id)
 			{
 			
-			$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])." SET is_spam=-2 WHERE id=".sql_safe($s_id).";";
-			echo "<br />DEBUG1827: $sql";
-			
-			if(mysql_query($sql))
-				add_message($_POST['type']." ".$s_id." marked as not spam.");
-			else
-				add_error("There was some kind of error... (errorcode 1728)");	
+				$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])."
+					SET is_spam=-2
+					WHERE id=".sql_safe($s_id).";";
+				message_try_mysql($sql,
+					"084258", //Error code
+					sprintf(_("%s %s marked as not spam."), sql_safe($_POST['type']), $s_id) // success_message
+				);
 			}
 		}
 		else
 		{
-			$sql="DELETE FROM ".PREFIX."spam WHERE type='".sql_safe($_POST['type'])."' AND spam_id=".sql_safe($_POST['id'])." AND ";
+			$sql="DELETE FROM ".PREFIX."spam 
+				WHERE type='".sql_safe($_POST['type'])."' 
+				AND spam_id=".sql_safe($_POST['id'])." 
+				AND ";
 			//Om man är inloggad
 			if(isset($_SESSION[PREFIX.'user_id']))
 				$sql.="user=".sql_safe($_SESSION[PREFIX.'user_id']).";";
@@ -69,11 +75,10 @@ function spam_receive()
 			else
 				$sql.="IP='".sql_safe($_SERVER['REMOTE_ADDR'])."';";
 			
-			
-			if(mysql_query($sql))
-				add_message("Thank you for helping us keep the site spam-free!");
-			else
-				add_error("There was some kind of error... (errorcode 1729)");		
+			message_try_mysql($sql,
+				"084675", //Error code
+				_("Thank you for helping us keep the site spam-free!") // success_message
+			);
 		}
 	}
 }

@@ -86,6 +86,7 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
   usermessage_receive();
   notice_receive();
   privmess_receive();
+  spam_receive();
 
   if(isset($_SESSION[PREFIX.'user_id']))
 	usermessage_check_messages($_SESSION[PREFIX.'user_id']);
