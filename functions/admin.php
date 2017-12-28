@@ -20,6 +20,14 @@ function admin_display_contents()
 		{
 			admin_display_messages();
 		}
+		else if(!strcmp($_GET['s'],"spam"))
+		{
+			spam_admin_list();
+		}
+		else if(!strcmp($_GET['s'],"individual_spam_score"))
+		{
+			spam_show_individual_calculation();
+		}
 		else
 			echo "<div class=\"message_box error well\">"._("Unknown admin page")."</div>";
 	}
@@ -53,7 +61,8 @@ function admin_menu_dropdown()
             <li><a href="'.SITE_URL.'/?p=admin&amp;s=users">'._("Users").'</a></li>
             <li><a href="'.SITE_URL.'/?p=admin&amp;s=version">'._("Version").'</a></li>
             <li><a href="'.SITE_URL.'/?p=admin&amp;s=news">'._("Site news").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=mess">'._("Messages").'</a></li>';
+            <li><a href="'.SITE_URL.'/?p=admin&amp;s=mess">'._("Messages").'</a></li>
+            <li><a href="'.SITE_URL.'/?p=admin&amp;s=spam">'._("Spam").'</a></li>';
 
 
 		if(isset($custom_admin_pages['subpages']) && !empty($custom_admin_pages['subpages']))

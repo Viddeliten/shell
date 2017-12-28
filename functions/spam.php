@@ -153,7 +153,7 @@ function spam_admin_list($nr=20)
 		echo "<input type=\"hidden\" name=\"type\" value=\"comment\">";
 		while($c=mysql_fetch_array($cc))
 		{
-			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".SITE_URL."?page=individual_spam_score&amp;type=comment&amp;id=".$c['id']."\">[".$c['spam_score']."]</a>:  ".$c['comment']." <a href=\"".comment_get_link($c['id'])."\">[...]</a></p>";
+			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".spam_get_link($c['id'], "comment")."\">[".$c['spam_score']."]</a>:  ".$c['comment']." <a href=\"".comment_get_link($c['id'])."\">[...]</a></p>";
 		}
 		echo "<input type=\"button\" value=\"Markera alla\" onclick=\"CheckAll(this.form);\"><br />";
 
@@ -173,8 +173,8 @@ function spam_admin_list($nr=20)
 		while($c=mysql_fetch_array($cc))
 		{
 			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\">
-			<a href=\"".SITE_URL."?page=individual_spam_score&amp;type=feedback&amp;id=".$c['id']."\">[".$c['spam_score']."]</a>:  <strong>".$c['subject']."</strong> - ".$c['text']." 
-			<a href=\"".SITE_URL."?page=feedback&amp;id=".$c['id']."\">[...]</a></p>";
+			<a href=\"".spam_get_link($c['id'], "feedback")."\">[".$c['spam_score']."]</a>:  <strong>".$c['subject']."</strong> - ".$c['text']." 
+			".feedback_get_link($c['id'],"[...]")."</p>";
 		}
 		echo "<input type=\"button\" value=\"Markera alla\" onclick=\"CheckAll(this.form);\"><br />";
 
@@ -192,8 +192,8 @@ function spam_admin_list($nr=20)
 		echo "<input type=\"hidden\" name=\"type\" value=\"FAQ\">";
 		while($c=mysql_fetch_array($cc))
 		{
-			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".SITE_URL."?page=individual_spam_score&amp;type=FAQ&amp;id=".$c['id']."\">[".$c['spam_score']."]</a>:  <strong>".$c['subject']."</strong> - ".$c['text']." 
-			<a href=\"".SITE_URL."?page=FAQ&amp;id=".$c['id']."\">[...]</a></p>";
+			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".spam_get_link($c['id'],"FAQ")."\">[".$c['spam_score']."]</a>:  <strong>".$c['subject']."</strong> - ".$c['text']." 
+			<a href=\"".SITE_URL."?p=FAQ&amp;id=".$c['id']."\">[...]</a></p>";
 		}
 		echo "<input type=\"button\" value=\"Markera alla\" onclick=\"CheckAll(this.form);\"><br />";
 
@@ -249,7 +249,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 			if($output)
 			{
 				if($c['user']!=NULL)
-					echo "<p>$previous_spam other spam from this user ('<a href=\"?page=user&amp;user=".$c['user']."\">".$c['user']."'</a>)</p>";
+					echo "<p>$previous_spam other spam from this user ('".user_get_link($c['user']).")</p>";
 				else
 					echo "<p>$previous_spam other spam from this IP ('".$c['IP']."')</p>";
 			}
@@ -335,6 +335,11 @@ function spam_remove_old($type, $time_str)
 	AND $created<'".date("YmdHis", strtotime("- ".$time_str))."';";
 	// echo "<br />DEBUG2258 ".$sql;
 	mysql_query($sql);
+}
+
+function spam_get_link($id, $type)
+{
+	return SITE_URL."?p=admin&amp;s=individual_spam_score&amp;type=".$type."&amp;id=".$id;
 }
 
 ?>
