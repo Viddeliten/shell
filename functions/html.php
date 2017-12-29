@@ -255,18 +255,31 @@ function html_tooltip($tip_text)
 	return '<a class="helpmarker" href=# title="'.$tip_text.'">?</a>';
 }
 
-function html_table_from_array($array, $headlines=NULL, $silent_columns=array())
+function html_table_from_array($array, $headlines=NULL, $silent_columns=array(), $size_table=array())
 {
-	$r="<table class=\"table table-striped table-condensed\">
-	<tr>";
+	$r="<table class=\"table table-striped table-condensed\">";
+	if($headlines!==-1)
+		$r.="<tr>";
 	$keys=array();
-	if($headlines==NULL || empty($headlines))
+	if($headlines==NULL || empty($headlines) || $headlines==-1)
 	{
 		foreach($array[0] as $key => $val)
 		{
 			if(!in_array($key,$silent_columns))
 			{
-				$r.="<th>$key</th>";
+				$size="";
+				if(isset($size_table[$key]['min-width']))
+					$size.="min-width: ".$size_table[$key]['min-width']."; ";
+				if(isset($size_table[$key]['max-width']))
+					$size.="max-width: ".$size_table[$key]['max-width']."; ";
+				if(isset($size_table[$key]['width']))
+					$size.="width: ".$size_table[$key]['width']."; ";
+				if($size!="")
+					$style=' style="'.$size.'"';
+				else
+					$style="";
+				if($headlines!==-1)
+					$r.="<th $style>$key</th>";
 				$keys[]=$key;
 			}
 		}
@@ -275,11 +288,24 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array())
 	{
 		foreach($headlines as $key => $headline)
 		{
-			$r.="<th>$headline</th>";
+				$size="";
+				if(isset($size_table[$key]['min-width']))
+					$size.="min-width: ".$size_table[$key]['min-width']."; ";
+				if(isset($size_table[$key]['max-width']))
+					$size.="max-width: ".$size_table[$key]['max-width']."; ";
+				if(isset($size_table[$key]['width']))
+					$size.="width: ".$size_table[$key]['width']."; ";
+				if($size!="")
+					$style=' style="'.$size.'"';
+				else
+					$style="";
+
+			$r.="<th $style>$headline</th>";
 			$keys[]=$key;
 		}
 	}
-	$r.="</tr>";
+	if($headlines!==-1)
+		$r.="</tr>";
 	foreach($array as $a)
 	{
 		$r.="<tr>";
@@ -287,7 +313,19 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array())
 		{
 			if(!in_array($k,$silent_columns))
 			{
-				$r.="<td>".$a[$k]."</td>";
+				$size="";
+				if(isset($size_table[$k]['min-width']))
+					$size.="min-width: ".$size_table[$k]['min-width']."; ";
+				if(isset($size_table[$k]['max-width']))
+					$size.="max-width: ".$size_table[$k]['max-width']."; ";
+				if(isset($size_table[$k]['width']))
+					$size.="width: ".$size_table[$k]['width']."; ";
+				if($size!="")
+					$style=' style="'.$size.'"';
+				else
+					$style="";
+
+				$r.="<td $style>".$a[$k]."</td>";
 			}
 		}
 		$r.="</tr>";
@@ -348,9 +386,9 @@ function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1)
 }
 
 //Wrapper since this was apparently already done in message.php
-function html_progress_bar($percent)
+function html_progress_bar($percent, $max_decimals=2)
 {
-	return message_progress_bar($percent);
+	return message_progress_bar($percent, $max_decimals);
 }
 
 

@@ -121,11 +121,15 @@ function message_add_success_message($message)
 	}
 }
 
-function message_progress_bar($percent)
+function message_progress_bar($percent, $max_decimals=2)
 {
+	$percent_display=round($percent,2);
+	if($percent_display=round($percent,0))
+		$percent_display=round($percent,0);
+
 	return '<div class="progress">
   <div class="progress-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: '.$percent.'%;">
-    '.$percent.'%
+    '.$percent_display.'%
   </div>
 </div>';
 }
