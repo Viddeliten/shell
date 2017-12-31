@@ -138,7 +138,7 @@ function html_element($col_md_size, $col_xs_size, $element, $element_class=NULL,
 	return $return;
 }
 	
-function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL, $input_class=NULL, $helptext=NULL, $group_class=NULL, $onchange=NULL)
+function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL, $input_class=NULL, $helptext=NULL, $group_class=NULL, $onchange=NULL, $required=FALSE)
 {
 	return ($type!="hidden" ? '<div class="form-group'.($group_class!==NULL ?  " ".$group_class : "").'">' : "").
 			($label!==NULL ? '<label for="'.$input_id.'">'.$label.'</label>':'').
@@ -150,6 +150,7 @@ function html_form_input($input_id, $label, $type, $name, $value, $placeholder=N
 				   'value="'.$value.'" '.
 				   ($helptext!==NULL ?  'aria-describedby="'.$input_id.'helpBlock"' : "").
 				   ($onchange!==NULL ?  'onchange="'.$onchange.'" ' : "").
+				   ($required ? ' required' : '').
 				   ' />'.
 			($helptext!==NULL ? '<span id="'.$input_id.'helpBlock" class="help-block">'.$helptext.'</span>' :"").
 		($type!="hidden" ?'</div>':"");
