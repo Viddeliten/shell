@@ -66,6 +66,11 @@ th
     padding-right: 0;
 }
 
+.col-form-label
+{
+	min-width: 9em;
+}
+
 .clearer
 {
 	clear: both;
