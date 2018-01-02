@@ -140,8 +140,9 @@ function html_element($col_md_size, $col_xs_size, $element, $element_class=NULL,
 	
 function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL, $input_class=NULL, $helptext=NULL, $group_class=NULL, $onchange=NULL, $required=FALSE)
 {
-	return ($type!="hidden" ? '<div class="form-group'.($group_class!==NULL ?  " ".$group_class : "").'">' : "").
-			($label!==NULL ? '<label for="'.$input_id.'">'.$label.'</label>':'').
+	return ($type!="hidden" ? '<div class="form-group'.($group_class!==NULL ?  " ".$group_class : "").' row">' : "").
+			($label!==NULL ? '<label for="'.$input_id.'" class="col-sm-2 col-form-label">'.$label.'</label>':'').
+			'<div class="col-sm-10">'.
 			'<input type="'.$type.'" '.
 			       ($type!="hidden" ? 'class="form-control'.($input_class!==NULL ? " ".$input_class :"").'" ' :"").
 				   'id="'.$input_id.'" '.
@@ -153,7 +154,8 @@ function html_form_input($input_id, $label, $type, $name, $value, $placeholder=N
 				   ($required ? ' required' : '').
 				   ' />'.
 			($helptext!==NULL ? '<span id="'.$input_id.'helpBlock" class="help-block">'.$helptext.'</span>' :"").
-		($type!="hidden" ?'</div>':"");
+		($type!="hidden" ?'</div>':"").
+		'</div>';
 }
 
 function html_form_checkbox($label, $id, $name, $checked=NULL, $required=FALSE, $onclick=NULL)
@@ -392,5 +394,37 @@ function html_progress_bar($percent, $max_decimals=2)
 	return message_progress_bar($percent, $max_decimals);
 }
 
+function html_menu($menu=array(), $request_choser="page", $brand_text="", $brand_link="", $class="navbar navbar-default")
+{
+		$r='<nav class="'.$class.'">
+			<div class="container-fluid">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#comp-navbar-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			  </button>';
+		if($brand_text!="")
+			$r.='<a class="navbar-brand" href="'.$brand_link.'">'.$brand_text.'</a>';
+		// else if($brand_text!="")
+			// $r.=$brand_text;
+		$r.='	</div>';
+		$r.= '<div class="collapse navbar-collapse" id="comp-navbar-collapse">';
+		$r.='<ul class="nav navbar-nav menu">';
+		foreach($menu as $m)
+		{
+			$r.="<li";
+				if((!isset($_REQUEST[$request_choser]) &&  !strcmp($m['text'],$menu[0]['text']))|| (isset($_REQUEST[$request_choser]) && !strcmp($_REQUEST[$request_choser],$m['text'])))
+					$r.=" class=\"active\""; $r.=">";
+				$r.="<a href=\"".$m['link']."\">".$m['text']."</a>";
+			$r.="</li>";
+		}
+		$r.="</ul>
+		</div>
+	</nav>";
+	return $r;
+}
 
 ?>
