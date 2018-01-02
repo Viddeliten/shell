@@ -124,6 +124,8 @@ function sql_get_single_from_id($table, $column, $id)
 {
 	$sql="SELECT ".sql_safe($column)." FROM ".sql_safe($table)." WHERE id=".sql_safe($id).";";
 	$r=sql_get($sql);
-	return $r[0][$column];
+	if(isset($r[0][$column]))
+		return $r[0][$column];
+	return NULL;
 }
 ?>
