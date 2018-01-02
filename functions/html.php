@@ -140,6 +140,9 @@ function html_element($col_md_size, $col_xs_size, $element, $element_class=NULL,
 	
 function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL, $input_class=NULL, $helptext=NULL, $group_class=NULL, $onchange=NULL, $required=FALSE)
 {
+	if(!strcmp($type,"hidden"))
+		return '<input type="hidden" name="'.$name.'" value="'.$value.'">';
+	
 	return ($type!="hidden" ? '<div class="form-group'.($group_class!==NULL ?  " ".$group_class : "").' row">' : "").
 			($label!==NULL ? '<label for="'.$input_id.'" class="col-sm-2 col-form-label">'.$label.'</label>':'').
 			'<div class="col-sm-10">'.
@@ -230,9 +233,12 @@ function html_action_button($target_link, $button_text, $hidden_values=NULL)
 	'</form>';
 }
 
-function html_form_button($name, $value, $button_type="default")
+function html_form_button($name, $value, $button_type="default", $onclick=NULL)
 {
-	return '<input type="submit" name="'.$name.'" value="'.$value.'" class="btn btn-'.$button_type.'">';
+	return '<input type="submit" name="'.$name.'" value="'.$value.'" '.
+				'class="btn btn-'.$button_type.'" '.
+				($onclick!=NULL ? 'onclick="'.$onclick.'"':'').
+			'>';
 }
 
 function html_button($button_text, $class="btn btn-default", $onclick=NULL)
@@ -424,6 +430,45 @@ function html_menu($menu=array(), $request_choser="page", $brand_text="", $brand
 		$r.="</ul>
 		</div>
 	</nav>";
+	return $r;
+}
+
+function html_nav_tabs($tabs=array())
+{
+	$r='<div class="row">
+		<div class="col-lg-12">';
+/*			<!-- Nav tabs -->		*/
+	$r.='<ul class="nav nav-tabs" role="tablist">';
+	foreach($tabs as $key => $tab)
+	{
+		if($key==0)
+			$r.='<li role="presentation"'.' class="active">'.
+					'<a href="'.$tab['link'].'" >'.$tab['text'].'</a>'.
+				'</li>';
+		else if(!isset($tab['invisible']))
+			$r.='<li role="presentation">'.
+					'<a href="#'.$tab['id'].'" aria-controls="'.$tab['id'].'" role="tab" data-toggle="tab">'.$tab['text'].'</a>'.
+				'</li>';
+		else
+			$r.='<span style="display:none">'.
+					'<li role="presentation">'.
+						'<a href="#'.$tab['id'].'" aria-controls="'.$tab['id'].'" role="tab" data-toggle="tab">'.$tab['text'].'</a>'.
+					'</li>'.
+				'</span>';
+	}	
+	$r.='</ul>';
+
+/*			<!-- Tab panes -->		*/
+	$r.='<div class="tab-content">';
+	foreach($tabs as $key => $tab)
+	{
+		$r.='<div role="tabpanel" class="tab-pane fade in '.($key==0?'active':'').'" id="'.$tab['id'].'">'.
+				$tab['content'].
+			'</div>';
+	}
+	$r.='</div>';
+	$r.='</div>';
+	$r.='</div>';
 	return $r;
 }
 
