@@ -1188,9 +1188,10 @@ function feedback_display_accepted($nr)
 	AND accepted IS NOT NULL
 	AND resolved IS NULL
 	AND merged_with IS NULL
+	AND checked_in IS NULL
 	ORDER BY ".ORDER_STR."
 	LIMIT ".sql_safe($nr).";";
-	// echo "<pre>".print_r($sql,1)."</pre>";
+
 	if($ff=mysql_query($sql))
 	{
 		feedback_list_print($ff);
