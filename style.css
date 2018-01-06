@@ -42,6 +42,12 @@ th
 {
 }
 
+select.form-control.small
+{
+    font-size: 85%;
+    padding: 0.1em;
+    height: 2em;
+}
 #main_container
 {
 	position: relative; /* needed for footer positioning*/
@@ -123,6 +129,10 @@ tr.active td
 .row
 {
 	margin-top: 0.5em;
+}
+.row.snug
+{
+	margin-top: 0.01em;
 }
 
 .notice
