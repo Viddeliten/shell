@@ -84,20 +84,23 @@ function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $r
 	
 	if($nr>=$max_columns)
 		$columns=$max_columns;
-	else if($nr<=$min_columns)
-		$columns=$min_columns;
+	// else if($nr<=$min_columns)
+		// $columns=$min_columns;
 	else
 		$columns=$nr;
 	
 	$col_size=(int)(12/$columns);
-	if($col_size<=2)
-		$col_md_size=ceil($col_size*1.5);
-	else
-		$col_md_size=$col_size;
+	$md_columns=ceil(($min_columns+$columns)/2);
+	// if($col_size<=2)
+		// $col_md_size=ceil($col_size*1.5);
+	// else
+		// $col_md_size=$col_size;
+	$col_md_size=(int)(12/$md_columns);
 	
-	$col_sm_size=(int)(12/$min_columns);
+	$col_xs_size=(int)(12/$min_columns);
 		
 	$return="";
+    // $return.=prestr(array($columns,$min_columns, $max_columns, $nr));
 	if(!empty($elements))
 	{
 		$return.='<div class="row'.($row_class==NULL ? "":" ".$row_class).'">';
@@ -105,7 +108,7 @@ function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $r
 		{
 			if($key%$columns==0 && $key!=0)
 				$return.= '</div><div class="row">';
-			$return.= html_element($col_md_size, $col_sm_size, $e, $element_class, $col_size);
+			$return.= html_element($col_md_size, $col_xs_size, $e, $element_class, $col_size);
 		}
 		$return.='</div>';
 	}
@@ -127,7 +130,8 @@ function html_elements($col_size, $col_xs_size, $elements, $element_class=NULL)
 
 function html_element($col_md_size, $col_xs_size, $element, $element_class=NULL, $col_lg_size=NULL)
 {
-	$col_sm_size=(int)(12/(ceil(6/($col_xs_size))+ceil(6/($col_md_size))));
+	// $col_sm_size=(int)(12/(ceil(6/($col_xs_size))+ceil(6/($col_md_size))));
+	$col_sm_size=ceil(($col_xs_size+$col_md_size)/2);
 	$return="";
 	$return.= '<div class="col-md-'.$col_md_size.' col-sm-'.$col_sm_size.' col-xs-'.$col_xs_size.''.($col_lg_size==NULL ? "":" col-lg-".$col_lg_size).''.($element_class==NULL ? "":" ".$element_class).'">';
 	if(is_array($element))
@@ -141,7 +145,7 @@ function html_element($col_md_size, $col_xs_size, $element, $element_class=NULL,
 function html_form_input($input_id, $label, $type, $name, $value, $placeholder=NULL, $input_class=NULL, $helptext=NULL, $group_class=NULL, $onchange=NULL, $required=FALSE)
 {
 	if(!strcmp($type,"hidden"))
-		return '<input type="hidden" name="'.$name.'" value="'.$value.'">';
+		return '<input '.($input_id!=NULL?'id="'.$input_id.'" ':'').'type="hidden" name="'.$name.'" value="'.$value.'">';
 	
 	return ($type!="hidden" ? '<div class="form-group'.($group_class!==NULL ?  " ".$group_class : "").' row">' : "").
 			($label!==NULL ? '<label for="'.$input_id.'" class="col-sm-2 col-form-label">'.$label.'</label>':'').
@@ -205,14 +209,21 @@ function html_form_textarea($input_id, $label, $name, $value, $placeholder=NULL)
 		</div>';
 }
 
-function html_form_droplist($input_id, $label, $name, $options, $selected="", $onchange=NULL)
+function html_form_droplist($input_id, $label, $name, $options, $selected="", $onchange=NULL, $class=NULL)
 {
-	$return='<label for="'.$input_id.'">'.$label.'</label>
-		<select class="form-control" name="'.$name.'" id="'.$input_id.'"'.($onchange!==NULL ? 'onchange="'.$onchange.'"':'').'>';
-	foreach($options as $key => $val)
-	{
-		$return.='<option value="'.$key.'"'.(!strcmp($selected,$key) ? ' selected="selected"':'').'>'.$val.'</option>';
-	}
+    // preprint(array($input_id, $label, $name, $options, $selected, $onchange, $class),"html_form_droplist__");
+	if($label!==NULL && $label!="")
+		$return='<label for="'.$input_id.'">'.$label.'</label>';
+	else
+		$return="";
+	$return.='<select '.$selected.' class="form-control '.($class?$class:'').'" name="'.$name.'" id="'.$input_id.'"'.($onchange!==NULL ? 'onchange="'.$onchange.'"':'').'>';
+	if(!empty($options))
+    {
+        foreach($options as $key => $val)
+        {
+            $return.='<option value="'.$key.'"'.(!strcmp($selected,$key) || $selected==$key ? ' selected="selected"':'').'>'.$val.'</option>';
+        }
+    }
 	$return.='</select>';
 	return $return;
 }
@@ -432,7 +443,14 @@ function html_menu($menu=array(), $request_choser="page", $brand_text="", $brand
 	</nav>";
 	return $r;
 }
-
+/***
+/*	Populating tabs array:
+	$tabs[]=array(	"id"	=>	"important",
+						"link"	=>	Url to page this is on. Only needed on the first item,
+						"text"	=>	_("Tab text"),
+						"content"	=>	All html visible when the tab is active);
+*
+***/
 function html_nav_tabs($tabs=array())
 {
 	$r='<div class="row">
