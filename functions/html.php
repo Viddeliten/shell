@@ -100,15 +100,17 @@ function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $r
 	$col_xs_size=(int)(12/$min_columns);
 		
 	$return="";
-    // $return.=prestr(array($columns,$min_columns, $max_columns, $nr));
+    // $return.=prestr(array($columns,$min_columns, $max_columns, $nr),"STUFFS!");
 	if(!empty($elements))
 	{
 		$return.='<div class="row'.($row_class==NULL ? "":" ".$row_class).'">';
+        $i=0;
 		foreach($elements as $key => $e)
 		{
-			if($key%$columns==0 && $key!=0)
+			if($i%$columns==0 && $i!=0)
 				$return.= '</div><div class="row">';
 			$return.= html_element($col_md_size, $col_xs_size, $e, $element_class, $col_size);
+            $i++;
 		}
 		$return.='</div>';
 	}
@@ -259,6 +261,20 @@ function html_button($button_text, $class="btn btn-default", $onclick=NULL)
 			.'>'
 			.$button_text
 			.'</button>';
+}
+
+function html_form($method, $inputs)
+{
+    $r='<form method="'.$method.'">';
+    if(!empty($inputs))
+    {
+        foreach($inputs as $i)
+        {
+            $r.=$i;
+        }
+    }
+    $r.='</form>';
+    return $r;
 }
 
 function html_form_add_div($div_id, $button_text, $path, $button_class="btn btn-default")

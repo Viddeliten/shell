@@ -101,13 +101,13 @@ function sql_get_columns($selected_table)
 /*		Function:sql_update								*/
 /*		updates single column in specified table		*/
 /********************************************************/
-function sql_update($table, $column, $new_data, $id, $print_now=FALSE, $generate_warning_on_fail=FALSE)
+function sql_update($table, $column, $new_data, $id, $print_now=FALSE, $generate_warning_on_fail=FALSE, $success_message=NULL)
 {
 	$sql="UPDATE ".sql_safe($table)."
 	SET ".sql_safe($column)."='".sql_safe($new_data)."' 
 	WHERE id=".sql_safe($id).";";
 
-	message_try_mysql($sql,"1051110", NULL, $print_now, $generate_warning_on_fail);
+	message_try_mysql($sql,"1051110", $success_message, $print_now, $generate_warning_on_fail);
 }
 
 function sql_get_single($column, $table, $where)
