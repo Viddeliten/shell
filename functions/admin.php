@@ -121,7 +121,7 @@ function admin_display_version()
 function admin_display_news()
 {
 	//Form for news input
-	news_form();
+	echo news_form();
 }
 
 function admin_display_messages()
