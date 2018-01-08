@@ -39,6 +39,14 @@ function sql_print_results($alldata)
 	echo "</table>";
 }
 
+function sql_get_first($sql)
+{
+	$result=sql_get($sql);
+	if(isset($result[0]))
+		return $result[0];
+	return $result;
+}
+
 function sql_get($sql, $array=false, $index_column=NULL)
 {
 	$return=array();
@@ -63,7 +71,7 @@ function sql_get($sql, $array=false, $index_column=NULL)
 		}
 	}
 	else
-		html_tag("p",mysql_error(),"error");
+		echo html_tag("p",$sql." : ".mysql_error(),"error");
 	return $return;
 }
 
