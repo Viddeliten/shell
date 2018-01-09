@@ -47,7 +47,7 @@ function sql_get_first($sql)
 	return $result;
 }
 
-function sql_get($sql, $array=false, $index_column=NULL)
+function sql_get($sql, $array=false, $index_column=NULL, $warning_on_fail=FALSE)
 {
 	$return=array();
 	if($aa=mysql_query($sql))
@@ -71,7 +71,12 @@ function sql_get($sql, $array=false, $index_column=NULL)
 		}
 	}
 	else
-		echo html_tag("p",$sql." : ".mysql_error(),"error");
+	{
+		$error_message=mysql_error();
+		if($warning_on_fail!==NULL)
+			message_trigger_warning($warning_on_fail, $sql, $error_message);
+		echo html_tag("p",$sql." : ".$error_message,"error");
+	}
 	return $return;
 }
 
@@ -121,7 +126,7 @@ function sql_update($table, $column, $new_data, $id, $print_now=FALSE, $generate
 function sql_get_single($column, $table, $where)
 {
 	$sql="SELECT ".sql_safe($column)." FROM ".sql_safe($table)." WHERE ".$where.";";
-	preprint($sql,"DEBUG1059");
+	// preprint($sql,"DEBUG1059");
 	$r=sql_get($sql);
 	if(isset($r[0][$column]))
 		return $r[0][$column];
