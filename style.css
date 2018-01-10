@@ -132,7 +132,7 @@ tr.active td
 }
 .row.snug
 {
-	margin-top: 0.01em;
+	margin-top: -0.99em;
 }
 
 .notice
