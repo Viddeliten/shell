@@ -39,9 +39,9 @@ function sql_print_results($alldata)
 	echo "</table>";
 }
 
-function sql_get_first($sql)
+function sql_get_first($sql, $warning_on_fail=FALSE)
 {
-	$result=sql_get($sql);
+	$result=sql_get($sql, false,NULL, $warning_on_fail);
 	if(isset($result[0]))
 		return $result[0];
 	return $result;
