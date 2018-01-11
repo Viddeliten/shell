@@ -291,9 +291,9 @@ function html_tooltip($tip_text)
 	return '<a class="helpmarker" href=# title="'.$tip_text.'">?</a>';
 }
 
-function html_table_from_array($array, $headlines=NULL, $silent_columns=array(), $size_table=array())
+function html_table_from_array($array, $headlines=NULL, $silent_columns=array(), $size_table=array(), $class=NULL)
 {
-	$r="<table class=\"table table-striped table-condensed\">";
+	$r='<table class="table table-striped table-condensed'.($class?" ".$class:"").'">';
 	if($headlines!==-1)
 		$r.="<tr>";
 	$keys=array();
@@ -503,6 +503,23 @@ function html_nav_tabs($tabs=array())
 	$r.='</div>';
 	$r.='</div>';
 	$r.='</div>';
+	return $r;
+}
+
+function html_show_hide_clicker($div_id, $label, $contents)
+{
+	$r='<div id="'.$div_id.'" style="display:none">';
+	$r.=html_tag("p",'<a class="showhideclicker"'.
+						'onClick="showhide(\''.$div_id."');".
+						"showhide('".string_slugify($label)."_".$div_id."');\">".
+					"[-".sprintf(_("Hide %s"),$label)."-]</a>"); //toggle-pryl! =)
+	$r.=$contents;
+	$r.='</div>';
+	$r.=html_tag("p",'<a id="'.string_slugify($label)."_".$div_id.'" onClick="showhide(\''.$div_id."');".
+													"showhide('".string_slugify($label)."_".$div_id."');\"".
+						'class="commentclicker" href="#'.$label.'">'.
+						'[-'.sprintf(_("Show %s"),$label)."-]
+		</a>");
 	return $r;
 }
 
