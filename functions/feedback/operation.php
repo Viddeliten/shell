@@ -7,18 +7,17 @@ session_start();
 // require_once("../../globals/path.php");
 require_once("../../config.php");
 //From functions
-define('FUNC_PATH', ABS_PATH."/functions");
-require_once(FUNC_PATH."/user.php");
-require_once(FUNC_PATH."/login.php");
-require_once(FUNC_PATH."/flattr.php");
-require_once(FUNC_PATH."/spam.php");
-require_once(FUNC_PATH."/string.php");
-require_once(FUNC_PATH."/language.php");
-require_once(FUNC_PATH."/html.php");
-require_once(FUNC_PATH."/comment/func.php");
-require_once(FUNC_PATH."/db_connect.php");
+require_once(ABS_PATH."/functions"."/user.php");
+require_once(ABS_PATH."/functions"."/login.php");
+require_once(ABS_PATH."/functions"."/flattr.php");
+require_once(ABS_PATH."/functions"."/spam.php");
+require_once(ABS_PATH."/functions"."/string.php");
+require_once(ABS_PATH."/functions"."/language.php");
+require_once(ABS_PATH."/functions"."/html.php");
+require_once(ABS_PATH."/functions"."/comment/func.php");
+require_once(ABS_PATH."/functions"."/db_connect.php");
 //From Feedback
-require_once(FUNC_PATH."/feedback/func.php");
+require_once(ABS_PATH."/functions"."/feedback/func.php");
 
 language_setup();
 
