@@ -57,8 +57,8 @@ function api_feedback()
 	//Get sql
 	// feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merged=TRUE)
 	$sql=feedback_get_sql(SIZE_SUGGESTED, 
-						$nr_per_page, 
-						(isset($_REQUEST['from']) ? $_REQUEST['from'] : 0), //offset
+						sql_safe($nr_per_page), 
+						(isset($_REQUEST['from']) ? sql_safe($_REQUEST['from']) : 0), //offset
 						FALSE, //only_unresolved
 						FALSE); //no_merged
 	
