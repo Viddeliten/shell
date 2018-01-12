@@ -361,7 +361,7 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array(),
 				else
 					$style="";
 
-				$r.="<td $style>".$a[$k]."</td>";
+				$r.="<td $style>".(isset($a[$k]) ? $a[$k] : "")."</td>";
 			}
 		}
 		$r.="</tr>";

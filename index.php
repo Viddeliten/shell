@@ -18,7 +18,8 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	 <meta name="author" content="">
 	<?php require_once("config.php"); 
 	
-	echo FLATTR_META_TAG;
+	if(defined('FLATTR_META_TAG'))
+		echo FLATTR_META_TAG;
 	
 	require_once("functions/login.php");
 	require_once("functions/db_connect.php");
@@ -145,7 +146,8 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 <!-- End Google Analytics -->
 
 <?php //Pingdom script
-echo PINGDOM_SCRIPT; ?>
+if(defined('PINGDOM_SCRIPT'))
+	echo PINGDOM_SCRIPT; ?>
 	
 	<script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
 
