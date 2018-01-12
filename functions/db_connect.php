@@ -13,7 +13,7 @@ function db_connect($db_host, $db_name, $db_user, $db_pass)
 
 function db_close($conn)
 {
-	mysql_close($conn);
+	@mysql_close($conn);
 }
 
 function sql_print_results($alldata)
