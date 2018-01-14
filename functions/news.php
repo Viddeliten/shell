@@ -180,24 +180,16 @@ function news_show($max_nr=10, $extra_headline="", $extra_headline_size=2)
 		{
 			if(mysql_affected_rows()>0 && $extra_headline!="")
 				echo "<h$extra_headline_size>$extra_headline</h$extra_headline_size>";
-	
+			$news_posts=array();
 			//Hämta de senaste nyheterna
 			while($news = mysql_fetch_array($nn))
 			{
+				ob_start();
 				news_display_post($news['id'], $news['headline'], $news['published'], $news['author'], $news['text'], $extra_headline_size+1, TRUE);
-				// echo "<div class=\"news_post\">";
-				// echo "<h".($extra_headline_size+1)."><a href=\"".news_get_link_url($news['id'])."\">$news[headline]</a></h".($extra_headline_size+1).">";
-				// if($news['author']!=NULL)
-					// echo "<p class=\"date\">".sprintf(_("Posted by %s at %s"),user_get_link($news['author']) ,date("Y-m-d H:i",strtotime($news['time'])))."</p>";
-				// else
-					// echo "<p class=\"date\">$news[time]</p>";
-				// $text=str_replace("\n","<br />",$news['text']);
-				// $text=str_replace("<br /><br />","</p><p>",$text);
-				// echo "<p>$text</p>";
-				// visa kommentarer och om inloggad f? f??tt kommentera
-				// comments_show_comments_and_replies($news['id'], "news");
-				// echo "</div>";
+				$news_posts[]=str_replace("\n","",ob_get_contents());
+				ob_end_clean();
 			}
+			echo html_row(1,4,$news_posts);
 		}
 		
 		//RSS-link

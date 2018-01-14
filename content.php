@@ -32,7 +32,7 @@ else if(isset($_REQUEST['p']))
 				echo html_tag("div",comment_display_single($_GET['id'], NULL, FALSE),"comment");
 				break;
 			case "news":
-				news_show();
+				news_show(10, sprintf(_("News for %s"),SITE_NAME),1);
 				break;
 			case "feedback":
 				$ff=feedback_get_list_specific($_GET['id']);
@@ -56,7 +56,7 @@ else if(isset($_REQUEST['p']))
 	}
 	else if(!strcmp($_GET['p'],"news"))
 	{
-		news_show();
+		news_show(10, sprintf(_("News for %s"),SITE_NAME),1);
 	}
 	else if(!strcmp($_GET['p'],"user") && isset($_GET['s']) && !strcmp($_GET['s'],"profile"))
 	{
