@@ -2,6 +2,13 @@
 
 function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=true, $icon_path=NULL)
 {
+	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
+	$show_feedback=true;
+	if(isset($custom_pages["Feedback"]))
+	{
+		$show_feedback=false;
+	}
+
 	?>
 	<nav class="navbar <?php echo $navbar_type; ?> navbar-fixed-top">
       <div class="container">
@@ -21,7 +28,7 @@ function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=tru
 			<?php admin_menu_dropdown(); ?>
            <!-- <li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"about")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>?p=about" ><?php echo _("About"); ?></a></li> -->
 		   <?php display_custom_pages_menu(); ?>
-            <li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"feedback")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>?p=feedback"><?php echo _("Feedback"); ?></a></li>
+            <?php if($show_feedback) { ?><li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"feedback")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>?p=feedback"><?php echo _("Feedback"); ?></a></li><?php } ?>
 			<li><?php flattr_button_show(SITE_OWNER_FLATTR_ID, SITE_URL, SITE_NAME, "", 'compact', "sv"); ?></li>
           </ul>
 		  <ul class="nav navbar-nav navbar-right">
