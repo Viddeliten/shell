@@ -10,6 +10,12 @@ if(isset($custom_pages["Feedback"]))
 	if($custom_pages["Feedback"]['req_user_level']>0 && $custom_pages["Feedback"]['req_user_level']>$logged_in_level)
 		$show_feedback=false;
 }
+$show_users=true;
+if(isset($custom_pages["Users"]))
+{
+	if($custom_pages["Users"]['req_user_level']>0 && $custom_pages["Users"]['req_user_level']>$logged_in_level)
+		$show_users=false;
+}
 
 if($logged_in_level>0)
 	notice_display_notices($_SESSION[PREFIX.'user_id']);
@@ -77,6 +83,12 @@ else if(isset($_REQUEST['p']))
 	}
 	else if(!strcmp($_GET['p'],"user") && isset($_GET['s']) && !strcmp($_GET['s'],"profile"))
 	{
+		if(!$show_users)
+		{
+			message_print_error(_("Nothing to see here..."));
+			return 0;
+		}
+		
 		if(isset($_GET['user']))
 			$user=$_GET['user'];
 		else if(isset($_SESSION[PREFIX.'user_id']))
@@ -96,13 +108,13 @@ else if(isset($_REQUEST['p']))
 	{
 		user_display_settings();
 	}
-	else if(!strcmp($_GET['p'],"users"))
+	else if(!strcmp($_GET['p'],"users") && $show_users)
 	{
 		if(isset($_GET['s']))
 		{
 			if(!strcmp($_GET['s'],"active"))
 			{
-				echo "<h1>"._("Active users")."</h1>";
+				echo "<h1>"._("Active userss")."</h1>";
 				user_display_active_users(FALSE);
 				return TRUE;
 			}
