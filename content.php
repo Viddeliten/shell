@@ -1,7 +1,17 @@
 <?php
 
 message_display_messages_and_errors();
-if(login_check_logged_in_mini()>0)
+$logged_in_level=login_check_logged_in_mini();
+
+$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
+$show_feedback=true;
+if(isset($custom_pages["Feedback"]))
+{
+	if($custom_pages["Feedback"]['req_user_level']>0 && $custom_pages["Feedback"]['req_user_level']>$logged_in_level)
+		$show_feedback=false;
+}
+
+if($logged_in_level>0)
 	notice_display_notices($_SESSION[PREFIX.'user_id']);
 
 if(isset($_GET['reg']))
@@ -35,6 +45,11 @@ else if(isset($_REQUEST['p']))
 				news_show(10, sprintf(_("News for %s"),SITE_NAME),1);
 				break;
 			case "feedback":
+				if(!$show_feedback)
+				{
+					message_print_error(_("Nothing to see here..."));
+					return 0;
+				}
 				$ff=feedback_get_list_specific($_GET['id']);
 				feedback_list_print($ff);
 				break;
@@ -49,7 +64,9 @@ else if(isset($_REQUEST['p']))
 	}
 	else if(!strcmp($_GET['p'],"feedback"))
 	{
-		if(isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['s']),"all"))
+		if(!$show_feedback)
+			message_print_error(_("Nothing to see here..."));
+		else if(isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['s']),"all"))
 			feedback_show_all();
 		else
 			feedback_show();
