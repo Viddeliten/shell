@@ -42,6 +42,19 @@ function api_get($url)
 
 function api_feedback()
 {
+	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
+	$logged_in_level=login_check_logged_in_mini();
+	$show_feedback=true;
+	if(isset($custom_pages["Feedback"]))
+	{
+		if($custom_pages["Feedback"]['req_user_level']>0 && $custom_pages["Feedback"]['req_user_level']>$logged_in_level)
+			$show_feedback=false;
+	}
+	if(!$show_feedback)
+	{
+		return 0;
+	}
+
 	//Calculate number per page
 	$nr_per_page=5; //Default number
 	if(isset($_REQUEST['to']))
