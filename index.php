@@ -50,8 +50,17 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 
 	if(function_exists('meta_title_and_description')) meta_title_and_description(); ?>
    
-    <link rel="icon" href="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH; ?>/favicon.ico">
+   <?php // Use https://realfavicongenerator.net to get favicons, and put them in img/icon under custom content folder
+   echo '<link rel="apple-touch-icon" sizes="180x180" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/favicon-16x16.png">
+<link rel="manifest" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/manifest.json">
+<link rel="mask-icon" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/favicon.ico">
+<meta name="msapplication-config" content="/'.CUSTOM_CONTENT_PATH.'/img/icon/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">'; ?>
 
+    
     <!-- Bootstrap core CSS -->
     <link href="<?php echo SITE_URL; ?>/bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
 
