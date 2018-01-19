@@ -277,6 +277,54 @@ function html_form($method, $inputs)
     return $r;
 }
 
+function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL)
+{
+	// Get table columns
+	$table=sql_get("SHOW COLUMNS FROM ".($db_name!=NULL ? $db_name.".":"").sql_safe($table_name).";");
+
+	// Recieve
+	if(isset($_POST[$table_name."_update_".$id]))
+	{
+		require_once(FUNC_PATH."db.php");
+		require_once(FUNC_PATH."base_class.php");
+		$values=array();
+		$db=new C_db(db_host, ($db_name!=NULL ? $db_name : db_name), db_user, db_pass);
+		$class=new base_class($db, $table_name, $_POST['id']);
+		foreach($table as $column)
+		{
+			if(!strcmp($column['Field'],"id") || !strcmp($column['Field'],"last_updated") || in_array($column['Field'],$skip_members))
+				continue;
+			if(!strcmp($column['Field'],"source") || !strcmp($column['Field'],"origin"))
+				$value=SITE_URL;
+			else
+				$value=$_POST[$column['Field']];
+			$values[$column['Field']]=$value;
+		}
+		$class->update_from_arr($values);
+	}
+	
+	$inputs=array();
+
+	// Get values
+	if($id!=NULL)
+		$values=sql_get_first("SELECT * FROM ".($db_name!=NULL ? $db_name.".":"").sql_safe($table_name)." WHERE id=".sql_safe($id).";");
+
+	foreach($table as $column)
+	{
+		if(!strcmp($column['Field'],"id") || in_array($column['Field'],$skip_members))
+			continue;
+		
+		$inputs[]=html_form_input($column['Field']."_text", sprintf("%s :",$column['Field']), "text", $column['Field'], $values[$column['Field']], $column['Default'], NULL, $column['Type']);
+		// TODO: Make different inputs based on type of field
+	}
+	if($id!=NULL)
+	{
+		$inputs[]=html_form_input(NULL, NULL, "hidden", "id", $id);
+		$inputs[]=html_form_button($table_name."_update_".$id, _("Update"), "success");
+	}
+	return html_form("post", $inputs);
+}
+
 function html_form_add_div($div_id, $button_text, $path, $button_class="btn btn-default")
 {
 	$r='<div id="'.$div_id.'">';
