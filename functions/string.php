@@ -28,7 +28,9 @@ function string_get_link_from_url($url, $get_title=true)
 		$link_text=string_get_title_from_url($url);
 	if($link_text=="")
 		$link_text=_("link");
-	return '<a href="'.$url.'">'.$link_text.'</a>';
+	if(strlen($link_text>100))
+		$link_text=substr($link_text,0,100);
+	return '<a href="'.trim($url).'">'.$link_text.'</a>';
 }
 
 function string_get_title_from_url($url)
@@ -172,11 +174,11 @@ function string_unslugify($text)
 
 function preprint($value, $label="")
 {
-	echo $label.prestr($value);
+	echo prestr($value, $label);
 }
-function prestr($value)
+function prestr($value, $label="")
 {
-	return "<pre>".print_r($value,1)."</pre>";
+	return $label."<pre>".print_r($value,1)."</pre>";
 }
 
 //Get user defined constants
