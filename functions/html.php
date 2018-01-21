@@ -339,8 +339,63 @@ function html_tooltip($tip_text)
 	return '<a class="helpmarker" href=# title="'.$tip_text.'">?</a>';
 }
 
+function html_table_from_single_array($array, $headlines=NULL, $silent_columns=array(), $vertical=TRUE, $size_table=array(), $class=NULL)
+{
+    $r='<table class="table table-striped table-condensed'.($class?" ".$class:"").'">';
+	if($headlines!==-1)
+		$r.="<tr>";
+    foreach($array as $key => $val)
+    {
+        if(!in_array($key,$silent_columns))
+        {
+            $size="";
+            if(isset($size_table[$key]['min-width']))
+                $size.="min-width: ".$size_table[$key]['min-width']."; ";
+            if(isset($size_table[$key]['max-width']))
+                $size.="max-width: ".$size_table[$key]['max-width']."; ";
+            if(isset($size_table[$key]['width']))
+                $size.="width: ".$size_table[$key]['width']."; ";
+            if($size!="")
+                $style=' style="'.$size.'"';
+            else
+                $style="";
+            if($headlines!==-1)
+                $r.="<th $style>".string_unslugify($key)."</th>";
+            $keys[]=$key;
+        }
+    }
+		$r.="<tr>";
+    foreach($array as $k => $val)
+	{
+        if(!in_array($k,$silent_columns))
+        {
+            $size="";
+            if(isset($size_table[$k]['min-width']))
+                $size.="min-width: ".$size_table[$k]['min-width']."; ";
+            if(isset($size_table[$k]['max-width']))
+                $size.="max-width: ".$size_table[$k]['max-width']."; ";
+            if(isset($size_table[$k]['width']))
+                $size.="width: ".$size_table[$k]['width']."; ";
+            if($size!="")
+                $style=' style="'.$size.'"';
+            else
+                $style="";
+
+            $r.="<td $style>".$val."</td>";
+        }
+    }
+    $r.="</tr>";
+	$r.="</table>";
+	return $r;
+}
+
 function html_table_from_array($array, $headlines=NULL, $silent_columns=array(), $size_table=array(), $class=NULL)
 {
+    if(empty($array))
+        return _("Empty array");
+    if(!isset($array[0]))
+        return html_table_from_single_array($package, $headlines, $silent_columns, FALSE);
+    
 	$r='<table class="table table-striped table-condensed'.($class?" ".$class:"").'">';
 	if($headlines!==-1)
 		$r.="<tr>";
@@ -363,7 +418,7 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array(),
 				else
 					$style="";
 				if($headlines!==-1)
-					$r.="<th $style>$key</th>";
+					$r.="<th $style>".string_unslugify($key)."</th>";
 				$keys[]=$key;
 			}
 		}
