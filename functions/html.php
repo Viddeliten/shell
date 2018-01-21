@@ -277,7 +277,7 @@ function html_form($method, $inputs)
     return $r;
 }
 
-function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL)
+function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL, $just_inputs=FALSE)
 {
 	// Get table columns
 	$table=sql_get("SHOW COLUMNS FROM ".($db_name!=NULL ? $db_name.".":"").sql_safe($table_name).";");
@@ -320,8 +320,11 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 	if($id!=NULL)
 	{
 		$inputs[]=html_form_input(NULL, NULL, "hidden", "id", $id);
-		$inputs[]=html_form_button($table_name."_update_".$id, _("Update"), "success");
+        if(!$just_inputs)
+            $inputs[]=html_form_button($table_name."_update_".$id, _("Update"), "success");
 	}
+    if($just_inputs)
+        return $inputs;
 	return html_form("post", $inputs);
 }
 
