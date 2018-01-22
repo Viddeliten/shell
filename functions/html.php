@@ -202,7 +202,7 @@ function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=
 	return $r;
 }
 
-function html_form_textarea($input_id, $label, $name, $value, $placeholder=NULL)
+function html_form_textarea($input_id, $label, $name, $value="", $placeholder=NULL)
 {
 	return '<div class="form-group">
 			<label for="'.$input_id.'">'.$label.'</label>
