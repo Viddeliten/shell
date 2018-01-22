@@ -396,8 +396,6 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array(),
 {
     if(empty($array))
         return _("Empty array");
-    if(!isset($array[0]))
-        return html_table_from_single_array($package, $headlines, $silent_columns, FALSE);
     
 	$r='<table class="table table-striped table-condensed'.($class?" ".$class:"").'">';
 	if($headlines!==-1)
