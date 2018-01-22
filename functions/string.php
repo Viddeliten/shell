@@ -178,7 +178,7 @@ function preprint($value, $label="")
 }
 function prestr($value, $label="")
 {
-	return $label."<pre>".print_r($value,1)."</pre>";
+	return $label."<pre>".str_replace("\n","<br />",print_r($value,1))."</pre>";
 }
 
 //Get user defined constants
