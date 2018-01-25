@@ -101,6 +101,8 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
   if(isset($_SESSION[PREFIX.'user_id']))
 	usermessage_check_messages($_SESSION[PREFIX.'user_id']);
 
+	if(defined('HEADER_CONTENT'))
+		echo HEADER_CONTENT;
 ?>
 	
   </head>
