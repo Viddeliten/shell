@@ -21,6 +21,12 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	if(defined('FLATTR_META_TAG'))
 		echo FLATTR_META_TAG;
 	
+	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
+		require_once(CUSTOM_CONTENT_PATH."/globals.php");
+
+	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
+		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
+
 	require_once("functions/login.php");
 	require_once("functions/db_connect.php");
 	require_once("functions/string.php");
@@ -42,11 +48,7 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	require_once("functions/html.php");
 	require_once("functions/rss.php");
 	
-	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
-		require_once(CUSTOM_CONTENT_PATH."/globals.php");
 
-	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
-		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
 
 	if(function_exists('meta_title_and_description')) meta_title_and_description(); ?>
    
