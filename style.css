@@ -19,6 +19,11 @@
     }
 }
 
+.inline
+{
+	display: inline-block;
+}
+
 .navbar-brand img {
     display: inline;
 	margin-top: -0.9em;
@@ -82,7 +87,7 @@ select.form-control.small
 	min-width: 9em;
 }
 
-.clearer
+.clearer, .clearfix
 {
 	clear: both;
 }
