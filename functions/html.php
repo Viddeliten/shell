@@ -29,6 +29,18 @@ function html_link($url, $text, $class=NULL)
 	$the_text=str_ireplace("<br /><br />","</p></p>",$the_text);
 	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class).'>'.$the_text.'</a>';
 }
+
+function html_list($items, $list_class=NULL, $list_item_class=NULL)
+{
+    if(empty($items))
+        return NULL;
+    
+    $list=array();
+    foreach($items as $item)
+        $list[]=html_tag("li",$item, $list_item_class);
+        
+    return html_tag("ol", implode($list), $list_class);
+}
 	
 // Returns rows of elements.
 // All elements in first layers will be one row each
@@ -230,7 +242,7 @@ function html_form_droplist($input_id, $label, $name, $options, $selected="", $o
 	return $return;
 }
 
-function html_action_button($target_link, $button_text, $hidden_values=NULL)
+function html_action_button($target_link, $button_text, $hidden_values=NULL, $button_type="primary", $large=FALSE)
 {
 	$h="";
 	if(!empty($hidden_values))
@@ -242,14 +254,14 @@ function html_action_button($target_link, $button_text, $hidden_values=NULL)
 	}
 	return '<form action="'.$target_link.'" method="post">'.
 		$h.
-		html_form_button("action",$button_text, "info").
+		html_form_button("action",$button_text, $button_type, NULL, $large).
 	'</form>';
 }
 
-function html_form_button($name, $value, $button_type="default", $onclick=NULL)
+function html_form_button($name, $value, $button_type="default", $onclick=NULL, $large=FALSE)
 {
 	return '<input type="submit" name="'.$name.'" value="'.$value.'" '.
-				'class="btn btn-'.$button_type.'" '.
+				'class="btn btn-'.$button_type.($large==TRUE ? ' btn-lg' : '').'" '.
 				($onclick!=NULL ? 'onclick="'.$onclick.'"':'').
 			'>';
 }
