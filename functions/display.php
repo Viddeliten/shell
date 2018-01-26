@@ -112,25 +112,28 @@ function display_conditional_login()
 	}
 }
 
-function display_footer()
+if(!function_exists("display_footer"))
 {
-	?>
-	<div id="footer">
-		<div class="row">
-			<div class="col-md-8 center">
-				<?php if(!defined('NotPresented')) { ?>
-				<p><?php echo _("This site is presented by"); ?></p> <?php } ?>
-				<a href="http://viddewebb.se"><img src="<?php echo SITE_URL."/"; ?>img/ViddeWebb-footer.png" alt="Vidde Webb"></a>
-			</div>
-			<div class="col-md-4 right">
-				<p><?php echo _("Select language:"); ?>
-					<a href="<?php echo add_get_to_URL("language", "sv"); ?>"><img src="<?php echo SITE_URL."/"; ?>img/flag/sv.png"></a>
-					<a href="<?php echo add_get_to_URL("language", "uk"); ?>"><img src="<?php echo SITE_URL."/"; ?>img/flag/uk.png"></a>
-				</p>
-			</div>
-		</div>
-	</div>
-	<?php
+    function display_footer()
+    {
+        ?>
+        <div id="footer">
+            <div class="row">
+                <div class="col-md-8 center">
+                    <?php if(!defined('NotPresented')) { ?>
+                    <p><?php echo _("This site is presented by"); ?></p> <?php } ?>
+                    <a href="http://viddewebb.se"><img src="<?php echo SITE_URL."/"; ?>img/ViddeWebb-footer.png" alt="Vidde Webb"></a>
+                </div>
+                <div class="col-md-4 right">
+                    <p><?php echo _("Select language:"); ?>
+                        <a href="<?php echo add_get_to_URL("language", "sv"); ?>"><img src="<?php echo SITE_URL."/"; ?>img/flag/sv.png"></a>
+                        <a href="<?php echo add_get_to_URL("language", "uk"); ?>"><img src="<?php echo SITE_URL."/"; ?>img/flag/uk.png"></a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
 }
 
 function display_custom_pages_menu()
