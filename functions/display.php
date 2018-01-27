@@ -26,17 +26,13 @@ function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=tru
           <ul class="nav navbar-nav">
             <?php if( $show_home_link) { ?><li <?php if(!isset($_GET['p'])) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>"><?php echo _("Home"); ?></a></li><?php } ?>
 			<?php admin_menu_dropdown(); ?>
-           <!-- <li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"about")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>?p=about" ><?php echo _("About"); ?></a></li> -->
+           <!-- <li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"about")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>/about" ><?php echo _("About"); ?></a></li> -->
 		   <?php display_custom_pages_menu(); ?>
-            <?php if($show_feedback) { ?><li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"feedback")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>?p=feedback"><?php echo _("Feedback"); ?></a></li><?php } ?>
+            <?php if($show_feedback) { ?><li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"feedback")) echo 'class="active"'; ?>><a href="<?php echo SITE_URL; ?>/feedback"><?php echo _("Feedback"); ?></a></li><?php } ?>
 			<?php if(defined('SITE_OWNER_FLATTR_ID')) { ?><li><?php flattr_button_show(SITE_OWNER_FLATTR_ID, SITE_URL, SITE_NAME, "", 'compact', "sv"); ?></li><?php } ?>
           </ul>
 		  <ul class="nav navbar-nav navbar-right">
-			<?php 
-			display_friend_request_drop_menu();
-			// display_dropdown_menu('<span class="glyphicon glyphicon-user"></span>',
-										// "user",
-										// array("friend request from name" => array("slug" => "profile&amp;user=1"))); ?>
+				<?php display_friend_request_drop_menu(); ?>
 			<li><?php login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"'); ?></li>
           </ul>
         </div><!--/.nav-collapse -->
@@ -85,7 +81,7 @@ function display_friend_request_drop_menu()
 		$r=array();
 		foreach($requests as $request)
 		{
-			$r[sprintf("Friend request from %s", user_get_name($request['requested_by']))]=array("slug" => "profile&amp;user=".$request['requested_by']);
+			$r[sprintf("Friend request from %s", user_get_name($request['requested_by']))]=array("slug" => "profile/?user=".$request['requested_by']);
 		}
 		if(!empty($r))
 		{
@@ -158,7 +154,7 @@ function display_menu_pages($custom_pages)
 			}
 			else if(!isset($content['subpages']) || empty($content['subpages']))
 			{
-				echo '<li ><a href="'.SITE_URL.'/?p='.$content['slug'].'" >'._($name).'</a></li>';
+				echo '<li ><a href="'.SITE_URL.'/'.$content['slug'].'" >'._($name).'</a></li>';
 			}
 			else
 			{
@@ -168,7 +164,7 @@ function display_menu_pages($custom_pages)
 					  foreach($content['subpages'] as $s_name => $s_content)
 					  {
 							if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
-								echo '<li ><a href="'.SITE_URL.'/?p='.$content['slug'].'&amp;s='.$s_content['slug'].'" >'._($s_name).'</a></li>';
+								echo '<li ><a href="'.SITE_URL.'/'.$content['slug'].'/'.$s_content['slug'].'" >'._($s_name).'</a></li>';
 					  }
 				echo '</ul>
 					</li>';
@@ -186,7 +182,7 @@ function display_dropdown_menu($name, $slug, $subpages)
 					  foreach($subpages as $s_name => $s_content)
 					  {
 							if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
-								echo '<li ><a href="'.SITE_URL.'/?p='.$slug.'&amp;s='.$s_content['slug'].'" >'.$s_name.'</a></li>';
+								echo '<li ><a href="'.SITE_URL.'/'.$slug.'/'.$s_content['slug'].'" >'.$s_name.'</a></li>';
 					  }
 				echo '</ul>
 	</li>';

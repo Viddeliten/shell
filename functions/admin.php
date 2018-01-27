@@ -58,18 +58,18 @@ function admin_menu_dropdown()
 		echo '<li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.(isset($custom_admin_name) ? $custom_admin_name : _("Admin tools")).'<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=users">'._("Users").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=version">'._("Version").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=news">'._("Site news").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=mess">'._("Messages").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=spam">'._("Spam").'</a></li>';
+            <li><a href="'.SITE_URL.'/admin/users">'._("Users").'</a></li>
+            <li><a href="'.SITE_URL.'/admin/version">'._("Version").'</a></li>
+            <li><a href="'.SITE_URL.'/admin/news">'._("Site news").'</a></li>
+            <li><a href="'.SITE_URL.'/admin/mess">'._("Messages").'</a></li>
+            <li><a href="'.SITE_URL.'/admin/spam">'._("Spam").'</a></li>';
 
 
 		if(isset($custom_admin_pages['subpages']) && !empty($custom_admin_pages['subpages']))
 		{
 			foreach($custom_admin_pages['subpages'] as $s_name => $s_content)
 			{
-				echo '<li ><a href="'.SITE_URL.'/?p='.$custom_admin_pages['slug'].'&amp;s='.$s_content['slug'].'" >'.$s_name.'</a></li>';
+				echo '<li ><a href="'.SITE_URL.'/'.$custom_admin_pages['slug'].'/'.$s_content['slug'].'" >'.$s_name.'</a></li>';
 			}
 		}
 
