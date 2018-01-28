@@ -32,9 +32,13 @@ function message_print_message($message, $return=false)
 	else
 		echo $message;
 }
+function message_success_message($message)
+{
+    return "<div class=\"message_box success well\">".$message."</div>";
+}
 function message_print_success_message($message)
 {
-	echo "<div class=\"message_box success well\">".$message."</div>";
+	echo message_success_message($message);
 }
 function message_print_error($message)
 {
