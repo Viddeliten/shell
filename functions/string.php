@@ -1,9 +1,12 @@
 <?php
 
-function sql_safe($str)
+if(!function_exists("sql_safe"))
 {
-	$str=mysql_real_escape_string($str);
-	return $str;
+	function sql_safe($str)
+	{
+		$str=mysql_real_escape_string($str);
+		return $str;
+	}
 }
 
 function password_generate($len)
@@ -172,15 +175,27 @@ function string_unslugify($text)
 	return ucfirst(str_replace("_"," ",$text));
 }
 
-function preprint($value, $label="")
+if(!function_exists("preprint"))
 {
-	echo prestr($value, $label);
+	function preprint($value, $label="")
+	{
+		echo prestr($value, $label);
+	}
 }
-function prestr($value, $label="")
+if(!function_exists("prestr"))
 {
-	return $label."<pre>".str_replace("\n","<br />",print_r($value,1))."</pre>";
+	function prestr($value, $label="")
+	{
+		// return $label."<pre>".str_replace("\n","<br />",print_r($value,1))."</pre>";
+		$str=print_r($array,1);
+		$str=str_replace("<","&lt;",$str);
+		$str=str_replace(">","&gt;",$str);
+		$str="<pre>".$str."</pre>";
+		if($label!==NULL)
+			$str=$label.$str;
+		return str_replace("\n","<br />", $str);
+	}
 }
-
 //Get user defined constants
 function string_get_defined_constants()
 {
