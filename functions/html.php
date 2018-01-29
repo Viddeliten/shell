@@ -260,12 +260,16 @@ function html_action_button($target_link, $button_text, $hidden_values=NULL, $bu
 	'</form>';
 }
 
-function html_form_button($name, $value, $button_type="default", $onclick=NULL, $large=FALSE)
+function html_form_button($name, $value, $button_type="default", $onclick=NULL, $large=FALSE, $inline=FALSE)
 {
-	return '<input type="submit" name="'.$name.'" value="'.$value.'" '.
+	$button='<input type="submit" name="'.$name.'" value="'.$value.'" '.
 				'class="btn btn-'.$button_type.($large==TRUE ? ' btn-lg' : '').'" '.
 				($onclick!=NULL ? 'onclick="'.$onclick.'"':'').
 			'>';
+	if($inline)
+		$button=html_tag("div",html_tag("div","","col-sm-2").html_tag("div",$button,"col-sm-2"),"row");
+
+	return $button;
 }
 
 function html_button($button_text, $class="btn btn-default", $onclick=NULL)
