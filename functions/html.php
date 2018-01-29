@@ -216,11 +216,13 @@ function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=
 
 function html_form_textarea($input_id, $label, $name, $value="", $placeholder=NULL)
 {
-	return '<div class="form-group">
-			<label for="'.$input_id.'">'.$label.'</label>
-			<textarea class="form-control autoExpanding" id="'.$input_id.'" placeholder="'.$placeholder.'" name="'.$name.'">'
-			.string_html_to_text($value).'</textarea>
-		</div>';
+	return '<div class="form-group row">'.
+				'<label for="'.$input_id.'" class="col-sm-2 col-form-label">'.$label.'</label>'.
+				html_tag("div",'<textarea class="form-control autoExpanding " id="'.$input_id.'"'.
+								' placeholder="'.$placeholder.'" name="'.$name.'">'.
+								string_html_to_text($value).
+								'</textarea>',"col-sm-10").
+			'</div>';
 }
 
 function html_form_droplist($input_id, $label, $name, $options, $selected="", $onchange=NULL, $class=NULL)
