@@ -1,8 +1,24 @@
 <?php
 
-function language_setup()
+function language_setup($override_language=NULL)
 {
-	if(isset($_GET['language']))
+	if($override_language!=NULL)
+	{
+		switch($override_language)
+		{
+			case "sv":
+			case "se":
+				$language="sv_SE";
+				break;
+			case "en":
+			case "uk":
+				$language="en_GB";
+				break;
+			default:
+				$language="sv_SE";
+		}
+	}
+	else if(isset($_GET['language']))
 	{
 		//User has selected language
 		if(!strcmp($_GET['language'],"sv"))
