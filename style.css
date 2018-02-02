@@ -109,6 +109,11 @@ select.form-control.small
 	text-align: center;
 }
 
+.left
+{
+	text-align: left;
+}
+
 .leftfloat
 {
 	float: left;
