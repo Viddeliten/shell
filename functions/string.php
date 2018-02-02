@@ -187,7 +187,7 @@ if(!function_exists("prestr"))
 	function prestr($value, $label="")
 	{
 		// return $label."<pre>".str_replace("\n","<br />",print_r($value,1))."</pre>";
-		$str=print_r($array,1);
+		$str=print_r($value,1);
 		$str=str_replace("<","&lt;",$str);
 		$str=str_replace(">","&gt;",$str);
 		$str="<pre>".$str."</pre>";
