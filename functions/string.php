@@ -1,9 +1,12 @@
 <?php
 
-function sql_safe($str)
+if(!function_exists("sql_safe"))
 {
-	$str=mysql_real_escape_string($str);
-	return $str;
+	function sql_safe($str)
+	{
+		$str=mysql_real_escape_string($str);
+		return $str;
+	}
 }
 
 function password_generate($len)
@@ -28,7 +31,9 @@ function string_get_link_from_url($url, $get_title=true)
 		$link_text=string_get_title_from_url($url);
 	if($link_text=="")
 		$link_text=_("link");
-	return '<a href="'.$url.'">'.$link_text.'</a>';
+	if(strlen($link_text>100))
+		$link_text=substr($link_text,0,100);
+	return '<a href="'.trim($url).'">'.$link_text.'</a>';
 }
 
 function string_get_title_from_url($url)
@@ -166,18 +171,31 @@ function string_slugify($text)
 }
 function string_unslugify($text)
 {
+	$text=str_replace("-"," ",$text);
 	return ucfirst(str_replace("_"," ",$text));
 }
 
-function preprint($value, $label="")
+if(!function_exists("preprint"))
 {
-	echo $label.prestr($value);
+	function preprint($value, $label="")
+	{
+		echo prestr($value, $label);
+	}
 }
-function prestr($value)
+if(!function_exists("prestr"))
 {
-	return "<pre>".print_r($value,1)."</pre>";
+	function prestr($value, $label="")
+	{
+		// return $label."<pre>".str_replace("\n","<br />",print_r($value,1))."</pre>";
+		$str=print_r($value,1);
+		$str=str_replace("<","&lt;",$str);
+		$str=str_replace(">","&gt;",$str);
+		$str="<pre>".$str."</pre>";
+		if($label!==NULL)
+			$str=$label.$str;
+		return str_replace("\n","<br />", $str);
+	}
 }
-
 //Get user defined constants
 function string_get_defined_constants()
 {

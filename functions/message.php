@@ -32,13 +32,22 @@ function message_print_message($message, $return=false)
 	else
 		echo $message;
 }
+function message_success_message($message)
+{
+    return "<div class=\"message_box success well\">".$message."</div>";
+}
 function message_print_success_message($message)
 {
-	echo "<div class=\"message_box success well\">".$message."</div>";
+	echo message_success_message($message);
+}
+
+function message_error_message($message)
+{
+    return "<div class=\"message_box error well\">".$message."</div>";
 }
 function message_print_error($message)
 {
-	echo "<div class=\"message_box error well\">".$message."</div>";
+	echo message_error_message($message);
 }
 
 function message_add_error($error_mess)
@@ -56,12 +65,15 @@ function add_error($error_mess)
 		define('ERROR'.$i, $error_mess);
 	}
 }
-function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=FALSE, $generate_warning_on_fail=FALSE)
+function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=FALSE, $generate_warning_on_fail=FALSE, $return_message_text=FALSE)
 {
 	if(mysql_query($sql))
 	{
 		if($success_message!=NULL)
 		{
+            if($return_message_text)
+                return $success_message;
+            
 			if($print_now)
 				message_print_success_message($success_message);
 			else
@@ -73,13 +85,20 @@ function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=F
 	}
 	else
 	{
-		if($print_now)
-				message_print_error(sprintf(_("Error code %s<br />SQL: %s<br />ERROR: %s"),$error_code, $sql, mysql_error()));
-			else
-				add_error_mysql($error_code,$sql, mysql_error());
+        $error_message=sprintf(_("Error code %s<br />SQL: %s<br />ERROR: %s"),$error_code, $sql, mysql_error());
+        if($return_message_text)
+            $return=$error_message;
+
+        if($print_now)
+            message_print_error($error_message);
+        else if(!$return_message_text)
+            add_error_mysql($error_code ,$sql, mysql_error());
+        
 		if($generate_warning_on_fail)
 			message_trigger_warning($error_code, $sql, mysql_error());
 			// trigger_error (sprintf(_("Error code %s	SQL: %s	ERROR: %s"),$error_code, $sql, mysql_error()));
+        if($return_message_text)
+               return $return;
 		return FALSE;
 	}
 }
@@ -121,11 +140,15 @@ function message_add_success_message($message)
 	}
 }
 
-function message_progress_bar($percent)
+function message_progress_bar($percent, $max_decimals=2)
 {
+	$percent_display=round($percent,2);
+	if($percent_display=round($percent,0))
+		$percent_display=round($percent,0);
+
 	return '<div class="progress">
   <div class="progress-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: '.$percent.'%;">
-    '.$percent.'%
+    '.$percent_display.'%
   </div>
 </div>';
 }

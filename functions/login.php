@@ -10,8 +10,29 @@ function login_receive()
 	}
 	if(isset($_GET['reg']) && isset($_POST['upsign']))
 	{
-		user_register();
+		if(login_captcha_check())
+			user_register();
 	}
+}
+
+function login_captcha_check()
+{
+	if(isset($_POST['g-recaptcha-response']))
+		$response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+	
+	if(!isset($response))
+	{
+		add_error(_("You do not appear to be human. Feeling ok?"));
+		return FALSE;
+	}
+	else if(isset($response['error-codes'][0]) && !strcmp($response['error-codes'][0],'missing-input-response'))
+	{
+		//Human was a robot or forgot to check captcha
+		add_error(_("Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
+		return FALSE;
+	}
+	else
+		return TRUE;
 }
 
 /************************************************************************/
@@ -242,7 +263,12 @@ function login_form_registration()
 			<div class="form-group">
 				<label for="signup_email">Email:</label> 
 				<input type="text" name="email" id="signup_email" class="form-control">
-			</div>
+			</div>';
+
+		require_once('functions/recaptchalib.php');
+		echo '<div class="g-recaptcha" data-sitekey="'.ReCaptcha_publickey.'"></div>';
+
+		echo '
 			<input type="submit" name="upsign" value="Sign me up!" class="btn btn-default">
 		</form>';
 	}

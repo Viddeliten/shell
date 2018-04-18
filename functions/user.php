@@ -42,7 +42,9 @@ function user_receive()
 				flattr_set_flattrID($user_id, $_POST['flattr_id']);
 			}
 			//Flattr choice. Allways do this!
-			flattr_set_flattr_choice($user_id, $_POST['flattr_choice']);
+			flattr_set_flattr_choice($user_id, (isset($_POST['flattr_choice']) ? $_POST['flattr_choice'] : array()));
+			
+			user_set_custom_choices(login_get_user(), $_POST);
 		}
 	}
 	else if(isset($_POST['profile_save']))
@@ -89,11 +91,13 @@ function user_display_dropdown()
           </ul>';
 }
 
-function user_get_all($type)
+function user_get_all($type, $limit=NULL)
 {
-	$sql="SELECT id FROM user";
+	$sql="SELECT id FROM ".PREFIX."user";
 	if(!strcmp($type,"active"))
-		$sql.=" WHERE lastlogin IS NOT NULL AND inactive IS NULL;";
+		$sql.=" WHERE lastlogin IS NOT NULL AND inactive IS NULL";
+	if($limit!==NULL)
+		$sql.=" ORDER BY RAND() LIMIT 0,".sql_safe($limit);
 	$r=array();
 	if($uu=mysql_query($sql))
 	{
@@ -367,6 +371,25 @@ function user_display_settings()
 				foreach($custom_settings['flattr'] as $custom_flattr_choice => $translation)
 					user_setting_flattr_display($user_id, $custom_flattr_choice, $translation);
 			}
+			
+			$site_specific_user_settings=user_get_custom_setting_globals();
+
+			foreach($site_specific_user_settings as $cs => $val)
+			{
+				echo '<strong>'.string_unslugify($cs).'</strong>';
+				foreach($val as $cc => $v)
+				{
+					echo '<div class="checkbox">';
+						echo '<label>
+							<input type="checkbox" name="'.$cs.'[]" value="'.$cc.'"';
+							if(user_get_setting($user_id, array($cs => $cc)))
+								echo ' checked';
+							echo '>
+							'.$v.'
+						  </label>';
+					echo '</div>';
+				}
+			}
 		}
 
 		//Save button
@@ -374,6 +397,34 @@ function user_display_settings()
 		
 		echo '</form>';
 	}
+}
+
+function user_get_setting($user_id, $type_arr)
+{
+	$choices=user_get_settings($user_id);
+
+	foreach($type_arr as $key => $val)
+	{
+		if(isset($choices[$key]))
+		{
+			if(in_array($val, $choices[$key]))
+				return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+function user_get_settings($user_id)
+{
+	if($uu=mysql_query("SELECT settings FROM ".PREFIX."user_setting WHERE user_id='".sql_safe($user_id)."';"))
+	{
+		if($u=mysql_fetch_array($uu))
+		{
+			$choices=unserialize($u['settings']);
+			return $choices;
+		}
+	}
+	return NULL;	
 }
 
 function user_setting_flattr_display($user_id, $value, $translation)
@@ -514,6 +565,69 @@ function user_set_password($user_id, $new_password)
 	}
 }
 
+function user_get_custom_setting_globals()
+{
+	$site_specific_user_settings=array();
+	require_once(CUSTOM_CONTENT_PATH."/globals.php");
+	
+	if(defined('CUSTOM_SETTINGS'))
+	{
+		$custom_settings=unserialize(CUSTOM_SETTINGS);
+		
+		foreach($custom_settings as $cs => $val)
+		{
+			if(strcmp($cs,"flattr"))
+			{
+				foreach($val as $cc => $v)
+				{
+					$site_specific_user_settings[string_slugify($cs)][$cc]=$v;
+				}
+			}
+		}
+	}
+	return $site_specific_user_settings;
+}
+
+function user_set_custom_choices($user_id, $post)
+{
+	//First get what choices outside of flattr there is
+	$custom_settings=user_get_custom_setting_globals();
+	
+	//Save the choices user has made
+	$save_settings=array();
+	foreach($custom_settings as $cs => $s)
+	{
+		if(isset($post[$cs]))
+		{
+			foreach($s as $choice => $val)
+			{
+				if(in_array($choice, $post[$cs]))
+					$save_settings[$cs][]=$choice;
+			}
+		}
+	}
+
+	//write to db
+	$current_choices=user_get_settings($user_id);
+	$current_choices_serialized=serialize($current_choices);
+	$new_choices=serialize($save_settings);
+
+	if(strcmp($current_choices_serialized,$new_choices))
+	{
+		if($current_choices === NULL)
+			$sql="INSERT INTO ".PREFIX."user_setting SET settings=\"".sql_safe($new_choices)."\", user_id=".sql_safe($user_id).";";
+		else
+			$sql="UPDATE ".PREFIX."user_setting SET settings=\"".sql_safe($new_choices)."\" WHERE user_id=".sql_safe($user_id).";";
+
+		$error_code="1039615";
+		$success_message=_("Settings saved");
+		message_try_mysql($sql,	$error_code, $success_message,
+			FALSE, //Print now
+			TRUE //generate_warning_on_fail
+			);
+	}
+}
+
 function user_name_exists($username)
 {
 	if($users=mysql_query("SELECT * FROM ".PREFIX."user WHERE username='".sql_safe($username)."';"))
@@ -623,7 +737,7 @@ function user_display_active_users($include_reputation=TRUE)
 function user_display_friends()
 {
 	$friends=user_friend_get_accepted($_SESSION['user_id'],$_GET['sortby'],$_GET['order']);
-	// preprint($friends,"FRIENDS:");
+
 	if(empty($friends))
 	{
 		echo '<p>'._("Found no current friends").'</p>';
@@ -700,7 +814,7 @@ function user_friend_get_accepted($user_id, $sortby, $order)
 	WHERE (user_friend.requested_by=".sql_safe($user_id)." OR user_friend.user=".sql_safe($user_id).")
 	AND user_friend.status='ACCEPTED'
 	".($sortby!="" ? "ORDER BY ".sql_safe($sortby)." ".sql_safe($order) : "").";";
-	// preprint($sql, "DEBUG1832");
+
 	$friends=array();
 	if($ff=mysql_query($sql))
 	{
@@ -720,11 +834,10 @@ function user_friend_get($user1, $user2)
 	LEFT JOIN user_friend_history fh ON fh.user_friend_id=user_friend.id AND fh.id=fh2.id
 	WHERE (user_friend.requested_by=".sql_safe($user1)." AND user_friend.user=".sql_safe($user2).")
 	OR (user_friend.requested_by=".sql_safe($user2)." AND user_friend.user=".sql_safe($user1).");";
-	// preprint($sql, "DEBUG1834");
+
 	$ff=mysql_query($sql);
 	while($s=mysql_fetch_assoc($ff))
 	{
-		// preprint($s,"s");
 		$f=$s;
 		if($f['status']=="ACCEPTED")
 		{
@@ -763,7 +876,6 @@ function user_friend_get_request_button($user_id)
 
 	//Check current friendship status
 	$current_friendship=user_friend_get($user_id, $_SESSION['user_id']);
-	// preprint($current_friendship,"current_friendship");
 	
 	if(isset($current_friendship['status']) && $current_friendship['status']=="PENDING")
 	{

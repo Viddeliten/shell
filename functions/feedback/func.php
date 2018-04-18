@@ -71,20 +71,7 @@ function feedback_recieve()
 		/********************************************/
 		/*				Captcha check				*/
 		/********************************************/
-		if(login_check_logged_in_mini()<1 && isset($_POST['g-recaptcha-response']))
-			$response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
-
-		if(login_check_logged_in_mini()<1 && (!isset($response) || $response['success'] != true))
-		{
-			if(isset($response) && !strcmp($response['error-codes'][0],'missing-input-response'))
-			{
-				//Human was a robot or forgot to check captcha
-				add_error(_("Feedback could not be posted.<br />Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
-			}
-			else
-				add_error(_("Feedback could not be posted.<br />You do not appear to be human. Feeling ok?"));
-		}
-		else
+		if(login_check_logged_in_mini()>0 || login_captcha_check())
 		{
 			// Captcha or login passed
 			
@@ -108,10 +95,10 @@ function feedback_recieve()
 			// echo "<br />DEBUG 2133: $sql";
 			mysql_query($sql);
 			$id=mysql_insert_id();
-			$message_body=html_tag("div", "<h3>".sql_safe($_POST['subject'])."</h3>
-			<p>".$_POST['text']."</p>", "posted feedback").
-			"<p><a href=\"?p=feedback&amp;id=$id\">["._("Permanent link to your feedback")."]</a></p>
-			<p><strong>Thankyou for your input!</strong></p>";
+			$message_body=html_tag("div", html_tag("h3",sql_safe($_POST['subject'])).
+				html_tag("p", $_POST['text']), "posted feedback").
+				html_tag("p", feedback_get_link($id,"["._("Permanent link to your feedback")."]")).
+				html_tag("p", html_tag("strong", _("Thank you for your input!")));
 			
 			message_add_message($message_body, _("You have submitted the following"));
 
@@ -1201,9 +1188,10 @@ function feedback_display_accepted($nr)
 	AND accepted IS NOT NULL
 	AND resolved IS NULL
 	AND merged_with IS NULL
+	AND checked_in IS NULL
 	ORDER BY ".ORDER_STR."
 	LIMIT ".sql_safe($nr).";";
-	// echo "<pre>".print_r($sql,1)."</pre>";
+
 	if($ff=mysql_query($sql))
 	{
 		feedback_list_print($ff);
@@ -1444,13 +1432,20 @@ function feedback_get_attached_feedbacks($id)
 	return NULL;
 }
 
-function feedback_get_link($id)
+function feedback_get_link($id, $linktext=NULL)
 {
-	$title=feedback_get_title($id);
-	if($title==NULL)
-		$str="Feedback #$id";
+	if($linktext!=NULL)
+	{
+		$str=$linktext;
+	}
 	else
-		$str=$title;
+	{
+		$title=feedback_get_title($id);
+		if($title==NULL)
+			$str="Feedback #$id";
+		else
+			$str=$title;
+	}
 	return "<a href=\"".feedback_get_url($id)."\">$str</a>";
 }
 

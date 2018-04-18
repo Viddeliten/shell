@@ -20,6 +20,14 @@ function admin_display_contents()
 		{
 			admin_display_messages();
 		}
+		else if(!strcmp($_GET['s'],"spam"))
+		{
+			spam_admin_list();
+		}
+		else if(!strcmp($_GET['s'],"individual_spam_score"))
+		{
+			spam_show_individual_calculation();
+		}
 		else
 			echo "<div class=\"message_box error well\">"._("Unknown admin page")."</div>";
 	}
@@ -50,17 +58,18 @@ function admin_menu_dropdown()
 		echo '<li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.(isset($custom_admin_name) ? $custom_admin_name : _("Admin tools")).'<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=users">'._("Users").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=version">'._("Version").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=news">'._("Site news").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=admin&amp;s=mess">'._("Messages").'</a></li>';
+            <li><a href="'.SITE_URL.'/admin/users">'._("Users").'</a></li>
+            <li><a href="'.SITE_URL.'/admin/version">'._("Version").'</a></li>
+            <li><a href="'.SITE_URL.'/admin/news">'._("Site news").'</a></li>
+            <li><a href="'.SITE_URL.'/admin/mess">'._("Messages").'</a></li>
+            <li><a href="'.SITE_URL.'/admin/spam">'._("Spam").'</a></li>';
 
 
 		if(isset($custom_admin_pages['subpages']) && !empty($custom_admin_pages['subpages']))
 		{
 			foreach($custom_admin_pages['subpages'] as $s_name => $s_content)
 			{
-				echo '<li ><a href="'.SITE_URL.'/?p='.$custom_admin_pages['slug'].'&amp;s='.$s_content['slug'].'" >'.$s_name.'</a></li>';
+				echo '<li ><a href="'.SITE_URL.'/'.$custom_admin_pages['slug'].'/'.$s_content['slug'].'" >'.$s_name.'</a></li>';
 			}
 		}
 
@@ -112,7 +121,7 @@ function admin_display_version()
 function admin_display_news()
 {
 	//Form for news input
-	news_form();
+	echo news_form();
 }
 
 function admin_display_messages()

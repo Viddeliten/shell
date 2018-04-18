@@ -18,6 +18,15 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	 <meta name="author" content="">
 	<?php require_once("config.php"); 
 	
+	if(defined('FLATTR_META_TAG'))
+		echo FLATTR_META_TAG;
+	
+	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
+		require_once(CUSTOM_CONTENT_PATH."/globals.php");
+
+	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
+		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
+
 	require_once("functions/login.php");
 	require_once("functions/db_connect.php");
 	require_once("functions/string.php");
@@ -39,16 +48,21 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	require_once("functions/html.php");
 	require_once("functions/rss.php");
 	
-	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
-		require_once(CUSTOM_CONTENT_PATH."/globals.php");
 
-	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
-		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
 
 	if(function_exists('meta_title_and_description')) meta_title_and_description(); ?>
    
-    <link rel="icon" href="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH; ?>/favicon.ico">
+   <?php // Use https://realfavicongenerator.net to get favicons, and put them in img/icon under custom content folder
+   echo '<link rel="apple-touch-icon" sizes="180x180" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/favicon-16x16.png">
+<link rel="manifest" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/manifest.json">
+<link rel="mask-icon" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/favicon.ico">
+<meta name="msapplication-config" content="/'.CUSTOM_CONTENT_PATH.'/img/icon/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">'; ?>
 
+    
     <!-- Bootstrap core CSS -->
     <link href="<?php echo SITE_URL; ?>/bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -84,10 +98,13 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
   usermessage_receive();
   notice_receive();
   privmess_receive();
+  spam_receive();
 
   if(isset($_SESSION[PREFIX.'user_id']))
 	usermessage_check_messages($_SESSION[PREFIX.'user_id']);
 
+	if(defined('HEADER_CONTENT'))
+		echo HEADER_CONTENT;
 ?>
 	
   </head>
@@ -120,7 +137,7 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	
 	<?php 
 	}
-	usermessage_check_messages();
+	// usermessage_check_messages();
 	db_close($connection); ?>
 	
 	<!-- Flattr-stuff: -->
@@ -142,7 +159,8 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 <!-- End Google Analytics -->
 
 <?php //Pingdom script
-echo PINGDOM_SCRIPT; ?>
+if(defined('PINGDOM_SCRIPT'))
+	echo PINGDOM_SCRIPT; ?>
 	
 	<script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
 

@@ -3,9 +3,15 @@
 /************************************************************************************************************/
 /*	for swedish translation:																				*/
 /* --------------------------																				*/
-/* generate pot-file that can be merged with po-file to generate mo-file:									*/
+/* In root, outside of custom_content,																		*/
+/* generate pot-file that can be merged with po-file to generate mo-file (2 commands):						*/
 /*	xgettext --from-code=UTF-8 -o texts-sv.pot *.php														*/
-/*	find . -iname "*.php" | xargs xgettext --from-code=UTF-8 -k_e -k_x -k__ -o translations/default.pot		*/
+/*	find . -iname "*.php" | xargs xgettext --from-code=UTF-8 -k_e -k_x -k__ -o custom_content/translations/default.pot
+/*																											*/
+/*	Download po and pot, update from POT file, upload po													*/
+/*																											*/
+/* Then to merge from shell translations, do (1 command):													*/
+/*	msgcat sample-translations/sv_SE/LC_MESSAGES/sv_SE.po custom_content/translations/sv_SE/LC_MESSAGES/sv_SE.po -o custom_content/translations/sv_SE/LC_MESSAGES/sv_SE.po --use-first
 /************************************************************************************************************/
 // define('DEFAULT_LANGUAGE', 'sv_SE'); //Swedish
 define('DEFAULT_LANGUAGE', 'en_GB');	//Brittish
@@ -20,6 +26,8 @@ define('PREFIX',"");
 define('CONTACT_EMAIL','your@email.se');
 define('SITE_URL','http://your.site.se');
 define('SITE_NAME','Example Site');
+
+define('USER_MESSAGE_MAIL_SENDING', FALSE); //Set this to true if you have tested and want to send emails by user message
 
 /********************************/
 /*			database			*/
@@ -40,6 +48,7 @@ define("ReCaptcha_publickey",""); // Site key
 /*			Flattr				*/
 /********************************/
 define('SITE_OWNER_FLATTR_ID', "");
+define('FLATTR_META_TAG','<meta name="flattr:id" content="someflattrcode">');
 
 /********************************/
 /*		Google analytics		*/

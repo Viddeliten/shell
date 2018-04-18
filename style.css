@@ -1,3 +1,8 @@
+*
+{
+	overflow-wrap: break-word;
+}
+
 /* @media (min-width: 1000px) { */
 @media (min-width: 700px) and (max-width: 1200px) { 
     .navbar-collapse.collapse {
@@ -12,6 +17,11 @@
     .navbar-header {
         float:none;
     }
+}
+
+.inline
+{
+	display: inline-block;
 }
 
 .navbar-brand img {
@@ -42,6 +52,12 @@ th
 {
 }
 
+select.form-control.small
+{
+    font-size: 85%;
+    padding: 0.1em;
+    height: 2em;
+}
 #main_container
 {
 	position: relative; /* needed for footer positioning*/
@@ -66,7 +82,12 @@ th
     padding-right: 0;
 }
 
-.clearer
+.col-form-label
+{
+	min-width: 9em;
+}
+
+.clearer, .clearfix
 {
 	clear: both;
 }
@@ -86,6 +107,11 @@ th
 .center
 {
 	text-align: center;
+}
+
+.left
+{
+	text-align: left;
 }
 
 .leftfloat
@@ -118,6 +144,10 @@ tr.active td
 .row
 {
 	margin-top: 0.5em;
+}
+.row.snug
+{
+	margin-top: -0.99em;
 }
 
 .notice
@@ -493,7 +523,7 @@ border-radius: 30px;
 	margin: 0;
 	padding: 0;
 }
-.navbar.vertical ul li
+.navbar.vertical ul li, .underlined
 {
 	border-bottom: 1px solid #7a8d8b;
 }

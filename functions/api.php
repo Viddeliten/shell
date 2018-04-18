@@ -42,6 +42,19 @@ function api_get($url)
 
 function api_feedback()
 {
+	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
+	$logged_in_level=login_check_logged_in_mini();
+	$show_feedback=true;
+	if(isset($custom_pages["Feedback"]))
+	{
+		if($custom_pages["Feedback"]['req_user_level']>0 && $custom_pages["Feedback"]['req_user_level']>$logged_in_level)
+			$show_feedback=false;
+	}
+	if(!$show_feedback)
+	{
+		return 0;
+	}
+
 	//Calculate number per page
 	$nr_per_page=5; //Default number
 	if(isset($_REQUEST['to']))
@@ -57,8 +70,8 @@ function api_feedback()
 	//Get sql
 	// feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merged=TRUE)
 	$sql=feedback_get_sql(SIZE_SUGGESTED, 
-						$nr_per_page, 
-						(isset($_REQUEST['from']) ? $_REQUEST['from'] : 0), //offset
+						sql_safe($nr_per_page), 
+						(isset($_REQUEST['from']) ? sql_safe($_REQUEST['from']) : 0), //offset
 						FALSE, //only_unresolved
 						FALSE); //no_merged
 	

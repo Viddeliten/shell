@@ -112,7 +112,7 @@ function version_show_linked_number($before_str, $link_class="")
 	{
 		if($v=mysql_fetch_array($vv))
 		{
-			echo "<a class=\"".$link_class."\" href=\"".SITE_URL."?p=changelog\">";
+			echo "<a class=\"".$link_class."\" href=\"".SITE_URL."/changelog\">";
 			if($before_str!="")
 				echo $before_str." ";
 			// echo round($v['version'], 2);
@@ -120,7 +120,7 @@ function version_show_linked_number($before_str, $link_class="")
 			return true;
 		}
 	}
-	echo "<a class=\"".$link_class."\" href=\"".SITE_URL."?p=changelog\">";
+	echo "<a class=\"".$link_class."\" href=\"".SITE_URL."/changelog\">";
 	if($before_str!="")
 		echo $before_str." ";
 	echo "0</a>";
@@ -129,10 +129,12 @@ function version_show_linked_number($before_str, $link_class="")
 
 function version_show_latest($nr=10)
 {
+	$logged_in_level=login_check_logged_in_mini();	
+	
 	echo "<h3>"._("Changelog")."</h3>";
 	
 	//Om man är admin vill man se vad som är färdigt, men inte tillagt i en version
-	$logged_in_level=login_check();
+
 	if($logged_in_level>1) //login_check()>1)
 	{
 		version_add_unlinked_feedbacks_to_latest(NULL);
@@ -150,7 +152,7 @@ function version_show_latest($nr=10)
 					{
 						if($f=mysql_fetch_array($ff))
 						{
-							echo "<p>".date("Y-m-d H:i",strtotime($d['time']))." : <a href=\"".SITE_URL."?p=feedback&amp;id=".$f['id']."\">";
+							echo "<p>".date("Y-m-d H:i",strtotime($d['time']))." : <a href=\"".SITE_URL."/feedback/single/".$f['id']."\">";
 							if($f['subject']!=NULL && $f['subject']!="")
 							{
 								echo $f['subject'];
@@ -190,9 +192,9 @@ function version_show_latest($nr=10)
 							if($f=mysql_fetch_array($ff))
 							{
 								if($logged_in_level>1)
-									echo "<p>".date("Y-m-d H:i",strtotime($d['time']))." : <a href=\"".SITE_URL."?p=feedback&amp;id=".$f['id']."\">";
+									echo "<p>".date("Y-m-d H:i",strtotime($d['time']))." : <a href=\"".SITE_URL."/feedback/single/".$f['id']."\">";
 								else
-									echo "<p>".date("Y-m-d",strtotime($d['time']))." : <a href=\"".SITE_URL."?p=feedback&amp;id=".$f['id']."\">";
+									echo "<p>".date("Y-m-d",strtotime($d['time']))." : <a href=\"".SITE_URL."/feedback/single/".$f['id']."\">";
 								if($f['subject']!=NULL && $f['subject']!="")
 								{
 									echo $f['subject'];

@@ -13,7 +13,7 @@ function db_connect($db_host, $db_name, $db_user, $db_pass)
 
 function db_close($conn)
 {
-	mysql_close($conn);
+	@mysql_close($conn);
 }
 
 function sql_print_results($alldata)
@@ -39,7 +39,15 @@ function sql_print_results($alldata)
 	echo "</table>";
 }
 
-function sql_get($sql, $array=false, $index_column=NULL)
+function sql_get_first($sql, $warning_on_fail=FALSE)
+{
+	$result=sql_get($sql, false,NULL, $warning_on_fail);
+	if(isset($result[0]))
+		return $result[0];
+	return $result;
+}
+
+function sql_get($sql, $array=false, $index_column=NULL, $warning_on_fail=FALSE)
 {
 	$return=array();
 	if($aa=mysql_query($sql))
@@ -63,7 +71,12 @@ function sql_get($sql, $array=false, $index_column=NULL)
 		}
 	}
 	else
-		html_tag("p",mysql_error(),"error");
+	{
+		$error_message=mysql_error();
+		if($warning_on_fail!==NULL)
+			message_trigger_warning($warning_on_fail, $sql, $error_message);
+		echo html_tag("p",$sql." : ".$error_message,"error");
+	}
 	return $return;
 }
 
@@ -101,18 +114,31 @@ function sql_get_columns($selected_table)
 /*		Function:sql_update								*/
 /*		updates single column in specified table		*/
 /********************************************************/
-function sql_update($table, $column, $new_data, $id)
+function sql_update($table, $column, $new_data, $id, $print_now=FALSE, $generate_warning_on_fail=FALSE, $success_message=NULL)
 {
 	$sql="UPDATE ".sql_safe($table)."
 	SET ".sql_safe($column)."='".sql_safe($new_data)."' 
 	WHERE id=".sql_safe($id).";";
-	mysql_query($sql);
+
+	message_try_mysql($sql,"1051110", $success_message, $print_now, $generate_warning_on_fail);
+}
+
+function sql_get_single($column, $table, $where)
+{
+	$sql="SELECT ".sql_safe($column)." FROM ".sql_safe($table)." WHERE ".$where.";";
+	// preprint($sql,"DEBUG1059");
+	$r=sql_get($sql);
+	if(isset($r[0][$column]))
+		return $r[0][$column];
+	return NULL;
 }
 
 function sql_get_single_from_id($table, $column, $id)
 {
 	$sql="SELECT ".sql_safe($column)." FROM ".sql_safe($table)." WHERE id=".sql_safe($id).";";
 	$r=sql_get($sql);
-	return $r[0][$column];
+	if(isset($r[0][$column]))
+		return $r[0][$column];
+	return NULL;
 }
 ?>

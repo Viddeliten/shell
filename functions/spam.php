@@ -4,6 +4,8 @@ define('SPAM_POINTS',5);
 
 function spam_receive()
 {
+	login_check_logged_in_mini();
+	
 	//`spam_id``user``IP``type`
 	
 	if(isset($_POST['this_is_spam']))
@@ -13,19 +15,22 @@ function spam_receive()
 		{
 			foreach($_POST['id'] as $s_id)
 			{
-			
-			$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])." SET is_spam=2 WHERE id=".sql_safe($s_id).";";
-			echo "<br />DEBUG1827: $sql";
-			
-			if(mysql_query($sql))
-				add_message($_POST['type']." ".$s_id." marked as spam.");
-			else
-				add_error("There was some kind of error... (errorcode 1726)");	
+				$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])." 
+					SET is_spam=2 
+					WHERE id=".sql_safe($s_id).";";
+				
+				message_try_mysql($sql,
+					"085123", //Error code
+					sprintf(_("%s %s marked as spam"), $_POST['type'], $s_id)// success_message
+				);
 			}
 		}
 		else
 		{
-			$sql="INSERT INTO ".PREFIX."spam SET type='".sql_safe($_POST['type'])."', spam_id=".sql_safe($_POST['id']).", ";
+			$sql="INSERT INTO ".PREFIX."spam 
+				SET 
+					type='".sql_safe($_POST['type'])."', 
+					spam_id=".sql_safe($_POST['id']).", ";
 			//Om man är inloggad
 			if(isset($_SESSION[PREFIX.'user_id']))
 				$sql.="user=".sql_safe($_SESSION[PREFIX.'user_id']).";";
@@ -33,12 +38,10 @@ function spam_receive()
 			else
 				$sql.="IP='".sql_safe($_SERVER['REMOTE_ADDR'])."';";
 			
-			// echo "<br />DEBUG1012: $sql";
-			
-			if(mysql_query($sql))
-				add_message("Thank you for helping us keep the site spam-free!");
-			else
-				add_error("There was some kind of error... (errorcode 1727)");		
+			message_try_mysql($sql,
+				"084842", //Error code
+				_("Thank you for helping us keep the site spam-free!") // success_message
+			);
 		}
 	}
 	
@@ -50,18 +53,21 @@ function spam_receive()
 			foreach($_POST['id'] as $s_id)
 			{
 			
-			$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])." SET is_spam=-2 WHERE id=".sql_safe($s_id).";";
-			echo "<br />DEBUG1827: $sql";
-			
-			if(mysql_query($sql))
-				add_message($_POST['type']." ".$s_id." marked as not spam.");
-			else
-				add_error("There was some kind of error... (errorcode 1728)");	
+				$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])."
+					SET is_spam=-2
+					WHERE id=".sql_safe($s_id).";";
+				message_try_mysql($sql,
+					"084258", //Error code
+					sprintf(_("%s %s marked as not spam."), sql_safe($_POST['type']), $s_id) // success_message
+				);
 			}
 		}
 		else
 		{
-			$sql="DELETE FROM ".PREFIX."spam WHERE type='".sql_safe($_POST['type'])."' AND spam_id=".sql_safe($_POST['id'])." AND ";
+			$sql="DELETE FROM ".PREFIX."spam 
+				WHERE type='".sql_safe($_POST['type'])."' 
+				AND spam_id=".sql_safe($_POST['id'])." 
+				AND ";
 			//Om man är inloggad
 			if(isset($_SESSION[PREFIX.'user_id']))
 				$sql.="user=".sql_safe($_SESSION[PREFIX.'user_id']).";";
@@ -69,11 +75,10 @@ function spam_receive()
 			else
 				$sql.="IP='".sql_safe($_SERVER['REMOTE_ADDR'])."';";
 			
-			
-			if(mysql_query($sql))
-				add_message("Thank you for helping us keep the site spam-free!");
-			else
-				add_error("There was some kind of error... (errorcode 1729)");		
+			message_try_mysql($sql,
+				"084675", //Error code
+				_("Thank you for helping us keep the site spam-free!") // success_message
+			);
 		}
 	}
 }
@@ -148,7 +153,7 @@ function spam_admin_list($nr=20)
 		echo "<input type=\"hidden\" name=\"type\" value=\"comment\">";
 		while($c=mysql_fetch_array($cc))
 		{
-			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".SITE_URL."?page=individual_spam_score&amp;type=comment&amp;id=".$c['id']."\">[".$c['spam_score']."]</a>:  ".$c['comment']." <a href=\"".comment_get_link($c['id'])."\">[...]</a></p>";
+			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".spam_get_link($c['id'], "comment")."\">[".$c['spam_score']."]</a>:  ".$c['comment']." <a href=\"".comment_get_link($c['id'])."\">[...]</a></p>";
 		}
 		echo "<input type=\"button\" value=\"Markera alla\" onclick=\"CheckAll(this.form);\"><br />";
 
@@ -168,8 +173,8 @@ function spam_admin_list($nr=20)
 		while($c=mysql_fetch_array($cc))
 		{
 			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\">
-			<a href=\"".SITE_URL."?page=individual_spam_score&amp;type=feedback&amp;id=".$c['id']."\">[".$c['spam_score']."]</a>:  <strong>".$c['subject']."</strong> - ".$c['text']." 
-			<a href=\"".SITE_URL."?page=feedback&amp;id=".$c['id']."\">[...]</a></p>";
+			<a href=\"".spam_get_link($c['id'], "feedback")."\">[".$c['spam_score']."]</a>:  <strong>".$c['subject']."</strong> - ".$c['text']." 
+			".feedback_get_link($c['id'],"[...]")."</p>";
 		}
 		echo "<input type=\"button\" value=\"Markera alla\" onclick=\"CheckAll(this.form);\"><br />";
 
@@ -187,8 +192,8 @@ function spam_admin_list($nr=20)
 		echo "<input type=\"hidden\" name=\"type\" value=\"FAQ\">";
 		while($c=mysql_fetch_array($cc))
 		{
-			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".SITE_URL."?page=individual_spam_score&amp;type=FAQ&amp;id=".$c['id']."\">[".$c['spam_score']."]</a>:  <strong>".$c['subject']."</strong> - ".$c['text']." 
-			<a href=\"".SITE_URL."?page=FAQ&amp;id=".$c['id']."\">[...]</a></p>";
+			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".spam_get_link($c['id'],"FAQ")."\">[".$c['spam_score']."]</a>:  <strong>".$c['subject']."</strong> - ".$c['text']." 
+			<a href=\"".SITE_URL."?p=FAQ&amp;id=".$c['id']."\">[...]</a></p>";
 		}
 		echo "<input type=\"button\" value=\"Markera alla\" onclick=\"CheckAll(this.form);\"><br />";
 
@@ -244,7 +249,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 			if($output)
 			{
 				if($c['user']!=NULL)
-					echo "<p>$previous_spam other spam from this user ('<a href=\"?page=user&amp;user=".$c['user']."\">".$c['user']."'</a>)</p>";
+					echo "<p>$previous_spam other spam from this user ('".user_get_link($c['user']).")</p>";
 				else
 					echo "<p>$previous_spam other spam from this IP ('".$c['IP']."')</p>";
 			}
@@ -330,6 +335,11 @@ function spam_remove_old($type, $time_str)
 	AND $created<'".date("YmdHis", strtotime("- ".$time_str))."';";
 	// echo "<br />DEBUG2258 ".$sql;
 	mysql_query($sql);
+}
+
+function spam_get_link($id, $type)
+{
+	return SITE_URL."?p=admin&amp;s=individual_spam_score&amp;type=".$type."&amp;id=".$id;
 }
 
 ?>
