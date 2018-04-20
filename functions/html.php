@@ -300,7 +300,7 @@ function html_form($method, $inputs, $multipart=FALSE)
     return $r;
 }
 
-function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL, $just_inputs=FALSE)
+function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL, $just_inputs=FALSE, $field_type_override=NULL, $custom_labels=NULL)
 {
 	// Get table columns
 	$table=sql_get("SHOW COLUMNS FROM ".($db_name!=NULL ? $db_name.".":"").sql_safe($table_name).";");
@@ -336,9 +336,88 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 	{
 		if(!strcmp($column['Field'],"id") || in_array($column['Field'],$skip_members))
 			continue;
+
+		preprint($column, "Column");
 		
-		$inputs[]=html_form_input($column['Field']."_text", sprintf("%s :",$column['Field']), "text", $column['Field'], $values[$column['Field']], $column['Default'], NULL, $column['Type']);
-		// TODO: Make different inputs based on type of field
+		//Decide input type based on field type or override
+		if(isset($field_type_override[$column['Field']]))
+			$type=$field_type_override[$column['Field']];
+		else
+		{
+			$type="text";
+			if(!strcmp($column['Type'],"text"))
+				$type="textarea";
+			
+			else if(!strcmp(substr($column['Type'],0,3),"int"))
+			{
+				//Default just number
+				$type="number";
+				
+				//int that is foreign key to other table should be a droplist
+				if(!strcmp($column['Key'], "MUL"))
+				{
+							//Check if it is a reference to foreign key
+					$sql="	SELECT 
+								`REFERENCED_TABLE_NAME`,
+								`REFERENCED_COLUMN_NAME`
+							FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` 
+							WHERE `TABLE_SCHEMA`='".($db_name!=NULL ? $db_name : db_name)."'
+							AND `COLUMN_NAME`='".$column['Field']."';";
+					$fk=sql_get_first($sql);
+					preprint($sql);
+					if(isset($fk['REFERENCED_TABLE_NAME']))
+					{
+						$type="droplist";
+						$sql="SELECT * FROM ".$fk['REFERENCED_TABLE_NAME'].";";
+						preprint($sql, "SQL");
+						$warning_on_fail=TRUE;
+						$array=false;
+						$reference_table_contents=sql_get($sql, $array, NULL, $warning_on_fail);
+						preprint($reference_table_contents, "reference_table_contents");
+						if(!empty($reference_table_contents))
+						{
+							// $fk['REFERENCED_COLUMN_NAME']
+							unset($name_column);
+							foreach($reference_table_contents[0] as $ref_column => $v)
+							{
+								if(!isset($name_column) && strcmp($ref_column, $fk['REFERENCED_COLUMN_NAME']))
+								{
+									$name_column=$ref_column;
+								}
+							}
+							foreach($reference_table_contents as $refs)
+							{
+								$options[$refs[$fk['REFERENCED_COLUMN_NAME']]]=$refs[$name_column];
+							}
+						}
+						$selected="";
+						$onchange=NULL;
+						$class=NULL;
+					}
+						
+				}
+			}
+			
+			//tinyint should be a checkbox
+			else if(!strcmp(substr($column['Type'],0,7),"tinyint"))
+				$type="checkbox";
+			
+			// TODO: more types!
+		}	
+		
+		if(isset($custom_labels[$column['Field']]))
+			$label=$custom_labels[$column['Field']];
+		else
+			$label=ucfirst($column['Field']);
+
+		if(!strcmp($type,"textarea"))
+			$inputs[]=html_form_textarea($column['Field']."_text_".$id, $label, $column['Field'], (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL));
+		else if(!strcmp($type,"droplist"))
+			$inputs[]=html_form_droplist($column['Field']."_text_".$id, $label, $column['Field'], $options, $selected, $onchange, $class);
+		else if(!strcmp($type,"checkbox"))
+			$inputs[]=html_form_checkbox($label, $column['Field']."_checkbox_".$id, $column['Field'], ($column['Default'] ? TRUE : NULL), FALSE, NULL);
+		else
+			$inputs[]=html_form_input($column['Field']."_text_".$id, $label, $type, $column['Field'], (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), $column['Default'], NULL, $column['Type']);		
 	}
 	if($id!=NULL)
 	{
