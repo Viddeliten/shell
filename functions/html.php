@@ -30,6 +30,11 @@ function html_link($url, $text, $class=NULL)
 	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class).'>'.$the_text.'</a>';
 }
 
+function html_link_register($text, $class=NULL)
+{
+	return html_link(SITE_URL."/?reg", $text, $class);
+}
+
 function html_list($items, $list_class=NULL, $list_item_class=NULL)
 {
     if(empty($items))
