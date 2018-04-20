@@ -110,6 +110,13 @@ function sql_get_columns($selected_table)
 	return $t;
 }
 
+function sql_insert($table, $values, $success_message=NULL, $error_code=1132203, $print_now=TRUE, $generate_warning_on_fail=FALSE)
+{
+	$sql="INSERT INTO ".PREFIX.sql_safe($table)." SET ".implode(", ",$values).";";
+	
+	message_try_mysql($sql,$error_code, $success_message, $print_now, $generate_warning_on_fail);
+}
+
 /********************************************************/
 /*		Function:sql_update								*/
 /*		updates single column in specified table		*/
