@@ -286,7 +286,7 @@ function html_button($button_text, $class="btn btn-default", $onclick=NULL)
 			.'</button>';
 }
 
-function html_form($method, $inputs)
+function html_form($method, $inputs, $multipart=FALSE)
 {
     $r='<form method="'.$method.'">';
     if(!empty($inputs))
