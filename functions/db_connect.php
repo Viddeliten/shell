@@ -112,9 +112,14 @@ function sql_get_columns($selected_table)
 
 function sql_insert($table, $values, $success_message=NULL, $error_code=1132203, $print_now=TRUE, $generate_warning_on_fail=FALSE)
 {
-	$sql="INSERT INTO ".PREFIX.sql_safe($table)." SET ".implode(", ",$values).";";
+	$values_merged=array();
+	foreach($values as $column => $value)
+	{
+		$values_merged[]="`".sql_safe($column)."`='".sql_safe($value)."'";
+	}
+	$sql="INSERT INTO ".PREFIX.sql_safe($table)." SET ".implode(", ",$values_merged).";";
 	
-	message_try_mysql($sql,$error_code, $success_message, $print_now, $generate_warning_on_fail);
+	return message_try_mysql($sql,$error_code, $success_message, $print_now, $generate_warning_on_fail);
 }
 
 /********************************************************/
