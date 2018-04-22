@@ -47,6 +47,7 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	require_once("functions/notice.php");
 	require_once("functions/html.php");
 	require_once("functions/rss.php");
+	require_once("functions/accesslog.php");
 	
 
 

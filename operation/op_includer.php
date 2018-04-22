@@ -18,6 +18,7 @@ require_once(ROOT_PATH."functions/user.php");
 require_once(ROOT_PATH."functions/html.php");
 require_once(ROOT_PATH."functions/feedback/func.php");
 require_once(ROOT_PATH."functions/api.php");
+require_once(ROOT_PATH."functions/accesslog.php");
 
 require_once(ROOT_PATH."config.php");
 if(defined("FUNC_PATH"))

@@ -115,7 +115,7 @@ function sql_insert($table, $values, $success_message=NULL, $error_code=1132203,
 	$values_merged=array();
 	foreach($values as $column => $value)
 	{
-		$values_merged[]="`".sql_safe($column)."`='".sql_safe($value)."'";
+		$values_merged[]="`".sql_safe($column)."`=".($value===NULL ? "NULL" : "'".sql_safe($value)."'");
 	}
 	$sql="INSERT INTO ".PREFIX.sql_safe($table)." SET ".implode(", ",$values_merged).";";
 	
