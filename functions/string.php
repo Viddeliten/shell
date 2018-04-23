@@ -244,6 +244,8 @@ function string_html_to_text($text)
 {
 	$text=str_ireplace("</p><p>","<br /><br />",$text);
 	$text=str_ireplace("<br />","\n",$text);
+	$text=str_ireplace("<p>","",$text);
+	$text=str_ireplace("</p>","",$text);
 	return $text;
 
 }

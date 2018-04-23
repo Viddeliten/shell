@@ -3,22 +3,25 @@
 	The thought behind having this file is to only have to change html creating in one place when bootstrap updates	
 	ALL the functions just returns html in strings so they can be echoed or used in other ways. */
 	
-function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id=NULL)
+function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id=NULL, $html_format_text=TRUE)
 {
 	$the_text=$text;
-	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles, $div_id);
+	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles, $div_id, $html_format_text);
 }
 
-function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=false, $div_id=NULL)
+function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=false, $div_id=NULL, $html_format_text=TRUE)
 {
-	$text=str_replace("\n", "<br />", $text);
-	$text=str_ireplace("\r","<br />",$text);
-	$text=str_ireplace("<br /><br />","</p><p>",$text);
-	//Look for urls
-	string_replace_urls_with_links($text, $get_link_titles);
-	
-	//Break long words
-	string_break_long_words($text);
+    if($html_format_text)
+    {
+        $text=str_replace("\n", "<br />", $text);
+        $text=str_ireplace("\r","<br />",$text);
+        $text=str_ireplace("<br /><br />","</p><p>",$text);
+        //Look for urls
+        string_replace_urls_with_links($text, $get_link_titles);
+        
+        //Break long words
+        string_break_long_words($text);
+    }
 
 	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').($div_id==NULL ? "":' id="'.$div_id.'"').'>'.$text.'</'.$tag_type.'>';
 }
@@ -27,7 +30,7 @@ function html_link($url, $text, $class=NULL)
 {
 	$the_text=str_ireplace("\n","<br />",$text);
 	$the_text=str_ireplace("<br /><br />","</p></p>",$the_text);
-	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class).'>'.$the_text.'</a>';
+	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class.'"').'>'.$the_text.'</a>';
 }
 
 function html_link_register($text, $class=NULL)
@@ -226,7 +229,7 @@ function html_form_textarea($input_id, $label, $name, $value="", $placeholder=NU
 				html_tag("div",'<textarea class="form-control autoExpanding " id="'.$input_id.'"'.
 								' placeholder="'.$placeholder.'" name="'.$name.'">'.
 								string_html_to_text($value).
-								'</textarea>',"col-sm-10").
+								'</textarea>',"col-sm-10", false, NULL, FALSE).
 			'</div>';
 }
 
@@ -331,7 +334,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 	// Get values
 	if($id!=NULL)
 		$values=sql_get_first("SELECT * FROM ".($db_name!=NULL ? $db_name.".":"").sql_safe($table_name)." WHERE id=".sql_safe($id).";");
-
+    
 	foreach($table as $column)
 	{
 		if(!strcmp($column['Field'],"id") || in_array($column['Field'],$skip_members))
@@ -392,7 +395,6 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 								$options[$refs[$fk['REFERENCED_COLUMN_NAME']]]=$refs[$name_column];
 							}
 						}
-						$selected="";
 						$onchange=NULL;
 						$class=NULL;
 					}
@@ -416,19 +418,24 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 			$name=$table_name."[".$nr_id."][".$column['Field']."]";
 		else
 			$name=$column['Field'];
-		
+				
 		if(!strcmp($type,"textarea"))
 			$inputs[]=html_form_textarea($column['Field']."_text_".$id, $label, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL));
 		else if(!strcmp($type,"droplist"))
-			$inputs[]=html_form_droplist($column['Field']."_text_".$id, $label, $name, $options, $selected, $onchange, $class);
+			$inputs[]=html_form_droplist($column['Field']."_text_".$id, $label, $name, $options, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), $onchange, $class);
 		else if(!strcmp($type,"checkbox"))
-			$inputs[]=html_form_checkbox($label, $column['Field']."_checkbox_".$id, $name, ($column['Default'] ? TRUE : NULL), FALSE, NULL);
+			$inputs[]=html_form_checkbox($label, $column['Field']."_checkbox_".$id, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : ($column['Default'] ? TRUE : NULL)), FALSE, NULL);
 		else
 			$inputs[]=html_form_input($column['Field']."_text_".$id, $label, $type, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), $column['Default'], NULL, $column['Type']);		
 	}
 	if($id!=NULL)
 	{
-		$inputs[]=html_form_input(NULL, NULL, "hidden", "id", $id);
+		if($nr_id!==NULL)
+			$hidden_name=$table_name."[".$nr_id."][id]";
+		else
+			$hidden_name="id";
+
+		$inputs[]=html_form_input(NULL, NULL, "hidden", $hidden_name, $id);
         if(!$just_inputs)
             $inputs[]=html_form_button($table_name."_update_".$id, _("Update"), "success");
 	}
