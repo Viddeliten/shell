@@ -685,14 +685,16 @@ function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_li
 		//version
 		$menu_items[]=version_show_linked_number("v", 'navbar-brand', TRUE);
 		
+        if($show_home_link)
+            $menu_items[]=html_tag("li",html_link(SITE_URL, _("Home"), "nav-link"),"navbar-nav".(!isset($_GET[$request_choser]) ? " active" : ""));
+
+
+		// Parameter menu items
 		foreach($menu as $m)
 		{
             $menu_items[]=html_tag("li",html_link($m['link'], $m['text'], "nav-link"),"navbar-nav".(isset($_GET[$request_choser]) && !strcmp($_GET[$request_choser],$m['text']) ? " active" : ""));
 		}
 		
-        if($show_home_link)
-            $menu_items[]=html_tag("li",html_link(SITE_URL, _("Home"), "nav-link"),"navbar-nav".(!isset($_GET[$request_choser]) ? " active" : ""));
-        
         $menu_items[]=admin_menu_dropdown(TRUE);
         $menu_items[]=display_custom_pages_menu(TRUE);
         if($show_feedback)
@@ -704,9 +706,12 @@ function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_li
             '
             </ul>
             ';
-        $r.=html_form_search();
+		// User menu items
+		$r.=login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"', TRUE);
         $r.=display_friend_request_drop_menu(TRUE);
-		$r.=html_tag("li", login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"', TRUE));
+		
+		//search form
+        $r.=html_form_search();
 
         $r.='
           </div>

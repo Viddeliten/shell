@@ -219,7 +219,9 @@ function display_dropdown_menu($name, $slug, $subpages)
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown_'.$name.'">';
         foreach($subpages as $s_name => $s_content)
         {
-            if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
+			if(!strcmp($s_name,"dropdown-divider"))
+				echo '<div class="dropdown-divider"></div>';
+            else if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
                 echo '<a class="dropdown-item" href="'.SITE_URL.'/'.$slug.'/'.$s_content['slug'].'">'._($s_name).'</a>';
         }
         echo '

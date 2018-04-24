@@ -70,25 +70,25 @@ function user_display_dropdown()
 	$privmessnr=privmess_get_unread_nr($_SESSION[PREFIX.'user_id']);
 	$badge_total=$privmessnr;
 				
-	echo '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.$_SESSION[PREFIX."username"]; 
+	$subpages=array();
+	$name=_("Messages"); 
+	if($privmessnr>0)
+	{
+		$name.= ' <span class="badge">'.$privmessnr.'</span>';
+	}
+	$subpages[$name]=array("slug" => "privmess");
+	$subpages[_("Profile")]=array("slug" => "profile");
+	$subpages[_("Settings")]=array("slug" => "settings");
+	$subpages["dropdown-divider"]=array();
+	$subpages[_("Log out")]=array("slug" => "logout");
+	$name=$_SESSION[PREFIX."username"]; 
 	if($badge_total>0)
 	{
-		echo ' <span class="badge">'.$badge_total.'</span>';
+		$name.= ' <span class="badge">'.$badge_total.'</span>';
 	}
-	echo ' <span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="'.SITE_URL.'/?p=user&amp;s=privmess">'._("Messages"); 
-
-			if($privmessnr>0)
-			{
-				echo ' <span class="badge">'.$privmessnr.'</span>';
-			}
-			echo '</a></li>
-            <li><a href="'.SITE_URL.'/?p=user&amp;s=profile">'._("Profile").'</a></li>
-            <li><a href="'.SITE_URL.'/?p=user&amp;s=settings">'._("Settings").'</a></li>
-            <li class="divider"></li>
-            <li><a href="'.SITE_URL.'/?logout">'._("Log out").'</a></li>
-          </ul>';
+	echo '<ul class="navbar-nav user-menu-dropdown">';
+	display_dropdown_menu($name, "user", $subpages);
+	echo '</ul>';
 }
 
 function user_get_all($type, $limit=NULL)
