@@ -821,4 +821,39 @@ function html_show_hide_clicker($div_id, $label, $contents)
 	return $r;
 }
 
+function html_carousel($image_array)
+{
+	reset($image_array);
+	$first_key = key($image_array);
+
+	// https://getbootstrap.com/docs/4.1/components/carousel/#with-indicators
+	$r='<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+  <ol class="carousel-indicators">';
+    // <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+    // <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+    // <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+	foreach($image_array as $key => $val)
+		$r.='<li data-target="#carouselExampleIndicators" data-slide-to="'.$key.'" '.(!strcmp($first_key, $key) ? 'class="active"' : "").'></li>';
+  $r.='</ol>
+  <div class="carousel-inner">';
+    // <div class="carousel-item active">
+      // <img class="d-block w-100" src=".../800x400?auto=yes&bg=777&fg=555&text=First slide" alt="First slide">
+    // </div>
+		foreach($image_array as $key => $image)
+			$r.='<div class="carousel-item  '.(!strcmp($first_key, $key) ? 'active' : "").'">
+				  <img class="d-block w-100" src="'.$image['url'].'" alt="'.$image['alt'].'">
+				</div>';
+	$r.='</div>
+  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>';
+return $r;
+}
+
 ?>

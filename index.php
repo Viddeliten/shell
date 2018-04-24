@@ -184,7 +184,12 @@ if(defined('PINGDOM_SCRIPT'))
     <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <?php if(!strcmp("3.3.4", $bootstrap_version)) { ?>
-    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/ie10-viewport-bug-workaround.js"></script> <?php } ?>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/ie10-viewport-bug-workaround.js"></script> <?php } else { ?>
+
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.js"></script>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.js"></script> <?php } ?>
+	
     
 <?php
  //Clearfix just in case

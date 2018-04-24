@@ -153,4 +153,11 @@ function sql_get_single_from_id($table, $column, $id)
 		return $r[0][$column];
 	return NULL;
 }
+
+function sql_delete($table, $id, $print_now=FALSE, $generate_warning_on_fail=FALSE, $success_message=NULL)
+{
+	$sql="DELETE FROM ".sql_safe($table)." WHERE id=".sql_safe($id).";";
+	$r=sql_get($sql);
+	message_try_mysql($sql,"1612136", $success_message, $print_now, $generate_warning_on_fail);
+}
 ?>
