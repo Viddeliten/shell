@@ -61,11 +61,17 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 <link rel="mask-icon" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/safari-pinned-tab.svg" color="#5bbad5">
 <link rel="shortcut icon" href="/'.CUSTOM_CONTENT_PATH.'/img/icon/favicon.ico">
 <meta name="msapplication-config" content="/'.CUSTOM_CONTENT_PATH.'/img/icon/browserconfig.xml">
-<meta name="theme-color" content="#ffffff">'; ?>
+<meta name="theme-color" content="#ffffff">'; 
+
+if(defined('BOOTSTRAP_VERSION'))
+    $bootstrap_version=BOOTSTRAP_VERSION;
+else
+    $bootstrap_version="3.3.4";
+?>
 
     
     <!-- Bootstrap core CSS -->
-    <link href="<?php echo SITE_URL; ?>/bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo SITE_URL; ?>/bootstrap-<? echo $bootstrap_version; ?>-dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Shell template style -->
     <link href="<?php echo SITE_URL; ?>/style.css" rel="stylesheet">
@@ -175,10 +181,11 @@ if(defined('PINGDOM_SCRIPT'))
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-3.3.4-dist/js/ie10-viewport-bug-workaround.js"></script>
-
+    <?php if(!strcmp("3.3.4", $bootstrap_version)) { ?>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/ie10-viewport-bug-workaround.js"></script> <?php } ?>
+    
 <?php
  //Clearfix just in case
 	echo '<div class="clearfix"></div>';

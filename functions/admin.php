@@ -36,8 +36,10 @@ function admin_display_contents()
 }
 
 /*	Displays a dropdown in main menu if an admin is logged in	*/
-function admin_menu_dropdown()
+function admin_menu_dropdown($return_html=FALSE)
 {
+    ob_start();
+    
 	//For custom admin pages
 	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
 	
@@ -55,30 +57,29 @@ function admin_menu_dropdown()
 	if($logged_in>1)
 	{
 		//Admin dropdown menu
-		echo '<li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.(isset($custom_admin_name) ? $custom_admin_name : _("Admin tools")).'<span class="caret"></span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="'.SITE_URL.'/admin/users">'._("Users").'</a></li>
-            <li><a href="'.SITE_URL.'/admin/version">'._("Version").'</a></li>
-            <li><a href="'.SITE_URL.'/admin/news">'._("Site news").'</a></li>
-            <li><a href="'.SITE_URL.'/admin/mess">'._("Messages").'</a></li>
-            <li><a href="'.SITE_URL.'/admin/spam">'._("Spam").'</a></li>';
-
-
-		if(isset($custom_admin_pages['subpages']) && !empty($custom_admin_pages['subpages']))
+        $subpages=array();
+        $subpages[_("Users")] = array('req_user_level'   => 2, 'slug'    => 'users');
+        $subpages[_("Version")] = array('req_user_level'   => 2, 'slug'    => 'version');
+        $subpages[_("Site news")] = array('req_user_level'   => 2, 'slug'    => 'news');
+        $subpages[_("Messages")] = array('req_user_level'   => 2, 'slug'    => 'mess');
+        $subpages[_("Spam")] = array('req_user_level'   => 2, 'slug'    => 'spam');
+        
+        if(isset($custom_admin_pages['subpages']) && !empty($custom_admin_pages['subpages']))
 		{
-			foreach($custom_admin_pages['subpages'] as $s_name => $s_content)
-			{
-				echo '<li ><a href="'.SITE_URL.'/'.$custom_admin_pages['slug'].'/'.$s_content['slug'].'" >'.$s_name.'</a></li>';
-			}
+            $subpages=array_merge($subpages, $custom_admin_pages['subpages']);
 		}
 
-		
-			
-		echo '
-          </ul>
-        </li>';
+        display_dropdown_menu((isset($custom_admin_name) ? $custom_admin_name : _("Admin tools")), "admin", $subpages);
 	}
+    
+    $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
+
 }
 
 function admin_display_users()

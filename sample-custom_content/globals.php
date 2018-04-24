@@ -1,5 +1,7 @@
 <?php
 
+define('BOOTSTRAP_VERSION', "4.1.0"); // Change to 3.3.4 if it does not look good!
+
 /********************************/
 /*		Available pages			*/
 /********************************/

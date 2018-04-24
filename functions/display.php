@@ -2,12 +2,22 @@
 
 function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=true, $icon_path=NULL)
 {
+    
 	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
 	$show_feedback=true;
 	if(isset($custom_pages["Feedback"]))
 	{
 		$show_feedback=false;
 	}
+    
+    $menu=array();
+    $request_choser="p";
+    $brand_text=($icon_path!==NULL ? '<img src="'.SITE_URL.'/'.$icon_path.'"/>' : SITE_NAME);
+    $brand_link=SITE_URL;
+    $class="navbar ".$navbar_type;
+    
+    echo html_menu($menu, $request_choser, $brand_text, $brand_link, $class, $show_home_link, $show_feedback);
+    return true;
 
 	?>
 	<nav class="navbar <?php echo $navbar_type; ?> navbar-fixed-top">
@@ -67,9 +77,10 @@ function display_menu_vertical($menu_items, $menu_header_name=SITE_NAME)
 	<?php	
 }
 
-function display_friend_request_drop_menu()
+function display_friend_request_drop_menu($return_html=FALSE)
 {
-	
+	ob_start();
+    
 	if(login_check_logged_in_mini()<1)
 		return 0;
 	
@@ -94,6 +105,15 @@ function display_friend_request_drop_menu()
 									"user",
 									$r);
 	}
+    
+    $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if(!$return_html)
+		echo $contents;
+	else
+		return $contents;
+
 }
 
 function display_conditional_login()
@@ -132,10 +152,21 @@ if(!function_exists("display_footer"))
     }
 }
 
-function display_custom_pages_menu()
+function display_custom_pages_menu($return_html=FALSE)
 {
+    ob_start();
+    
 	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
 	display_menu_pages($custom_pages);
+    
+    $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
+
 }
 
 function display_menu_pages($custom_pages)
@@ -150,25 +181,14 @@ function display_menu_pages($custom_pages)
 		{
 			if(isset($content['url']))
 			{
-				echo html_tag("li",html_link($content['url'], _($name)));
+				echo html_tag("li",html_link($content['url'], _($name), "nav-link"),"nav-item".(isset($_GET['p']) && !strcmp($content['slug'], $_GET['p']) ? " active" : ""));
 			}
 			else if(!isset($content['subpages']) || empty($content['subpages']))
 			{
-				echo '<li ><a href="'.SITE_URL.'/'.$content['slug'].'" >'._($name).'</a></li>';
+				echo '<li class="nav-item'.(isset($_GET['p']) && !strcmp($content['slug'], $_GET['p']) ? " active" : "").'"><a class="nav-link" href="'.SITE_URL.'/'.$content['slug'].'" >'._($name).'</a></li>';
 			}
-			else
-			{
-				echo '<li class="dropdown">
-					  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'._($name).'<span class="caret"></span></a>
-					  <ul class="dropdown-menu" role="menu">';
-					  foreach($content['subpages'] as $s_name => $s_content)
-					  {
-							if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
-								echo '<li ><a href="'.SITE_URL.'/'.$content['slug'].'/'.$s_content['slug'].'" >'._($s_name).'</a></li>';
-					  }
-				echo '</ul>
-					</li>';
-			}
+            else
+                display_dropdown_menu($name, $content['slug'], $content['subpages']);
 		}
 	}
 }
@@ -176,16 +196,36 @@ function display_menu_pages($custom_pages)
 function display_dropdown_menu($name, $slug, $subpages)
 {
 	$logged_in_level=login_check_logged_in_mini();
-	echo '<li class="dropdown">
-		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.$name.'<span class="caret"></span></a>
-					  <ul class="dropdown-menu" role="menu">';
-					  foreach($subpages as $s_name => $s_content)
-					  {
-							if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
-								echo '<li ><a href="'.SITE_URL.'/'.$slug.'/'.$s_content['slug'].'" >'.$s_name.'</a></li>';
-					  }
-				echo '</ul>
-	</li>';
+    
+    if(!defined("BOOTSTRAP_VERSION") || substr(BOOTSTRAP_VERSION, 0,1)=="3") // v3 (old) type dropdown
+    {
+        echo '<li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.$name.'<span class="caret"></span></a>
+                          <ul class="dropdown-menu" role="menu">';
+                          foreach($subpages as $s_name => $s_content)
+                          {
+                                if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
+                                    echo '<li ><a href="'.SITE_URL.'/'.$slug.'/'.$s_content['slug'].'" >'.$s_name.'</a></li>';
+                          }
+                    echo '</ul>
+        </li>';
+    }
+    else // version 4.1.0 type dropdown
+    {
+        echo '<li class="nav-item dropdown'.(isset($_GET['p']) && !strcmp($slug, $_GET['p']) ? " active" : "").'">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown_'.$name.'" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                '._($name).'
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown_'.$name.'">';
+        foreach($subpages as $s_name => $s_content)
+        {
+            if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
+                echo '<a class="dropdown-item" href="'.SITE_URL.'/'.$slug.'/'.$s_content['slug'].'">'._($s_name).'</a>';
+        }
+        echo '
+                </div>
+            </li>';
+    }
 }
 
 ?>

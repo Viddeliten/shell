@@ -453,8 +453,9 @@ function login_create_reset_code($email)
 	return NULL;
 }
 
-function login_display_link($a_text="")
+function login_display_link($a_text="", $return_html=FALSE)
 {
+    ob_start();
 	login_check_logged_in_mini();
 	if(isset($_SESSION[PREFIX."username"]))
 	{
@@ -468,6 +469,14 @@ function login_display_link($a_text="")
 		echo '<a class="hidden-lg hidden-md hidden-sm" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.$a_text.'>'._("Log in").'</a>'; //Just on small (xs) devices
 		echo '<a class="hidden-xs" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.'>'._("Log in").'</a>'; //Not on small (xs) devices
 	}
+    
+    $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if(!$return_html)
+		echo $contents;
+	else
+		return $contents;
 }
 
 ?>

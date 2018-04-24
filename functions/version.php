@@ -103,8 +103,10 @@ function version_add_unlinked_feedbacks_to_latest($time)
 	}
 }
 
-function version_show_linked_number($before_str, $link_class="")
+function version_show_linked_number($before_str, $link_class="", $return_html=FALSE)
 {
+	ob_start();
+	
 	//Ta reda på nyvarande versionsnummer
 	$sql="SELECT version FROM ".PREFIX."version ORDER BY id DESC LIMIT 0,1";
 	// echo "<br />DEBUG1342: $sql";
@@ -117,14 +119,33 @@ function version_show_linked_number($before_str, $link_class="")
 				echo $before_str." ";
 			// echo round($v['version'], 2);
 			echo $v['version']."</a>";
-			return true;
+			$contents = ob_get_contents();
+			ob_end_clean();
+			
+			if(!$return_html)
+			{
+				echo $contents;
+				return true;
+			}
+			else
+				return $contents;
 		}
 	}
 	echo "<a class=\"".$link_class."\" href=\"".SITE_URL."/changelog\">";
 	if($before_str!="")
 		echo $before_str." ";
 	echo "0</a>";
-	return false;
+
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if(!$return_html)
+	{
+		echo $contents;
+		return false;
+	}
+	else
+		return $contents;
 }
 
 function version_show_latest($nr=10)

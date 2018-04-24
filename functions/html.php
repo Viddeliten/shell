@@ -9,6 +9,11 @@ function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id
 	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles, $div_id, $html_format_text);
 }
 
+function html_img($source)
+{
+	return '<img src="'.$source.'" />';
+}
+
 function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=false, $div_id=NULL, $html_format_text=TRUE)
 {
     if($html_format_text)
@@ -33,12 +38,24 @@ function html_link($url, $text, $class=NULL)
 	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class.'"').'>'.$the_text.'</a>';
 }
 
+function html_card($card_link="", $card_link_text="Go somewhere", $card_title="", $card_text="", $img_source="", $image_alt="Image")
+{
+    return '<div class="card">'. // style="width: 18rem;">
+      '<img class="card-img-top" src="'.$img_source.'" alt="'.$image_alt.'">
+      <div class="card-body">
+        <h5 class="card-title">'.$card_title.'</h5>
+        <p class="card-text">'.$card_text.'</p>'.
+        ($card_link!="" ? '<a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a>' : "").
+      '</div>
+    </div>';
+}
+
 function html_link_register($text, $class=NULL)
 {
 	return html_link(SITE_URL."/?reg", $text, $class);
 }
 
-function html_list($items, $list_class=NULL, $list_item_class=NULL)
+function html_list($items, $list_class=NULL, $list_item_class=NULL, $list_type="ol")
 {
     if(empty($items))
         return NULL;
@@ -47,7 +64,7 @@ function html_list($items, $list_class=NULL, $list_item_class=NULL)
     foreach($items as $item)
         $list[]=html_tag("li",$item, $list_item_class);
         
-    return html_tag("ol", implode($list), $list_class);
+    return html_tag($list_type, implode($list), $list_class);
 }
 	
 // Returns rows of elements.
@@ -647,9 +664,57 @@ function html_progress_bar($percent, $max_decimals=2)
 	return message_progress_bar($percent, $max_decimals);
 }
 
-function html_menu($menu=array(), $request_choser="page", $brand_text="", $brand_link="", $class="navbar navbar-default")
+function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_link="", $class="navbar navbar-default", $show_home_link=TRUE, $show_feedback=TRUE, $expand_size="lg")
 {
-		$r='<nav class="'.$class.'">
+    if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+    {
+        if(!strcmp($class, "navbar navbar-default"))
+            $class="navbar navbar-light bg-light"; // This is the new "default"
+        else if(!strcmp($class, "navbar navbar-inverse"))
+            $class="navbar navbar-dark bg-dark"; // This is the new black
+        $class.=" navbar-expand-".$expand_size;
+        
+        $r='<nav class="'.$class.' horisontal">'.
+            ( $brand_text!="" ? '<a class="navbar-brand" href="'.$brand_link.'">'.$brand_text.'</a>' : "").
+          '<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>';
+
+        $menu_items=array();
+		
+		//version
+		$menu_items[]=version_show_linked_number("v", 'navbar-brand', TRUE);
+		
+		foreach($menu as $m)
+		{
+            $menu_items[]=html_tag("li",html_link($m['link'], $m['text'], "nav-link"),"navbar-nav".(isset($_GET[$request_choser]) && !strcmp($_GET[$request_choser],$m['text']) ? " active" : ""));
+		}
+		
+        if($show_home_link)
+            $menu_items[]=html_tag("li",html_link(SITE_URL, _("Home"), "nav-link"),"navbar-nav".(!isset($_GET[$request_choser]) ? " active" : ""));
+        
+        $menu_items[]=admin_menu_dropdown(TRUE);
+        $menu_items[]=display_custom_pages_menu(TRUE);
+        if($show_feedback)
+            $menu_items[]=html_tag("li",html_link(SITE_URL."/feedback", _("Feedback"), "nav-link"),"navbar-nav".(isset($_GET[$request_choser]) && !strcmp($_GET[$request_choser],"feedback") ? " active" : ""));
+
+        $r.='<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">'.
+                implode("",$menu_items).
+            '
+            </ul>
+            ';
+        $r.=html_form_search();
+        $r.=display_friend_request_drop_menu(TRUE);
+		$r.=html_tag("li", login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"', TRUE));
+
+        $r.='
+          </div>
+        </nav>';
+        return $r;
+    }
+
+    $r='<nav class="'.$class.'">
 			<div class="container-fluid">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
@@ -676,8 +741,16 @@ function html_menu($menu=array(), $request_choser="page", $brand_text="", $brand
 		}
 		$r.="</ul>
 		</div>
-	</nav>";
+        </nav>";
 	return $r;
+}
+
+function html_form_search()
+{
+    return '<form class="form-inline my-2 my-lg-0">
+              <input class="form-control mr-sm-2" type="search" placeholder="'._("Search").'" aria-label="'._("Search").'" name="search">
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">'._("Search").'</button>
+            </form>';
 }
 /***
 /*	Populating tabs array:

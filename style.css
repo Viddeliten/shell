@@ -24,9 +24,17 @@
 	display: inline-block;
 }
 
+.navbar.horisontal
+{
+	height: 4em;
+}
+.navbar-brand {
+	height: inherit;
+}
 .navbar-brand img {
     display: inline;
-	margin-top: -0.9em;
+	/* margin-top: -0.9em; */
+	margin-top: -0.25em;
 	height: inherit;
 	margin-right: 0.4em;
 }
@@ -36,10 +44,6 @@
 	margin-bottom: 0;
 }
 
-body {
-
-  padding-top: 50px;
-}
 html, body {
   height: 100%; /* needed for container min-height */
 }
