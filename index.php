@@ -74,7 +74,9 @@ else
     <link href="<?php echo SITE_URL; ?>/bootstrap-<? echo $bootstrap_version; ?>-dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Shell template style -->
-    <link href="<?php echo SITE_URL; ?>/style.css" rel="stylesheet">
+    <?php if(!strcmp("4.1.0", $bootstrap_version)) { ?>
+    <link href="<?php echo SITE_URL; ?>/style_bootstrap410.css" rel="stylesheet"> <?php } else { ?>
+    <link href="<?php echo SITE_URL; ?>/style_bootstrap334.css" rel="stylesheet"><?php } ?>
 
 	<!-- Custom style -->
     <link href="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH; ?>/style.css" rel="stylesheet">

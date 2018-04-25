@@ -700,7 +700,8 @@ function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_li
         if($show_feedback)
             $menu_items[]=html_tag("li",html_link(SITE_URL."/feedback", _("Feedback"), "nav-link"),"navbar-nav".(isset($_GET[$request_choser]) && !strcmp($_GET[$request_choser],"feedback") ? " active" : ""));
 
-        $r.='<div class="collapse navbar-collapse" id="navbarSupportedContent">
+        // navbar navbar-collapse  navbar-dark bg-dark collapse show
+        $r.='<div class="collapse navbar-collapse '.$class.'" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">'.
                 implode("",$menu_items).
             '
