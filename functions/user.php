@@ -71,23 +71,26 @@ function user_display_dropdown()
 	$badge_total=$privmessnr;
 				
 	$subpages=array();
+    
 	$name=_("Messages"); 
 	if($privmessnr>0)
 	{
 		$name.= ' <span class="badge">'.$privmessnr.'</span>';
 	}
 	$subpages[$name]=array("slug" => "privmess");
+    
 	$subpages[_("Profile")]=array("slug" => "profile");
 	$subpages[_("Settings")]=array("slug" => "settings");
 	$subpages["dropdown-divider"]=array();
 	$subpages[_("Log out")]=array("slug" => "logout");
+    
 	$name=$_SESSION[PREFIX."username"]; 
 	if($badge_total>0)
 	{
 		$name.= ' <span class="badge">'.$badge_total.'</span>';
 	}
 	echo '<ul class="navbar-nav user-menu-dropdown">';
-	display_dropdown_menu($name, "user", $subpages);
+        display_dropdown_menu($name, "user", $subpages);
 	echo '</ul>';
 }
 

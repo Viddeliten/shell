@@ -97,7 +97,10 @@ function display_friend_request_drop_menu($return_html=FALSE)
 		if(!empty($r))
 		{
 			$nr=count($r);
-			$r_text=html_tag("span",$nr,"badge");
+            if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+                $r_text=html_tag("span",$nr,"badge badge-info");
+            else
+                $r_text=html_tag("span",$nr,"badge");
 		}
 		else
 			$r_text="";
@@ -195,6 +198,8 @@ function display_menu_pages($custom_pages)
 
 function display_dropdown_menu($name, $slug, $subpages)
 {
+    // preprint(array($name, $slug, $subpages),"display_dropdown_menu");
+    mail("johanna.julen@loopia.se","display_dropdown_menu", print_r(array($name, $slug, $subpages),1));
 	$logged_in_level=login_check_logged_in_mini();
     
     if(!defined("BOOTSTRAP_VERSION") || substr(BOOTSTRAP_VERSION, 0,1)=="3") // v3 (old) type dropdown
@@ -212,11 +217,11 @@ function display_dropdown_menu($name, $slug, $subpages)
     }
     else // version 4.1.0 type dropdown
     {
-        echo '<li class="nav-item dropdown'.(isset($_GET['p']) && !strcmp($slug, $_GET['p']) ? " active" : "").'">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown_'.$name.'" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                '._($name).'
+        echo '<li class="nav-item dropdown'.(isset($_GET['p']) && !strcmp($slug, $_GET['p']) ? " active" : "").'"> 
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown_'.string_slugify($name).'" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                '.$name.'
                 </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown_'.$name.'">';
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown_'.string_slugify($name).'">';
         foreach($subpages as $s_name => $s_content)
         {
 			if(!strcmp($s_name,"dropdown-divider"))
