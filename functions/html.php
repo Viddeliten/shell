@@ -708,13 +708,14 @@ function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_li
             </ul>
             ';
 		// User menu items
-		$r.=login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"', TRUE);
+        $r.='<ul class="navbar-nav mr-auto">';
+		$r.=login_display_link('data-toggle="collapse" data-target="#navbarSupportedContent" aria-expanded="false" aria-controls="navbar"', TRUE);
         $r.=display_friend_request_drop_menu(TRUE);
 		
 		//search form
         $r.=html_form_search();
 
-        $r.='
+        $r.='</ul>
           </div>
         </nav>';
         return $r;

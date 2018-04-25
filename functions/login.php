@@ -465,8 +465,19 @@ function login_display_link($a_text="", $return_html=FALSE)
 	else
 	{
         if(!defined("BOOTSTRAP_VERSION") || substr(BOOTSTRAP_VERSION, 0,1)=="3") // v3 (old) type dropdown
+        {
             echo '<a class="hidden-lg hidden-md hidden-sm" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.$a_text.'>'._("Log in").'</a>'; //Just on small (xs) devices
-		echo '<a class="hidden-xs" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.'>'._("Log in").'</a>'; //Not on small (xs) devices
+            echo '<a class="hidden-xs" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.'>'._("Log in").'</a>'; //Not on small (xs) devices
+        }
+        else // v4
+        {
+            // https://getbootstrap.com/docs/4.0/utilities/display/#hiding-elements
+            echo '
+                <li class="nav-item">
+                    <a class="nav-link d-block d-sm-none" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.$a_text.'>'._("Log in").'</a>'; //Just on small (xs) devices
+            echo '<a class="nav-link d-none d-sm-block" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.'>'._("Log in").'</a>
+            </li>'; //Not on small (xs) devices
+        }
 	}
     
     $contents = ob_get_contents();
