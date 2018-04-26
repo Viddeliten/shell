@@ -19,9 +19,11 @@
     } */
 }
 
-.navbar-collapse.collapse.show
+.navbar-collapse.collapse, .navbar-collapse.collapsing
 {
 	z-index: 2000;
+	padding: .5rem 16px;
+	margin: -8px -16px;
 }
 
 .inline
@@ -29,17 +31,19 @@
 	display: inline-block;
 }
 
-.navbar.horisontal
+.navbar.horisontal /*, navbar navbar-dark bg-dark navbar-expand-lg horisontal */
 {
 	height: 4em;
+	padding-top: 0;
 }
-.navbar-brand {
+.navbar.horisontal .navbar-brand {
 	height: inherit;
+	/* background-color: blue; */
+	margin-top: -0.25em;
 }
 .navbar-brand img {
     display: inline;
 	/* margin-top: -0.9em; */
-	margin-top: -0.25em;
 	height: inherit;
 	margin-right: 0.4em;
 }
