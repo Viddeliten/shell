@@ -666,8 +666,8 @@ function html_progress_bar($percent, $max_decimals=2)
 
 function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_link="", $class="navbar navbar-default", $show_home_link=TRUE, $show_feedback=TRUE, $expand_size="lg")
 {
-    if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
-    {
+    // if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+    // {
         if(!strcmp($class, "navbar navbar-default"))
             $class="navbar navbar-light bg-light"; // This is the new "default"
         else if(!strcmp($class, "navbar navbar-inverse"))
@@ -719,37 +719,47 @@ function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_li
           </div>
         </nav>';
         return $r;
-    }
+    /*}
 
-    $r='<nav class="'.$class.'">
-			<div class="container-fluid">
-			<!-- Brand and toggle get grouped for better mobile display -->
-			<div class="navbar-header">
-			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#comp-navbar-collapse">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			  </button>';
-		if($brand_text!="")
-			$r.='<a class="navbar-brand" href="'.$brand_link.'">'.$brand_text.'</a>';
-		// else if($brand_text!="")
-			// $r.=$brand_text;
-		$r.='	</div>';
-		$r.= '<div class="collapse navbar-collapse" id="comp-navbar-collapse">';
-		$r.='<ul class="nav navbar-nav menu">';
-		foreach($menu as $m)
-		{
-			$r.="<li";
-				if((!isset($_REQUEST[$request_choser]) &&  !strcmp($m['text'],$menu[0]['text']))|| (isset($_REQUEST[$request_choser]) && !strcmp($_REQUEST[$request_choser],$m['text'])))
-					$r.=" class=\"active\""; $r.=">";
-				$r.="<a href=\"".$m['link']."\">".$m['text']."</a>";
-			$r.="</li>";
-		}
-		$r.="</ul>
-		</div>
-        </nav>";
-	return $r;
+    $r='<nav class="navbar '.$navbar_type.' navbar-fixed-top">
+      <div class="container">
+		<div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a id="navbar-site-name" class="navbar-brand" href="'.SITE_URL.'">'.($icon_path!==NULL? '<img src="'.SITE_URL.'/'.$icon_path.'"/>' : SITE_NAME).'</a>';
+	$r.=version_show_linked_number("v", 'navbar-brand', TRUE);
+    $r.='</div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">';
+    if($show_home_link)
+    { 
+        $r.='<li '.(!isset($_GET['p']) ? 'class="active"' :"").'><a href="'.SITE_URL.'">'._("Home").'</a></li>';
+    }
+	$r.=admin_menu_dropdown(TRUE);
+           /* <!-- <li <?php if(isset($_GET['p']) && !strcmp($_GET['p'],"about")) echo 'class="active"'; ?>><a href="'.SITE_URL.'/about" >'._("About").'</a></li> --> 
+	$r.=display_custom_pages_menu(TRUE);
+    if($show_feedback)
+    { 
+        $r.='<li '.((isset($_GET['p']) && !strcmp($_GET['p'],"feedback")) ? 'class="active"' : "" ).'><a href="'.SITE_URL.'/feedback">'._("Feedback").'</a></li>';
+    }
+	if(defined('SITE_OWNER_FLATTR_ID')) 
+    {
+        $r.='<li>'.flattr_button_show(SITE_OWNER_FLATTR_ID, SITE_URL, SITE_NAME, "", 'compact', "sv", true).'</li>';
+    }
+    
+    $r.='</ul>
+		  <ul class="nav navbar-nav navbar-right">
+				'.display_friend_request_drop_menu(TRUE).'
+			<li>'.login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"', TRUE).'</li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>';
+	return $r; */
 }
 
 function html_form_search()
@@ -769,6 +779,30 @@ function html_form_search()
 ***/
 function html_nav_tabs($tabs=array())
 {
+    if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+    {
+        //https://getbootstrap.com/docs/4.1/components/navs/#tabs
+        $first_key=key($image_array);
+        $r='<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">';
+        foreach($tabs as $id => $tab)
+        {
+            // if($tab['has_tab'])
+                $r.='<a class="nav-item nav-link '.(!strcmp($first_key, $id) ? 'active' : "").' '.(!$tab['has_tab'] ? 'd-none' : '').'" id="'.$id.'-tab" data-toggle="tab" href="#'.$id.'" role="tab" aria-controls="'.$id.'" aria-selected="true">'.string_unslugify($id).'</a>';
+        }
+        $r.='</div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">';
+        foreach($tabs as $id => $tab)
+        {
+            $r.='<div class="tab-pane fade '.(!strcmp($first_key, $id) ? 'show active' : "").'" id="'.$id.'" role="tabpanel" aria-labelledby="'.$id.'-tab">'.
+            $tab['content'].
+            '</div>';
+        }
+        $r.='</div>';
+        return $r;
+    }
+    
 	$r='<div class="row">
 		<div class="col-lg-12">';
 /*			<!-- Nav tabs -->		*/

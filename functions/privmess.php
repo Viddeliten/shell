@@ -69,9 +69,36 @@ function privmess_get_unread_nr($receiver_id)
 	return $antal;
 }
 
-function privmess_display()
+function privmess_display($return_html=FALSE)
 {
-	// http://getbootstrap.com/javascript/#tabs
+    if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+    {
+        $tabs=array();
+        if(login_check_logged_in_mini()>0)
+        {
+			$tabs['inbox']['content']=privmess_display_inbox($_SESSION[PREFIX.'user_id'], TRUE);
+			$tabs['inbox']['has_tab']=TRUE;
+            $tabs['sent']['content']=privmess_display_outbox($_SESSION[PREFIX.'user_id'], TRUE);
+			$tabs['sent']['has_tab']=TRUE;
+        }
+        $tabs['compose']['content']=privmess_display_compose(NULL, "", "", TRUE);
+        $tabs['compose']['has_tab']=TRUE;
+
+        $tabs['reply']['content']=(isset($_GET['message_id']) ? privmess_display_reply($_GET['message_id']) : "");
+        $tabs['reply']['has_tab']=FALSE;
+        $tabs['single']['content']=(isset($_GET['message_id']) ? privmess_display_single_message($_GET['message_id']) : "");
+        $tabs['single']['has_tab']=FALSE;
+
+        $content=html_nav_tabs($tabs);
+
+        if($return_html)
+            return $content;
+        else
+            echo $content;
+        return TRUE;
+    }
+    
+	// http://getbootstrap.com/javascript/#tabs (works with v3.3.4)
 	echo '
 	<div class="row">
 		<div class="col-lg-12">
@@ -215,8 +242,10 @@ function privmess_display_reply($message_id)
 	echo "<p class=\"error\">"._("Something went wrong")."<br />$sql</p>";
 }
 
-function privmess_display_compose($receiver=NULL, $subject="", $quoted_text="")
-{?>
+function privmess_display_compose($receiver=NULL, $subject="", $quoted_text="", $return_html=fALSE)
+{
+    ob_start();
+    ?>
 	<h1><?php echo _("Composing message"); ?></h1>
 	<form method="post">
 		<div class="form-group">
@@ -243,10 +272,19 @@ function privmess_display_compose($receiver=NULL, $subject="", $quoted_text="")
 		<input type="submit" name="privmess_send" value="<?php echo _("Send"); ?>" class="btn btn-success">
 	</form>
 <?php
+    $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if(!$return_html)
+		echo $contents;
+	else
+		return $contents;
 }
 
-function privmess_display_inbox($receiver_id)
+function privmess_display_inbox($receiver_id, $return_html=FALSE)
 {
+    ob_start();
+    
 	echo '<div class="row">
 		<div class="col-xs-12">
 			<h1>'._("Inbox").'</h1>';
@@ -274,7 +312,15 @@ function privmess_display_inbox($receiver_id)
 		while($m=mysql_fetch_array($mm))
 		{
 			// $message_link=SITE_URL."/?p=user&amp;s=privmess&amp;message_id=".$m['id'];
-			$message_link='<a href="#single" aria-controls="single" role="tab" data-toggle="tab" onclick="return replace_html_div_inner(\'single\', \''.SITE_URL.'/operation/privmess_single.php?message_id='.$m['id'].'\');">';
+			if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+            {
+                $message_link='<a href="#single" class="single_tab_link" onclick="return replace_html_div_inner(\'single\', \''.SITE_URL.'/operation/privmess_single.php?message_id='.$m['id'].'\');">';
+            }
+            else
+            {
+                $message_link='<a href="#single" aria-controls="single" role="tab" data-toggle="tab" onclick="return replace_html_div_inner(\'single\', \''.SITE_URL.'/operation/privmess_single.php?message_id='.$m['id'].'\');">';
+            }
+            
 			if($m['opened']===NULL)
 				echo '<tr class="active">';
 			else
@@ -293,10 +339,20 @@ function privmess_display_inbox($receiver_id)
 	echo '
 		</div>
 	</div>';
+    
+    $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if(!$return_html)
+		echo $contents;
+	else
+		return $contents;
 }
 
-function privmess_display_outbox($sender_id)
+function privmess_display_outbox($sender_id, $return_html)
 {
+    ob_start();
+    
 	echo '<div class="row">
 		<div class="col-xs-12">
 			<h1>'._("Sent messages").'</h1>';
@@ -324,22 +380,34 @@ function privmess_display_outbox($sender_id)
 		while($m=mysql_fetch_array($mm))
 		{
 			// $message_link=SITE_URL."/?p=user&amp;s=privmess&amp;message_id=".$m['id'];
-			$message_link='<a 
-								href="#single" 
-								aria-controls="single" 
-								role="tab" 
-								data-toggle="tab"
-								onclick="return replace_html_div_inner(\'single\', \''.SITE_URL.'/operation/privmess_single.php?message_id='.$m['id'].'\');">';
-			if($m['opened']===NULL)
-				echo '<tr class="active">';
-			else
-				echo '<tr>';
-			echo '
-					<td>'.user_get_link($m['reciever']).'</td>
-					<td>'.$message_link.$m['subject'].'</a></td>
-					<td>'.$message_link.$m['sent'].'</a></td>
-					<td>'.$m['opened'].'</td>
-				</tr>';
+            if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+            {
+                // $('#someTab').tab('show')
+                $message_link='<a 
+                                    href="#single" 
+                                    class="single_tab_link"
+                                    onclick="replace_html_div_inner(\'single\', \''.SITE_URL.'/operation/privmess_single.php?message_id='.$m['id'].'\');">';
+                                    
+            }
+            else
+            {
+                $message_link='<a 
+                                    href="#single" 
+                                    aria-controls="single" 
+                                    role="tab" 
+                                    data-toggle="tab"
+                                    onclick="return replace_html_div_inner(\'single\', \''.SITE_URL.'/operation/privmess_single.php?message_id='.$m['id'].'\');">';
+            }
+            if($m['opened']===NULL)
+                echo '<tr class="active">';
+            else
+                echo '<tr>';
+            echo '
+                    <td>'.user_get_link($m['reciever']).'</td>
+                    <td>'.$message_link.$m['subject'].'</a></td>
+                    <td>'.$message_link.$m['sent'].'</a></td>
+                    <td>'.$m['opened'].'</td>
+                </tr>';
 		}
 		if($nr>0)
 			echo '</table>';
@@ -348,6 +416,14 @@ function privmess_display_outbox($sender_id)
 	echo '
 		</div>
 	</div>';
+    
+    $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if(!$return_html)
+		echo $contents;
+	else
+		return $contents;
 }
 
 ?>

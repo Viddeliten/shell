@@ -10,14 +10,17 @@ function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=tru
 		$show_feedback=false;
 	}
     
-    $menu=array();
-    $request_choser="p";
-    $brand_text=($icon_path!==NULL ? '<img src="'.SITE_URL.'/'.$icon_path.'"/>' : SITE_NAME);
-    $brand_link=SITE_URL;
-    $class="navbar ".$navbar_type;
-    
-    echo html_menu($menu, $request_choser, $brand_text, $brand_link, $class, $show_home_link, $show_feedback);
-    return true;
+    if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+    {
+        $menu=array();
+        $request_choser="p";
+        $brand_text=($icon_path!==NULL ? '<img src="'.SITE_URL.'/'.$icon_path.'"/>' : SITE_NAME);
+        $brand_link=SITE_URL;
+        $class="navbar ".$navbar_type;
+        
+        echo html_menu($menu, $request_choser, $brand_text, $brand_link, $class, $show_home_link, $show_feedback);
+        return true;
+    }
 
 	?>
 	<nav class="navbar <?php echo $navbar_type; ?> navbar-fixed-top">
@@ -198,8 +201,6 @@ function display_menu_pages($custom_pages)
 
 function display_dropdown_menu($name, $slug, $subpages)
 {
-    // preprint(array($name, $slug, $subpages),"display_dropdown_menu");
-    mail("johanna.julen@loopia.se","display_dropdown_menu", print_r(array($name, $slug, $subpages),1));
 	$logged_in_level=login_check_logged_in_mini();
     
     if(!defined("BOOTSTRAP_VERSION") || substr(BOOTSTRAP_VERSION, 0,1)=="3") // v3 (old) type dropdown

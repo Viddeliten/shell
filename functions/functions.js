@@ -19,7 +19,7 @@ function replace_html_div_inner(div_id_to, path)
 			url: path,
 			type: 'get',
 			dataType: 'html',
-			async: false,
+			async: true,
 			success: function(data) {
 				$( '#' + div_id_to ).html( data );
 				result = true;
@@ -148,6 +148,10 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     var target = this.href.split('#');
     $('.nav a').filter('[href="#'+target[1]+'"]').tab('show');
 });
+
+$('a.single_tab_link').on('click', function (e) {
+    $('#single-tab').tab('show');
+})
 
 //Tooltip
 $(function() {

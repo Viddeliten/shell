@@ -89,9 +89,9 @@ function user_display_dropdown()
 	{
 		$name.= ' <span class="badge">'.$badge_total.'</span>';
 	}
-	echo '<ul class="navbar-nav user-menu-dropdown">';
+	echo (defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0") ? '<ul class="navbar-nav user-menu-dropdown">' : "");
         display_dropdown_menu($name, "user", $subpages);
-	echo '</ul>';
+    echo (defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0") ? '</ul>' : "");
 }
 
 function user_get_all($type, $limit=NULL)
