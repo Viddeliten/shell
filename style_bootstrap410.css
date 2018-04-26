@@ -68,6 +68,12 @@ img.leftfloat
 	margin-right: 0.5em;
 }
 
+.author
+{
+	font-size: 80%;
+	float: right;
+}
+
 /*      NEWS        */
 #news
 {
