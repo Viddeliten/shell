@@ -173,7 +173,7 @@ if(defined('PINGDOM_SCRIPT'))
 	
 	<script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
 
-	<script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>functions/functions.js?v=161113"></script>
+	<script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>functions/functions.js?v=161114"></script>
 	<script src="//viddewebb.se/_commons/js/basic.js"></script>
 
 	<?php if(file_exists(CUSTOM_CONTENT_PATH.'/functions/java.js')) { ?>
