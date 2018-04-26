@@ -665,7 +665,7 @@ function html_progress_bar($percent, $max_decimals=2)
 	return message_progress_bar($percent, $max_decimals);
 }
 
-function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_link="", $class="navbar navbar-default", $show_home_link=TRUE, $show_feedback=TRUE, $expand_size="lg")
+function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_link="", $class="navbar navbar-default", $show_home_link=TRUE, $show_feedback=TRUE, $expand_size="xl")
 {
     // if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
     // {
