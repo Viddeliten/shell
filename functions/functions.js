@@ -152,6 +152,10 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 $('a.single_tab_link').on('click', function (e) {
     $('#single-tab').tab('show');
 })
+$('a.reply_tab_link').on('click', function (e) {
+    // e.preventDefault();
+    $('#reply-tab').tab('show');
+})
 
 //Tooltip
 $(function() {

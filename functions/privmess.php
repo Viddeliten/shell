@@ -86,6 +86,7 @@ function privmess_display($return_html=FALSE)
 
         $tabs['reply']['content']=(isset($_GET['message_id']) ? privmess_display_reply($_GET['message_id']) : "");
         $tabs['reply']['has_tab']=FALSE;
+        
         $tabs['single']['content']=(isset($_GET['message_id']) ? privmess_display_single_message($_GET['message_id']) : "");
         $tabs['single']['has_tab']=FALSE;
 
@@ -160,13 +161,20 @@ function privmess_display_single_message($message_id)
 				$message=str_replace("<br /><br />","</p><p>",$message);
 				$message=str_replace("</p><p></p><p>","</p><p>",$message);
 				
-				$reply_link='<a class="btn btn-default"
-										href="#reply"
-										aria-controls="reply"
-										role="tab"
-										data-toggle="tab"
-										onclick="return replace_html_div_inner(\'reply\', \''.SITE_URL.'/operation/privmess_reply.php?message_id='.$message_id.'\');"
-							>';
+				if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+                {
+                    $reply_link=html_link("#reply",html_button(_("Reply"), "btn btn-default", "replace_html_div_inner('reply', '".SITE_URL."/operation/privmess_reply.php?message_id=".$message_id."'); $('#reply-tab').tab('show');", TRUE), "reply_tab_link");
+                }
+                else
+                {
+                    $reply_link='<a class="reply_tab_link btn btn-default"
+                                            href="#reply"
+                                            aria-controls="reply"
+                                            role="tab"
+                                            data-toggle="tab"
+                                            onclick="return replace_html_div_inner(\'reply\', \''.SITE_URL.'/operation/privmess_reply.php?message_id='.$message_id.'\');"
+                                >'._("Reply").'</a>';
+                }
 				
 				echo '
 				<div class="row">
@@ -193,9 +201,9 @@ function privmess_display_single_message($message_id)
 									<input type="hidden" name="p" value="user">
 									<input type="hidden" name="s" value="privmess">';
 									if($m['sender'])
-										echo $reply_link.
+										echo $reply_link;
 											// '<a name="privmess_reply" value="'.
-											_("Reply").'</a>';
+											
 									echo '
 									<input type="submit" name="privmess_mark_unread" value="'._("Mark unread").'" class="btn btn-default">
 									<input type="submit" name="privmess_delete" value="'._("Delete").'" class="btn btn-default"

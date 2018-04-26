@@ -297,9 +297,10 @@ function html_form_button($name, $value, $button_type="default", $onclick=NULL, 
 	return $button;
 }
 
-function html_button($button_text, $class="btn btn-default", $onclick=NULL)
+function html_button($button_text, $class="btn btn-default", $onclick=NULL, $button_type=FALSE)
 {
-	return '<button '.($class!==NULL ? 'class="'.$class.'"' : '')
+	return '<button '.($button_type ? 'type="button"' : "").' '
+                    .($class!==NULL ? 'class="'.$class.'"' : '')
 					.($onclick!==NULL ? ' onclick="'.$onclick.'"' : '')
 			.'>'
 			.$button_text
