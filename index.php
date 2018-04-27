@@ -27,29 +27,8 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
 		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
 
-	require_once("functions/login.php");
-	require_once("functions/db_connect.php");
-	require_once("functions/string.php");
-	require_once("functions/message.php");
-	require_once("functions/user.php");
-	require_once("functions/flattr.php");
-	require_once("functions/spam.php");
-	require_once("functions/version.php");
-	require_once("functions/admin.php");
-	require_once("functions/language.php");
-	require_once("functions/display.php");
-	require_once("functions/feedback/func.php");
-	require_once("functions/comment/func.php");
-	require_once("functions/news.php");
-	require_once("functions/mailer.php");
-	require_once("functions/usermessage.php");
-	require_once("functions/privmess.php");
-	require_once("functions/notice.php");
-	require_once("functions/html.php");
-	require_once("functions/rss.php");
-	require_once("functions/accesslog.php");
-	
-
+	require_once("functions/include.php");
+	include_all_in_path("functions");
 
 	if(function_exists('meta_title_and_description')) meta_title_and_description(); ?>
    
