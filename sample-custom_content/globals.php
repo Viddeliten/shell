@@ -1,6 +1,6 @@
 <?php
 
-define('BOOTSTRAP_VERSION', "4.1.0"); // Change to 3.3.4 if it does not look good!
+// define('BOOTSTRAP_VERSION', "4.1.0"); // Uncomment to switch to newer bootstrap (experimental)
 
 /********************************/
 /*		Available pages			*/
