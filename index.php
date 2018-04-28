@@ -21,14 +21,18 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	require_once("functions/include.php");
 	include_all_in_path("functions");
 
-	if(defined('FLATTR_META_TAG'))
-		echo FLATTR_META_TAG;
-	
 	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
 		require_once(CUSTOM_CONTENT_PATH."/globals.php");
 
 	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
 		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
+
+	$connection=db_connect(db_host, db_name, db_user, db_pass);
+
+	if(function_exists("flattr_custom_page_tag") && $flattr_tag=flattr_custom_page_tag())
+		echo $flattr_tag;
+	else if(defined('FLATTR_META_TAG'))
+		echo FLATTR_META_TAG;
 
 	if(function_exists('meta_title_and_description')) meta_title_and_description(); ?>
    
@@ -69,7 +73,6 @@ else
    
   <?php  
   language_setup();
-  $connection=db_connect(db_host, db_name, db_user, db_pass);
 
   login_receive();
   

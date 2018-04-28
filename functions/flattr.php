@@ -65,13 +65,37 @@ function flattr_get_button_code($user_id, $flattr_id, $type, $url, $title, $desc
 	return NULL;
 }
 
-function flattr_button_show($uid, $url, $title, $description, $button, $language, $return_code=false)
+function flattr_button_show($uid, $url, $title, $description, $button, $language, $static=TRUE, $return_code=FALSE)
 {
 	$script_id=password_generate(32);
 	// echo "<script>
 	// echo "<script id='fbwxhy2'>
-	$code="<script id='$script_id'>
-	(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=".$uid."&title=".$title."&button=".$button."&description=".sql_safe($description)."&url='+encodeURIComponent('".$url."');f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('$script_id');</script>";
+	$params="?uid=".$uid."&title=".$title."&description=".sql_safe($description);
+	if($static)
+	{
+		$params.="&url=".$url;
+		$code='<a href="https://flattr.com/submit/auto'.$params.'"><img src="'.SITE_URL.'/img/flattr-this.png" alt="'._("Flattr this").'"></a>';
+	}
+	else
+	{
+		$params.="&button=".$button;
+		$params.="&url='+encodeURIComponent('".$url."');";
+		$code="<script id='$script_id'>
+					(function(i){
+						var f,
+							s=document.getElementById(i);
+						f=document.createElement('iframe');
+						f.src='//api.flattr.com/button/view/".$params."
+						f.title='Flattr';
+						f.height=20;
+						f.width=110;
+						f.style.borderWidth=0;
+						s.parentNode.insertBefore(f,s);
+					})
+					('$script_id');
+				</script>";
+	}
+	$code=html_tag("div",$code,"flattr-button", FALSE, NULL, FALSE);
 	if($return_code)
 		return $code;
 	else
@@ -115,9 +139,10 @@ function flattr_set_flattr_choice($user_id, $flattr_choice)
 	}
 }
 
-function flattr_button_conditional($user_id, $type, $link, $title, $description)
+//Eventuell Flattr-knapp
+function flattr_button_conditional($user_id, $type, $link, $title, $description, $static_button=TRUE, $return_html=FALSE)
 {
-	//Eventuell Flattr-knapp
+	ob_start();
 	if($user_id!=NULL && flattr_get_flattr_choice($user_id, $type))
 		$flattrID=flattr_get_flattrID($user_id);
 	else
@@ -131,7 +156,7 @@ function flattr_button_conditional($user_id, $type, $link, $title, $description)
 		
 		if($link!="")
 		{
-			flattr_button_show($flattrID, $link , $title, $description, 'compact', 'en_GB');
+			flattr_button_show($flattrID, $link , $title, $description, 'compact', 'en_GB', $static_button);
 		}
 		else
 		{
@@ -139,5 +164,12 @@ function flattr_button_conditional($user_id, $type, $link, $title, $description)
 			echo "Flattr-code broken! Please tell admin!";
 		}
 	}
+	
+	$content = ob_get_contents();
+	ob_end_clean();
+	if($return_html)
+		return $content;
+	else
+		echo $content;
 }
 ?>
