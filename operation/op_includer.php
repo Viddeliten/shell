@@ -5,20 +5,8 @@ session_start();
 if(!defined('ROOT_PATH'))
 	define('ROOT_PATH',"../");
 
-require_once(ROOT_PATH."functions/db_connect.php");
-require_once(ROOT_PATH."functions/login.php");
-require_once(ROOT_PATH."functions/string.php");
-require_once(ROOT_PATH."functions/message.php");
-require_once(ROOT_PATH."functions/usermessage.php");
-require_once(ROOT_PATH."functions/language.php");
-require_once(ROOT_PATH."functions/news.php");
-require_once(ROOT_PATH."functions/rss_class.php");
-require_once(ROOT_PATH."functions/privmess.php");
-require_once(ROOT_PATH."functions/user.php");
-require_once(ROOT_PATH."functions/html.php");
-require_once(ROOT_PATH."functions/feedback/func.php");
-require_once(ROOT_PATH."functions/api.php");
-require_once(ROOT_PATH."functions/accesslog.php");
+require_once(ROOT_PATH."functions/include.php");
+include_all_in_path(ROOT_PATH."functions");
 
 require_once(ROOT_PATH."config.php");
 if(defined("FUNC_PATH"))

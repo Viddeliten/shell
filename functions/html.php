@@ -821,6 +821,12 @@ function html_show_hide_clicker($div_id, $label, $contents)
 	return $r;
 }
 
+/***
+*   function html_carousel
+*   Parameters:
+*       image_array -   array of "images"; array("url"    =>  string
+                                                 "alt"   =>  string)
+***/
 function html_carousel($image_array)
 {
 	reset($image_array);
@@ -841,7 +847,12 @@ function html_carousel($image_array)
     // </div>
 		foreach($image_array as $key => $image)
 			$r.='<div class="carousel-item  '.(!strcmp($first_key, $key) ? 'active' : "").'">
+				'.(isset($image['link']) ? '<a href="'.$image['link'].'">' : '').'
 				  <img class="d-block w-100" src="'.$image['url'].'" alt="'.$image['alt'].'">
+					'.(isset($image['caption']) ? '<div class="carousel-caption d-none d-md-block">
+						'.$image['caption'].'
+					</div>' :'').
+					(isset($image['link']) ? '</a>' : '').'
 				</div>';
 	$r.='</div>
   <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">

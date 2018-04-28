@@ -18,6 +18,9 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	 <meta name="author" content="">
 	<?php require_once("config.php"); 
 	
+	require_once("functions/include.php");
+	include_all_in_path("functions");
+
 	if(defined('FLATTR_META_TAG'))
 		echo FLATTR_META_TAG;
 	
@@ -26,9 +29,6 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 
 	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
 		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
-
-	require_once("functions/include.php");
-	include_all_in_path("functions");
 
 	if(function_exists('meta_title_and_description')) meta_title_and_description(); ?>
    
@@ -152,7 +152,7 @@ if(defined('PINGDOM_SCRIPT'))
 	
 	<script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
 
-	<script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>functions/functions.js?v=161115"></script>
+	<script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>functions/functions.js?v=<?php echo date("YmdHis"); ?>"></script>
 	<script src="//viddewebb.se/_commons/js/basic.js"></script>
 
 	<?php if(file_exists(CUSTOM_CONTENT_PATH.'/functions/java.js')) { ?>

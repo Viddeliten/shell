@@ -17,7 +17,6 @@ function require_all_in_path($path)
 		else if(!strcmp(substr($filename,strlen($filename)-4),".php"))
 		{
 			$not_to_include=array(	"functions/include.php",
-									"functions/feedback/operation.php",
 									"functions/feedback/operation.php");
 			if(!in_array($filename, $not_to_include))
 			{
