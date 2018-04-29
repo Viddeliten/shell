@@ -770,6 +770,30 @@ function html_form_search()
 ***/
 function html_nav_tabs($tabs=array())
 {
+	if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+    {
+        //https://getbootstrap.com/docs/4.1/components/navs/#tabs
+        $first_key=key($image_array);
+        $r='<nav>
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">';
+        foreach($tabs as $id => $tab)
+        {
+            // if($tab['has_tab'])
+                $r.='<a class="nav-item nav-link '.(!strcmp($first_key, $id) ? 'active' : "").' '.(!$tab['has_tab'] ? 'd-none' : '').'" id="'.$id.'-tab" data-toggle="tab" href="#'.$id.'" role="tab" aria-controls="'.$id.'" aria-selected="true">'.string_unslugify($id).'</a>';
+        }
+        $r.='</div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">';
+        foreach($tabs as $id => $tab)
+        {
+            $r.='<div class="tab-pane fade '.(!strcmp($first_key, $id) ? 'show active' : "").'" id="'.$id.'" role="tabpanel" aria-labelledby="'.$id.'-tab">'.
+            $tab['content'].
+            '</div>';
+        }
+        $r.='</div>';
+        return $r;
+    }
+	
 	$r='<div class="row">
 		<div class="col-lg-12">';
 /*			<!-- Nav tabs -->		*/
