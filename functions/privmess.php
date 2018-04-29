@@ -73,31 +73,35 @@ function privmess_display($return_html=FALSE)
 {
     if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
     {
-        $tabs=array();
+		$content="";
+		$tabs=array();
         if(login_check_logged_in_mini()>0)
         {
 			$tabs['inbox']['content']=privmess_display_inbox($_SESSION[PREFIX.'user_id'], TRUE);
 			$tabs['inbox']['has_tab']=TRUE;
             $tabs['sent']['content']=privmess_display_outbox($_SESSION[PREFIX.'user_id'], TRUE);
 			$tabs['sent']['has_tab']=TRUE;
-        }
-        $tabs['compose']['content']=privmess_display_compose(NULL, "", "", TRUE);
-        $tabs['compose']['has_tab']=TRUE;
+			$tabs['compose']['content']=""; //privmess_display_compose(NULL, "", "", TRUE);
+			$tabs['compose']['has_tab']=TRUE;
 
-        $tabs['reply']['content']=(isset($_GET['message_id']) ? privmess_display_reply($_GET['message_id']) : "");
-        $tabs['reply']['has_tab']=FALSE;
+			$tabs['reply']['content']=(isset($_GET['message_id']) ? privmess_display_reply($_GET['message_id'], TRUE) : "");
+			$tabs['reply']['has_tab']=FALSE;
+			
+			$tabs['single']['content']=(isset($_GET['message_id']) ? privmess_display_single_message($_GET['message_id'], TRUE) : "");
+			$tabs['single']['has_tab']=FALSE;
         
-        $tabs['single']['content']=(isset($_GET['message_id']) ? privmess_display_single_message($_GET['message_id']) : "");
-        $tabs['single']['has_tab']=FALSE;
-
-        $content=html_nav_tabs($tabs);
+			$content=html_nav_tabs($tabs, (isset($_GET['message_id']) ? "single" : NULL ));
+		}
 
         if($return_html)
             return $content;
         else
             echo $content;
+		
         return TRUE;
-    }
+	}
+	else
+		echo preprint("NOT BOOTSTRAP_VERSION");
     
 	// http://getbootstrap.com/javascript/#tabs (works with v3.3.4)
 	echo '
@@ -141,8 +145,9 @@ function privmess_display($return_html=FALSE)
   </div>';
 }
 
-function privmess_display_single_message($message_id)
+function privmess_display_single_message($message_id, $return_html)
 {
+	ob_start();
 	if(login_check_logged_in_mini()>0)
 	{
 		//Show message
@@ -228,33 +233,53 @@ function privmess_display_single_message($message_id)
 	}
 	else
 		echo "Not logged in";
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
+
 }
 
-function privmess_display_reply($message_id)
+function privmess_display_reply($message_id, $return_html=FALSE)
 {
+	$content="";
 	// echo "Replyinig to message $message_id";
 	//Get sender, subject and message text from the message we are replying on
 	$sql="SELECT sender, subject, message, sent
 		FROM ".PREFIX."privmess 
 		WHERE reciever='".sql_safe($_SESSION[PREFIX.'user_id'])."'
 		AND id=".sql_safe($message_id).";";
+	preprint(array($message_id, $return_html), "privmess_display_reply");
 	if($mm=mysql_query($sql))
 	{
 		if($m=mysql_fetch_assoc($mm))
 		{
 			$quoted="--- ".user_get_name($m['sender'])." ".$m['sent']." ---\n".$m['message']; 
-			privmess_display_compose(user_get_name($m['sender']), "Re: ".$m['subject'], $quoted);
+			$content.=privmess_display_compose(user_get_name($m['sender']), "Re: ".$m['subject'], $quoted, TRUE);
+			if($return_html)
+				return $content;
+			else
+				echo $content;
 			return true;
 		}
 	}
-	echo "<p class=\"error\">"._("Something went wrong")."<br />$sql</p>";
+	$content.="<p class=\"error\">"._("Something went wrong")."<br />$sql</p>";
+	
+	if($return_html)
+		return $content;
+	else
+		echo $content;
 }
 
-function privmess_display_compose($receiver=NULL, $subject="", $quoted_text="", $return_html=fALSE)
+function privmess_display_compose($receiver=NULL, $subject="", $quoted_text="", $return_html=FALSE)
 {
     ob_start();
     ?>
-	<h1><?php echo _("Composing message"); ?></h1>
+	<h1><?php echo _("Composing message").($return_html? 1 : 0); ?></h1>
 	<form method="post">
 		<div class="form-group">
 			<label for="receiver_text"><?php echo _("Receiver user name"); ?></label>
@@ -283,10 +308,10 @@ function privmess_display_compose($receiver=NULL, $subject="", $quoted_text="", 
     $contents = ob_get_contents();
 	ob_end_clean();
 	
-	if(!$return_html)
-		echo $contents;
-	else
+	if($return_html)
 		return $contents;
+	else
+		echo $contents;
 }
 
 function privmess_display_inbox($receiver_id, $return_html=FALSE)

@@ -768,18 +768,20 @@ function html_form_search()
 						"content"	=>	All html visible when the tab is active);
 *
 ***/
-function html_nav_tabs($tabs=array())
+function html_nav_tabs($tabs=array(), $active=NULL)
 {
 	if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
     {
         //https://getbootstrap.com/docs/4.1/components/navs/#tabs
-        $first_key=key($image_array);
+        $first_key=key($tabs);
         $r='<nav>
   <div class="nav nav-tabs" id="nav-tab" role="tablist">';
         foreach($tabs as $id => $tab)
         {
             // if($tab['has_tab'])
-                $r.='<a class="nav-item nav-link '.(!strcmp($first_key, $id) ? 'active' : "").' '.(!$tab['has_tab'] ? 'd-none' : '').'" id="'.$id.'-tab" data-toggle="tab" href="#'.$id.'" role="tab" aria-controls="'.$id.'" aria-selected="true">'.string_unslugify($id).'</a>';
+                $r.='<a class="nav-item nav-link '
+						.($active!==NULL && !strcmp($active, $id) ? "active " :	(!strcmp($first_key, $id) ? 'active ' : "")).' ' // Active set or first id
+						.(!$tab['has_tab'] && ($active==NULL || strcmp($active, $id)) ? 'd-none' : '').'" id="'.$id.'-tab" data-toggle="tab" href="#'.$id.'" role="tab" aria-controls="'.$id.'" aria-selected="true">'.string_unslugify($id).'</a>';
         }
         $r.='</div>
         </nav>
