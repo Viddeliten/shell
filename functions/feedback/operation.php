@@ -5,7 +5,11 @@ session_start();
 // require_once("../../globals/db_info.php");
 // require_once("../../globals/values.php");
 // require_once("../../globals/path.php");
-require_once("../../config.php");
+if(defined('ABS_PATH'))
+	require_once(ABS_PATH."/config.php");
+else
+	require_once("../../config.php");
+
 //From functions
 require_once(ABS_PATH."/functions"."/user.php");
 require_once(ABS_PATH."/functions"."/login.php");

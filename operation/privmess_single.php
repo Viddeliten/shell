@@ -1,4 +1,7 @@
 <?php
+if(!defined('ROOT_PATH'))
+	define('ROOT_PATH',"../");
+
 require_once("op_includer.php");
 
   $connection=db_connect(db_host, db_name, db_user, db_pass);
