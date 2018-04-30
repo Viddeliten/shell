@@ -70,6 +70,11 @@ function flattr_button_show($uid, $url, $title, $description, $button, $language
 	$script_id=password_generate(32);
 	// echo "<script>
 	// echo "<script id='fbwxhy2'>
+    
+    //Remove all tags from descriptions
+    $pattern = "/<(.*?)>/";
+    $replacement = "";
+    $description=preg_replace($pattern, $replacement, $description);
 	$params="?uid=".$uid."&title=".$title."&description=".sql_safe($description);
 	if($static)
 	{
@@ -95,7 +100,7 @@ function flattr_button_show($uid, $url, $title, $description, $button, $language
 					('$script_id');
 				</script>";
 	}
-	$code=html_tag("div",$code,"flattr-button", FALSE, NULL, FALSE);
+	$code=html_tag("span",$code,"flattr-button", FALSE, NULL, FALSE);
 	if($return_code)
 		return $code;
 	else
@@ -140,7 +145,7 @@ function flattr_set_flattr_choice($user_id, $flattr_choice)
 }
 
 //Eventuell Flattr-knapp
-function flattr_button_conditional($user_id, $type, $link, $title, $description, $static_button=TRUE, $return_html=FALSE)
+function flattr_button_conditional($user_id, $type, $url, $title, $description, $static_button=TRUE, $return_html=FALSE)
 {
 	ob_start();
 	if($user_id!=NULL && flattr_get_flattr_choice($user_id, $type))
@@ -154,9 +159,9 @@ function flattr_button_conditional($user_id, $type, $link, $title, $description,
 	{
 		//echo "<br />debug1758: flattr ".$c['user'];
 		
-		if($link!="")
+		if($url!="")
 		{
-			flattr_button_show($flattrID, $link , $title, $description, 'compact', 'en_GB', $static_button);
+			flattr_button_show($flattrID, $url , $title, $description, 'compact', 'en_GB', $static_button);
 		}
 		else
 		{

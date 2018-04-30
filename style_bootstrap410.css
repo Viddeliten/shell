@@ -98,6 +98,10 @@ img.leftfloat
 	font-size: 80%;
 	float: right;
 }
+.author span
+{
+	padding: 0 0.5em;
+}
 
 /*		message_box		*/
 .message_box
@@ -200,30 +204,10 @@ ul.commentlist
 	color: red;
 }
 
-/*      feedback        */
-.posted.feedback
-{
-	background-color: white;
-    padding: 0.1em 1em;
-    box-shadow: inset 0px 0px 5px 0px rgba(0, 0, 0, 0.62);
-}
-.panel.feedback
-{
-	margin-top: 1em;
-}
-.feedback_list_line
-{
-	padding: 0;
-}
-li.list-group-item.feedback
-{
-	padding: 0px 15px;
-}
-
-.feedback_author, .feedback_time
-{
-	text-align: right;
-}
+/****************************************/
+/*      		feedback		        */
+/****************************************/
+/* Colors */
 .feedback_accepted, .feedback_accepted .feedback_headline, .panel-heading.feedback_accepted
 {
 	background-color: #aaffaa;
@@ -248,11 +232,25 @@ li.list-group-item.feedback
 {
 	color: #29080B
 }
-
-.feedback_buttons, .feedback_buttons .right
+/* Shapes */
+.feedback .card-title
 {
-	padding: 0;
+    height: 3em;
+    font-size: 2em;
+    padding: 1em 1em;
+	margin-bottom: 0;
+	border-bottom: 1px solid #eee;
 }
+
+.feedback .author
+{
+	font-size: 0.4em;
+    font-weight: initial;
+    position: absolute;
+    top: 0.5em;
+    right: 0;
+}
+
 
 /************************************/
 /*		For notices and such		*/

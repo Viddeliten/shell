@@ -641,8 +641,66 @@ function feedback_get_is_resolved($id)
 	return NULL;
 }
 
+function feedback_list_print_bs4($data, $id_expanded=NULL)
+{
+    $inloggad=login_check_logged_in_mini();
+	
+	while($d=@mysql_fetch_array($data)) 
+	{
+        $div_id="feedback_big_".$d['id'];
+        $title_class=($d['not_implemented']!=NULL ? "feedback_not_implemented" : 
+                    ($d['resolved']!=NULL ?         "feedback_resolved" :
+                    ($d['checked_in']!=NULL ?       "feedback_checked_in":
+                    ($d['accepted']!=NULL ?         "feedback_accepted" : ""))));
+        
+        if($d['subject']!="")
+            $headline=$d['subject'];
+        else
+            $headline="Feedback #".$d['id'];
+        
+        // flattr_button_conditional($user_id, $type, $link, $title, $description, $static_button=TRUE, $return_html=FALSE)
+        $flattr_button=flattr_button_conditional($d['user'], "feedback", feedback_get_url($d['id']), $headline, $d['text'], TRUE, TRUE);
+        $plusone_button=html_tag("span",html_form("post",array( '<input type="submit" name="feedback_plusone" value="+'.($d['plusones']+1).'">',
+								                                '<input type="hidden" name="id" value="'.$d['id'].'">'),
+                                                    "inline"
+                                                ),
+                                    "inline"
+                                );
+        
+        // echo html_card("", "", html_tag("span",$d['subject'],$title_class), $d['text'], NULL, NULL);
+        $card_array=array(   array(  "type"     =>  "title",
+                                     "class"    =>  $title_class,
+                                     "content"  =>  html_tag("div", $flattr_button.
+                                                                    $plusone_button.
+                                                                    html_tag("span",feedback_display_author_text($d['user'], $d['nick'], $d['url'], $d['id'], $d['created'], TRUE), FALSE, NULL, FALSE),
+                                                            "author").
+                                                    $headline
+                                 ),
+                             array(  "type"     =>  "body",
+                                     "class"    =>  "",
+                                     "content"  =>  $d['text']
+                                 ),
+                                 // feedback_display_bottom($d['id'], $div_id, $id_expanded);
+                             array(  "type"     =>  "list",
+                                     "class"    =>  "",
+                                     "content"  =>  feedback_display_bottom($d['id'], $div_id, $id_expanded, TRUE)
+                                 ),
+                             array(  "type"     =>  "footer",
+                                     "class"    =>  "",
+                                     "content"  =>  comments_show_comments_and_replies($d['id'], "feedback", FALSE)
+                                 )
+                        );
+        echo html_card_from_array($card_array, "feedback", $div_id);
+    }
+}
 function feedback_list_print($data, $id_expanded=NULL)
 {
+    if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
+    {
+        feedback_list_print_bs4($data, $id_expanded);
+        return true;
+    }
+    // preprint(array($data, $id_expanded), "feedback_list_print");
 	$inloggad=login_check_logged_in_mini();
 	
 	while($d=@mysql_fetch_array($data)) 
@@ -1661,8 +1719,9 @@ function feedback_set_unresolved($id)
 		}
 	}
 }
-function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL)
+function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL, $return_html=FALSE)
 {
+    ob_start();
 	echo '<ul class="list-group">';
 				feedback_status_show($feedback_id, NULL, NULL, NULL, NULL, "feedback_status_".$feedback_id, $parent_div_id, '<li class="list-group-item">','</li>');
 				feedback_display_size_buttons($feedback_id, "", '<li class="list-group-item">','</li>');
@@ -1691,6 +1750,13 @@ function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL
 						echo '</li>';
 					}
 			echo '</ul>';
+    $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
 }
 
 function feedback_get_class($id)
@@ -1797,7 +1863,7 @@ function feedback_get_author_link($feedback_id)
 	return NULL;
 }
 
-function feedback_display_author_text($feedback_user_id, $feedback_user_nick, $feedback_user_url, $feedback_id, $feedback_created)
+function feedback_display_author_text($feedback_user_id, $feedback_user_nick, $feedback_user_url, $feedback_id, $feedback_created, $return_html=FALSE)
 {
 	$feedback_link=SITE_URL."/?p=feedback&amp;id=".$feedback_id;
 	$feedback_time=date("Y-m-d H:i",strtotime($feedback_created));
@@ -1815,12 +1881,17 @@ function feedback_display_author_text($feedback_user_id, $feedback_user_nick, $f
 		$user_link=$feedback_user_url;
 	}
 	
+    $content="";
 	if(!isset($user_name))
-		echo sprintf(_("Posted at <a href=\"%s\">%s</a>"),$feedback_link,$feedback_time);
+		$content.= sprintf(_("Posted at <a href=\"%s\">%s</a>"),$feedback_link,$feedback_time);
 	else if($user_link==NULL)
-		echo sprintf(_("Posted by %s at <a href=\"%s\">%s</a>"), $user_name,$feedback_link,$feedback_time);
+		$content.= sprintf(_("Posted by %s at <a href=\"%s\">%s</a>"), $user_name,$feedback_link,$feedback_time);
 	else
-		echo sprintf(_("Posted by <a href=\"%s\">%s</a> at <a href=\"%s\">%s</a>"), $user_link, $user_name,$feedback_link,$feedback_time);
+		$content.= sprintf(_("Posted by <a href=\"%s\">%s</a> at <a href=\"%s\">%s</a>"), $user_link, $user_name,$feedback_link,$feedback_time);
+    
+    if($return_html)
+        return $content;
+    echo $return_html;
 }
 
 function feedback_get_checked_in()

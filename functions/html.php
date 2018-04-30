@@ -50,6 +50,61 @@ function html_card($card_link="", $card_link_text="Go somewhere", $card_title=""
     </div>';
 }
 
+function html_card_from_array_parts($array)
+{
+    // html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id=NULL, $html_format_text=TRUE)
+    $content="";
+    foreach($array as $part)
+    {
+        if(is_array($part['content']))
+            $part['content']=html_card_from_array_parts($part['content']);
+        
+        switch ($part['type'])
+        {
+            case "title":
+                 $content.=html_tag("h5",$part['content'],"card-title ".$part['class'], FALSE, NULL, FALSE);
+                break;
+            case "list":
+                 $content.=html_tag("ul",$part['content'],"list-group list-group-flush ".$part['class'], FALSE, NULL, FALSE);;
+                break;
+            default:
+                $content.=html_tag("div",$part['content'], "card-".$part['type']." ".$part['class'], FALSE, NULL, FALSE);
+        }
+    }
+    
+    return $content;
+}
+
+function html_card_from_array($array, $div_class="", $div_id=NULL)
+{
+    $content=html_tag("div",html_card_from_array_parts($array),"card ".$div_class, $div_id, FALSE, NULL, FALSE);
+   
+    return $content;
+    
+    /* Example card:
+    '<div class="card">
+    <img class="card-img-top" src=".../100px180/?text=Image cap" alt="Card image cap">
+          <div class="card-header">
+            Featured
+          </div>
+          <div class="card-body">
+        <h5 class="card-title">Special title treatment</h5>
+        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+      </div>
+      <ul class="list-group list-group-flush">
+    <li class="list-group-item">Cras justo odio</li>
+    <li class="list-group-item">Dapibus ac facilisis in</li>
+    <li class="list-group-item">Vestibulum at eros</li>
+  </ul>
+  <div class="card-body">
+    <a href="#" class="card-link">Card link</a>
+    <a href="#" class="card-link">Another link</a>
+  </div>
+    </div>';
+    */
+}
+
 function html_link_register($text, $class=NULL)
 {
 	return html_link(SITE_URL."/?reg", $text, $class);
