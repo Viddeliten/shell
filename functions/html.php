@@ -52,7 +52,6 @@ function html_card($card_link="", $card_link_text="Go somewhere", $card_title=""
 
 function html_card_from_array_parts($array)
 {
-    // html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id=NULL, $html_format_text=TRUE)
     $content="";
     foreach($array as $part)
     {
@@ -77,7 +76,7 @@ function html_card_from_array_parts($array)
 
 function html_card_from_array($array, $div_class="", $div_id=NULL)
 {
-    $content=html_tag("div",html_card_from_array_parts($array),"card ".$div_class, $div_id, FALSE, NULL, FALSE);
+    $content=html_tag("div",html_card_from_array_parts($array),"card ".$div_class, FALSE, $div_id, FALSE);
    
     return $content;
     

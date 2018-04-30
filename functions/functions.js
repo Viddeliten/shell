@@ -124,12 +124,9 @@ function feedback_operation(operation, id, target_div_id, extra_element_id)
 		else
 			adress+='&extra=' + document.getElementById(extra_element_id).value;
 	}
-	// alert('adressen: ' + adress);
-	// alert(adress);
-	//('unresolve',".$id.", 'feedback_resolved_".$id."')	
-	$.get( adress, function( data ) {
-		$( '#' + target_div_id ).replaceWith( data );
-	})
+
+    replace_html_div_inner(target_div_id, adress);
+    
 }
 
 $( ".autoExpanding" ).each(function() {
