@@ -81,7 +81,7 @@ function privmess_display($return_html=FALSE)
 			$tabs['inbox']['has_tab']=TRUE;
             $tabs['sent']['content']=privmess_display_outbox($_SESSION[PREFIX.'user_id'], TRUE);
 			$tabs['sent']['has_tab']=TRUE;
-			$tabs['compose']['content']=""; //privmess_display_compose(NULL, "", "", TRUE);
+			$tabs['compose']['content']=privmess_display_compose(NULL, "", "", TRUE);
 			$tabs['compose']['has_tab']=TRUE;
 
 			$tabs['reply']['content']=(isset($_GET['message_id']) ? privmess_display_reply($_GET['message_id'], TRUE) : "");
@@ -278,7 +278,7 @@ function privmess_display_compose($receiver=NULL, $subject="", $quoted_text="", 
 {
     ob_start();
     ?>
-	<h1><?php echo _("Composing message").($return_html? 1 : 0); ?></h1>
+	<h1><?php echo _("Composing message"); ?></h1>
 	<form method="post">
 		<div class="form-group">
 			<label for="receiver_text"><?php echo _("Receiver user name"); ?></label>
