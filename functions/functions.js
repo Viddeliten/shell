@@ -153,7 +153,7 @@ $('a.single_tab_link').on('click', function (e) {
     $('#single-tab').tab('show');
 })
 $('a.reply_tab_link').on('click', function (e) {
-    // e.preventDefault();
+    e.preventDefault();
     $('#reply-tab').tab('show');
 })
 
@@ -168,7 +168,7 @@ function carouselNormalization() {
 	var items = $('.carousel-item'), //grab all slides
 		heights = [], //create empty array to store height values
 		tallest; //create variable to make note of the tallest slide
-	console.log(items);
+	// console.log(items);
 
 	if (items.length) {
 		function normalizeHeights() {
@@ -193,6 +193,6 @@ function carouselNormalization() {
 }
 
 $(document).ready(function() {
-	console.log( "ready!" );
+	// console.log( "ready!" );
     carouselNormalization();
 });

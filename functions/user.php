@@ -75,7 +75,7 @@ function user_display_dropdown()
 	$name=_("Messages"); 
 	if($privmessnr>0)
 	{
-		$name.= ' <span class="badge">'.$privmessnr.'</span>';
+		$name.= ' <span class="badge badge-info">'.$privmessnr.'</span>';
 	}
 	$subpages[$name]=array("slug" => "privmess");
     

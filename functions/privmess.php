@@ -253,7 +253,6 @@ function privmess_display_reply($message_id, $return_html=FALSE)
 		FROM ".PREFIX."privmess 
 		WHERE reciever='".sql_safe($_SESSION[PREFIX.'user_id'])."'
 		AND id=".sql_safe($message_id).";";
-	preprint(array($message_id, $return_html), "privmess_display_reply");
 	if($mm=mysql_query($sql))
 	{
 		if($m=mysql_fetch_assoc($mm))
@@ -332,7 +331,7 @@ function privmess_display_inbox($receiver_id, $return_html=FALSE)
 	{
 		$nr=mysql_affected_rows();
 		if($nr>0)
-			echo '<table class="table table-hover">
+			echo '<table class="table table-hover inbox">
 				<tr>
 					<th>'._("Sender").'</th>
 					<th>'._("Subject").'</th>

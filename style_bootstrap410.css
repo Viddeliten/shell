@@ -442,4 +442,12 @@ border-radius: 30px;
 	background-color: #2e6fc366;
 }
 
+/*		PRIVMESS		*/
+.inbox .active
+{
+	font-weight: bold;
+}
 
+.badge {
+	background-color: #C94F4F;
+}

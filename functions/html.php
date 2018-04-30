@@ -300,10 +300,11 @@ function html_form_button($name, $value, $button_type="default", $onclick=NULL, 
 	return $button;
 }
 
-function html_button($button_text, $class="btn btn-default", $onclick=NULL)
+function html_button($button_text, $class="btn btn-default", $onclick=NULL, $button_type=TRUE)
 {
 	return '<button '.($class!==NULL ? 'class="'.$class.'"' : '')
 					.($onclick!==NULL ? ' onclick="'.$onclick.'"' : '')
+					.($button_type ? ' type="button"' : '')
 			.'>'
 			.$button_text
 			.'</button>';
@@ -780,7 +781,7 @@ function html_nav_tabs($tabs=array(), $active=NULL)
         {
             // if($tab['has_tab'])
                 $r.='<a class="nav-item nav-link '
-						.($active!==NULL && !strcmp($active, $id) ? "active " :	(!strcmp($first_key, $id) ? 'active ' : "")).' ' // Active set or first id
+						.(($active!==NULL && !strcmp($active, $id) ) || (!strcmp($first_key, $id) && $active==NULL ) ? "active " :	"") // Active set or first id
 						.(!$tab['has_tab'] && ($active==NULL || strcmp($active, $id)) ? 'd-none' : '').'" id="'.$id.'-tab" data-toggle="tab" href="#'.$id.'" role="tab" aria-controls="'.$id.'" aria-selected="true">'.string_unslugify($id).'</a>';
         }
         $r.='</div>
@@ -788,7 +789,7 @@ function html_nav_tabs($tabs=array(), $active=NULL)
         <div class="tab-content" id="nav-tabContent">';
         foreach($tabs as $id => $tab)
         {
-            $r.='<div class="tab-pane fade '.(!strcmp($first_key, $id) ? 'show active' : "").'" id="'.$id.'" role="tabpanel" aria-labelledby="'.$id.'-tab">'.
+            $r.='<div class="tab-pane fade '.(($active!==NULL && !strcmp($active, $id) ) || (!strcmp($first_key, $id) && $active==NULL )? 'show active' : "").'" id="'.$id.'" role="tabpanel" aria-labelledby="'.$id.'-tab">'.
             $tab['content'].
             '</div>';
         }
