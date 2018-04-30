@@ -3,6 +3,13 @@
 	overflow-wrap: break-word;
 }
 
+@media (min-width: 1200px)
+{
+	.container {
+		min-width: 80%;
+	}
+}
+
 html, body {
   height: 100%; /* needed for container min-height */
 }
@@ -28,6 +35,15 @@ select.form-control.small
 #content{
 	margin-bottom: 50px;
 	min-height: 80%;
+}
+
+.row
+{
+	margin: 0;
+}
+.row.snug
+{
+	margin-top: -0.99em;
 }
 
 .carousel {
@@ -232,6 +248,10 @@ ul.commentlist
 {
 	color: #29080B
 }
+.feedback_body
+{
+	background-color: white;
+}
 /* Shapes */
 .feedback .card-title
 {
@@ -251,6 +271,16 @@ ul.commentlist
     right: 0;
 }
 
+.feedback.list-group-item, .feedback li
+{
+	padding: 0;
+	margin: 0;
+}
+
+.feedback form
+{
+	margin: 0.5em;
+}
 
 /************************************/
 /*		For notices and such		*/
