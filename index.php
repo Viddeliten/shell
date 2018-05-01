@@ -51,7 +51,8 @@ if(defined('BOOTSTRAP_VERSION'))
 else
     $bootstrap_version="3.3.4";
 ?>
-
+	<!-- OPENICONIC https://useiconic.com/open/ -->
+	<link href="<?php echo SITE_URL; ?>/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet">
     
     <!-- Bootstrap core CSS -->
     <link href="<?php echo SITE_URL; ?>/bootstrap-<? echo $bootstrap_version; ?>-dist/css/bootstrap.min.css" rel="stylesheet">

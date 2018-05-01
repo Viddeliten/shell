@@ -107,9 +107,12 @@ function display_friend_request_drop_menu($return_html=FALSE)
 		}
 		else
 			$r_text="";
-		display_dropdown_menu('<span class="glyphicon glyphicon-user"></span>'.$r_text,
+		
+		echo (defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0") ? '<ul class="navbar-nav user-menu-dropdown">' : "");
+		display_dropdown_menu('<span class="glyphicon glyphicon-user oi oi-person" aria-hidden="true"></span>'.$r_text,
 									"user",
 									$r);
+		echo (defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0") ? '</ul>' : "");
 	}
     
     $contents = ob_get_contents();
