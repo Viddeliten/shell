@@ -6,6 +6,8 @@
 function search_custom_search_all($search_string)
 {
 	$results=array();
+	$search_string=sql_safe(strtolower($search_string)); // To make search case insensitive
+
 	/* eXAMPLE CODE:
 	//user's profiles
 	$columns=array("username", "description");

@@ -25,7 +25,7 @@ function search_display_results($search_string)
 	}
 	else
 	{
-		echo message_warning(sprintf(_("Your search for '%s' did not render any results"), sql_safe($search_string)));
+		echo message_message_box("warning", sprintf(_("Your search for '%s' did not render any results"), sql_safe($search_string)));
 	}
 }
 
