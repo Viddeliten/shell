@@ -45,6 +45,10 @@ function message_error_message($message)
 {
     return "<div class=\"message_box error well\">".$message."</div>";
 }
+function message_message_box($type, $message)
+{
+    return "<div class=\"message_box ".$type." well\">".$message."</div>";
+}
 function message_print_error($message)
 {
 	echo message_error_message($message);
