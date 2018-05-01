@@ -447,7 +447,7 @@ function feedback_form_show()
 	</div>';
 }
 
-function feedback_search($search_str, $from, $to)
+function feedback_search_sql($search_str, $from, $to)
 {
 	//hämtar sökresultat
 	$str="%".sql_safe(str_replace(" ","%",$search_str))."%";
@@ -458,8 +458,23 @@ function feedback_search($search_str, $from, $to)
 	AND is_spam<1
 	ORDER BY ".ORDER_STR."
 	LIMIT ".sql_safe($from).",".sql_safe($to).";";
-	//echo "<br />DEBUG: $sql";
+
+	return $sql;
+}
+
+function feedback_search_results($search_str, $from, $to)
+{
+	$db=new db_class();
 	
+	$sql=feedback_search_sql($search_str, $from, $to);
+	$results=$db->select($sql);
+	
+	return $results;
+}
+
+function feedback_search($search_str, $from, $to)
+{
+	$sql=feedback_search_sql($search_str, $from, $to);
 	feedback_display_headline_list($sql, "", 1);
 }
 

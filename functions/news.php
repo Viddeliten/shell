@@ -205,4 +205,22 @@ function news_get_link_url($id=NULL)
 	return SITE_URL."?p=news&amp;id=".$id;
 }
 
+function news_search_get($search_string)
+{
+	$db=new db_class();
+	$search_string=strtolower($search_string); // To make search case insensitive
+	
+	$sql="SELECT DISTINCT news.id, user.username as author, news.headline, news.text
+	FROM news
+	LEFT JOIN user ON user.id=news.author
+	WHERE LOWER(user.username) LIKE '%".sql_safe($search_string)."%'
+	OR LOWER(news.headline) LIKE '%".sql_safe($search_string)."%'
+	OR LOWER(news.text) LIKE '%".sql_safe($search_string)."%'
+	ORDER BY news.id DESC";
+	
+	$results=$db->select($sql);
+	
+	return $results;
+}
+
 ?>

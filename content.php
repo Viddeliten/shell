@@ -134,6 +134,10 @@ else if(isset($_REQUEST['p']))
 	else 
 		echo "<p class=\"well message_box\">"._("Unknown page")."</p>";
 }
+else if(isset($_GET['search']))
+{
+	search_display_results($_GET['search']);
+}
 else
 {
 	if(file_exists(CUSTOM_CONTENT_PATH."/start.php"))

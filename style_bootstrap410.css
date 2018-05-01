@@ -119,6 +119,15 @@ img.leftfloat
 	padding: 0 0.5em;
 }
 
+.search_result
+{
+	padding: 0.5em;
+}
+.search_result .card-body
+{
+	padding: 0;
+}
+
 /*		message_box		*/
 .message_box
 {

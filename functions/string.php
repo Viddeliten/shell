@@ -275,4 +275,9 @@ function in_array_r($needle, $haystack, $strict = false) {
     return false;
 }
 
+function string_remove_tags($string)
+{
+	return preg_replace('/<(.?)*>/', "", $string);
+}
+
 ?>

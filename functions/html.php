@@ -810,8 +810,8 @@ function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_li
 
 function html_form_search()
 {
-    return '<form class="form-inline my-2 my-lg-0">
-              <input class="form-control mr-sm-2" type="search" placeholder="'._("Search").'" aria-label="'._("Search").'" name="search">
+    return '<form class="form-inline my-2 my-lg-0" action="'.SITE_URL.'">
+              <input class="form-control mr-sm-2" type="search" placeholder="'._("Search").'" aria-label="'._("Search").'" name="search" value="'.(isset($_GET['search']) ? $_GET['search'] : "").'">
               <button class="btn btn-outline-success my-2 my-sm-0" type="submit">'._("Search").'</button>
             </form>';
 }
