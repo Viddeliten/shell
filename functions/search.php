@@ -65,6 +65,19 @@ function search_search($search_string)
 	}
 	
 	//user's profiles
+	$columns=array("username", "description");
+	$user_profiles=search_general("user", $columns, $search_string);
+
+	foreach($user_profiles as $key => $val)
+	{
+		$results[]=array( "title"	=>	$val['username'],
+						"author"	=>	NULL,
+						"type"	=>	"User",
+						"description"	=>	substr(string_remove_tags($val['description']), 0, 100),
+						"url"	=>	user_get_link_url($val['id']),
+						"sort_value"	=> $key
+						);
+	}
 	
 	//Custom search results
 	if(function_exists("search_custom_search_all"))
@@ -75,4 +88,28 @@ function search_search($search_string)
 	
 	return $results;
 }
+
+function search_general($table, $columns, $search_string="")
+{
+	$db=new db_class();
+	$search_string=sql_safe(strtolower($search_string)); // To make search case insensitive
+	
+	$table=PREFIX.sql_safe($table);
+	$where=array();
+	foreach($columns as $c)
+	{
+		$where[]=sprintf("LOWER(%s) LIKE '%%%s%%'", $c, $search_string);
+	}
+	
+	
+	$sql="SELECT DISTINCT id, ".implode(", ", $columns)."
+	FROM ".$table."
+	WHERE ".implode(" OR ", $where)."
+	ORDER BY id DESC";
+	
+	$results=$db->select($sql);
+	
+	return $results;
+}
+
 ?>
