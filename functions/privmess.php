@@ -180,8 +180,6 @@ function privmess_display_single_message($message_id, $return_html)
                 }
 				
 				echo '
-				<div class="row">
-					<div class="col-xm-12">
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<p class="author">';
@@ -221,8 +219,6 @@ function privmess_display_single_message($message_id, $return_html)
 							}
 							echo '
 							</div>
-						</div>
-					</div>
 				</div>';
 			}
 			else
