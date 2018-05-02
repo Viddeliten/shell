@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: texts-sv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-07 08:22+0100\n"
-"PO-Revision-Date: 2018-01-07 09:01+0100\n"
+"POT-Creation-Date: 2018-05-02 18:18+0200\n"
+"PO-Revision-Date: 2018-05-02 18:27+0200\n"
 "Last-Translator: Johanna Julén <johanna.julen@loopia.se>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -40,39 +40,84 @@ msgstr "gettext är inte installerat"
 msgid "gettext is supported"
 msgstr "gettext stöds"
 
-#: content.php:46
+#: content.php:51 content.php:82
+#, php-format
+msgid "News for %s"
+msgstr "Nyheter för %s"
+
+#: content.php:56 content.php:74 content.php:88
+msgid "Nothing to see here..."
+msgstr "Ingenting att se här..."
+
+#: content.php:67
 #, php-format
 msgid "Content: %s #%s"
 msgstr "Innehåll: %s #%s"
 
-#: content.php:48
+#: content.php:69
 msgid "Comment on this"
 msgstr "Kommentera på detta"
 
-#: content.php:68
+#: content.php:97
 msgid "Missing user id"
 msgstr "Användar-id saknas"
 
-#: content.php:88 sample-custom_content/globals.php:39
+#: content.php:117 sample-custom_content/globals.php:41
 #: sample-custom_content/functions/page.php:18
 msgid "Active users"
 msgstr "Aktiva användare"
 
-#: content.php:106
+#: content.php:135
 msgid "Unknown page"
 msgstr "Sidan kunde inte hittas"
 
-#: sample-config.php:62 config.php:63
+#: sample-config.php:68 config.php:66
 msgid "Welcome, new member!"
 msgstr "Välkommen som ny medlem!"
 
-#: sample-config.php:63 config.php:64
+#: sample-config.php:69 config.php:67
 msgid "Example template"
 msgstr "Exempelmall"
 
-#: sample-config.php:64 config.php:65
+#: sample-config.php:70 config.php:68
 msgid "Insert your selling text here.<br>It should be snappy."
 msgstr "Ange din säljande text här.<br>Den bör vara kort och medryckande."
+
+#: orig_html.php:460 functions/html.php:523
+msgid "Update"
+msgstr "Uppdatera"
+
+#: orig_html.php:534 functions/html.php:597
+msgid "Empty array"
+msgstr "Tom array"
+
+#: orig_html.php:641 functions/html.php:704
+msgid "current"
+msgstr "nuvarande"
+
+#: orig_html.php:692 functions/html.php:755 functions/display.php:40
+msgid "Home"
+msgstr "Hem"
+
+#: orig_html.php:704 functions/html.php:767 functions/feedback/func.php:299
+#: functions/display.php:44
+msgid "Feedback"
+msgstr "Förbättringsförslag"
+
+#: orig_html.php:759 orig_html.php:760 functions/html.php:822
+#: functions/html.php:823 functions/feedback/func.php:411
+msgid "Search"
+msgstr "Sök"
+
+#: orig_html.php:816 functions/html.php:905
+#, php-format
+msgid "Hide %s"
+msgstr "Göm %s"
+
+#: orig_html.php:822 functions/html.php:911
+#, php-format
+msgid "Show %s"
+msgstr "Visa %s"
 
 #: functions/usermessage.php:19
 msgid "Unsuffient access"
@@ -235,117 +280,122 @@ msgstr "Meddelandet skickat"
 msgid "Message could not be sent. Error: %s"
 msgstr "Meddelande kunde inte skickas. Fel: %s"
 
-#: functions/privmess.php:80 functions/privmess.php:252
+#: functions/privmess.php:110 functions/privmess.php:314
 msgid "Inbox"
 msgstr "Inkorg"
 
-#: functions/privmess.php:81 functions/privmess.php:302
+#: functions/privmess.php:111 functions/privmess.php:378
 msgid "Sent messages"
 msgstr "Skickade meddelanden"
 
-#: functions/privmess.php:82
+#: functions/privmess.php:112
 msgid "Compose"
 msgstr "Komponera"
 
-#: functions/privmess.php:84
+#: functions/privmess.php:114
 msgid "Single"
 msgstr "Enskilt"
 
-#: functions/privmess.php:151
+#: functions/privmess.php:169 functions/privmess.php:179
+#: functions/comment/func.php:251 functions/comment/func.php:259
+msgid "Reply"
+msgstr "Svara"
+
+#: functions/privmess.php:187
 #, php-format
 msgid "Sent by: %s"
 msgstr "Skickat via: %s"
 
-#: functions/privmess.php:152
+#: functions/privmess.php:188
 #, php-format
 msgid "Time sent: %s"
 msgstr "Skickat: %s"
 
-#: functions/privmess.php:171 functions/comment/func.php:251
-#: functions/comment/func.php:259
-msgid "Reply"
-msgstr "Svara"
-
-#: functions/privmess.php:173
+#: functions/privmess.php:209
 msgid "Mark unread"
 msgstr "Markera som oläst"
 
-#: functions/privmess.php:174
+#: functions/privmess.php:210
 msgid "Delete"
 msgstr "Radera"
 
-#: functions/privmess.php:175
+#: functions/privmess.php:211
 msgid "Are you sure you want to delete this message?"
 msgstr "Är du säker på att du vill radera det här meddelandet?"
 
-#: functions/privmess.php:182
+#: functions/privmess.php:218
 #, php-format
 msgid "Sent to %s"
 msgstr "Skickat till %s"
 
-#: functions/privmess.php:215
+#: functions/privmess.php:263
 msgid "Something went wrong"
 msgstr "Någonting gick fel"
 
-#: functions/privmess.php:220
+#: functions/privmess.php:275
 msgid "Composing message"
 msgstr "Skiver meddelande"
 
-#: functions/privmess.php:223
+#: functions/privmess.php:278
 msgid "Receiver user name"
 msgstr "Mottagarens användarnamn"
 
-#: functions/privmess.php:227
+#: functions/privmess.php:282
 msgid "User name"
 msgstr "Användarnamn"
 
-#: functions/privmess.php:230 functions/privmess.php:234
-#: functions/privmess.php:267 functions/privmess.php:317
+#: functions/privmess.php:285 functions/privmess.php:289
+#: functions/privmess.php:329 functions/privmess.php:393
 #: functions/feedback/func.php:434
 msgid "Subject"
 msgstr "Ämne"
 
-#: functions/privmess.php:237
+#: functions/privmess.php:292
 msgid "Messsage"
 msgstr "Meddelande"
 
-#: functions/privmess.php:238
+#: functions/privmess.php:293
 msgid "Message"
 msgstr "Meddelande"
 
-#: functions/privmess.php:243 functions/comment/func.php:165
+#: functions/privmess.php:298 functions/comment/func.php:165
 msgid "Send"
 msgstr "Skicka"
 
-#: functions/privmess.php:266
+#: functions/privmess.php:328
 msgid "Sender"
 msgstr "Avsändare"
 
-#: functions/privmess.php:268 functions/privmess.php:318
+#: functions/privmess.php:330 functions/privmess.php:394
 msgid "Sent"
 msgstr "Skickat"
 
-#: functions/privmess.php:269 functions/privmess.php:319
+#: functions/privmess.php:331 functions/privmess.php:395
 msgid "Opened"
 msgstr "Öppnat"
 
-#: functions/privmess.php:316
+#: functions/privmess.php:392
 msgid "Receiver"
 msgstr "Mottagare"
 
-#: functions/message.php:79 functions/message.php:102
+#: functions/search.php:20 functions/feedback/func.php:327
+msgid "Search results"
+msgstr "Sökresultat"
+
+#: functions/search.php:28
+#, php-format
+msgid "Your search for '%s' did not render any results"
+msgstr "Din sökning på '%s' genererade inga resultat"
+
+#: functions/message.php:92 functions/message.php:115
 #, php-format
 msgid "Error code %s<br />SQL: %s<br />ERROR: %s"
 msgstr "Felkod %s<br />SQL: %s<br />ERROR: %s"
 
-#: functions/message.php:98
+#: functions/message.php:111
 #, php-format
 msgid "Error code %s\tSQL: %s\tERROR: %s"
 msgstr "Felkod %s\tSQL: %s\tERROR: %s"
-
-#: functions/html.php:385
-msgid "current"
-msgstr "nuvarande"
 
 #: functions/admin.php:32
 msgid "Unknown admin page"
@@ -355,11 +405,7 @@ msgstr "Okänd admin-sida"
 msgid "No page selected"
 msgstr "Ingen sida vald"
 
-#: functions/admin.php:59 sample-custom_content/globals.php:14
-msgid "Admin tools"
-msgstr "Admin-verktyg"
-
-#: functions/admin.php:61 sample-custom_content/globals.php:36
+#: functions/admin.php:61 sample-custom_content/globals.php:38
 msgid "Users"
 msgstr "Användare"
 
@@ -371,7 +417,7 @@ msgstr "Version"
 msgid "Site news"
 msgstr "Nyheter för hemsidan"
 
-#: functions/admin.php:64 functions/user.php:80
+#: functions/admin.php:64 functions/user.php:85
 msgid "Messages"
 msgstr "Meddelanden"
 
@@ -379,11 +425,15 @@ msgstr "Meddelanden"
 msgid "Spam"
 msgstr "Skräp"
 
-#: functions/admin.php:131
+#: functions/admin.php:72 sample-custom_content/globals.php:16
+msgid "Admin tools"
+msgstr "Admin-verktyg"
+
+#: functions/admin.php:132
 msgid "Message administration"
 msgstr "Hantera meddelanden"
 
-#: functions/admin.php:143
+#: functions/admin.php:144
 msgid "New message"
 msgstr "Nytt meddelande"
 
@@ -410,7 +460,7 @@ msgstr "Inloggning genomfördes med lyckat resultat"
 msgid "Login fail"
 msgstr "Inloggning misslyckades"
 
-#: functions/login.php:230 functions/user.php:328 functions/user.php:329
+#: functions/login.php:230 functions/user.php:342 functions/user.php:343
 msgid "Username"
 msgstr "Användarnamn"
 
@@ -418,7 +468,8 @@ msgstr "Användarnamn"
 msgid "password"
 msgstr "lösenord"
 
-#: functions/login.php:232 functions/login.php:468 functions/login.php:469
+#: functions/login.php:232 functions/login.php:469 functions/login.php:470
+#: functions/login.php:477 functions/login.php:478
 msgid "Log in"
 msgstr "Logga in"
 
@@ -474,144 +525,148 @@ msgstr ""
 "Meddelandet kunde inte skickas. Vänligen skicka ett e-postmeddelande till %s "
 "för hjälp i ärendet! Felkod %d"
 
-#: functions/user.php:54
+#: functions/user.php:61
 msgid "Profile updated"
 msgstr "Profil uppdaterad"
 
-#: functions/user.php:56
+#: functions/user.php:63
+msgid "There was an error updating your things"
+msgstr "Något fel hände när dina grejer skulle uppdateras"
+
+#: functions/user.php:66
 #, php-format
 msgid "Profile update fail<br />SQL: %s<br />ERROR: %s"
 msgstr "Profiluppdateringsfel<br />SQL: %s<br />ERROR: %s"
 
-#: functions/user.php:87
+#: functions/user.php:92
 msgid "Profile"
 msgstr "Profil"
 
-#: functions/user.php:88
+#: functions/user.php:93
 msgid "Settings"
 msgstr "Inställningar"
 
-#: functions/user.php:90
+#: functions/user.php:95
 msgid "Log out"
 msgstr "Logga ut"
 
-#: functions/user.php:253
+#: functions/user.php:266
 msgid "Profile text"
 msgstr "Profiltext"
 
-#: functions/user.php:257
+#: functions/user.php:270
 msgid "Profile image (avatar)"
 msgstr "Profilbild (avatar)"
 
-#: functions/user.php:264 functions/user.php:396
+#: functions/user.php:278 functions/user.php:410
 msgid "Save"
 msgstr "Spara"
 
-#: functions/user.php:285
+#: functions/user.php:299
 msgid "Edit profile"
 msgstr "Redigera profil"
 
-#: functions/user.php:323
+#: functions/user.php:337
 #, php-format
 msgid "Settings for %s"
 msgstr "Inställningar för %s"
 
-#: functions/user.php:333 functions/user.php:334
+#: functions/user.php:347 functions/user.php:348
 #: functions/feedback/func.php:430
 msgid "Email"
 msgstr "E-post"
 
-#: functions/user.php:338 functions/user.php:339
+#: functions/user.php:352 functions/user.php:353
 msgid "Password"
 msgstr "Lösenord"
 
-#: functions/user.php:343 functions/user.php:344
+#: functions/user.php:357 functions/user.php:358
 msgid "Flattr id"
 msgstr "Flattr ID"
 
-#: functions/user.php:354 functions/user.php:363 functions/user.php:438
+#: functions/user.php:368 functions/user.php:377 functions/user.php:452
 #, php-format
 msgid "Display Flattr-button on <strong>%s</strong>"
 msgstr "Visa Flattr-knapp på <strong>%s</strong>"
 
-#: functions/user.php:354
+#: functions/user.php:368
 msgid "comments"
 msgstr "kommentarer"
 
-#: functions/user.php:363
+#: functions/user.php:377
 msgid "feedbacks"
 msgstr "förbättringsförslag"
 
-#: functions/user.php:623
+#: functions/user.php:637
 msgid "Settings saved"
 msgstr "Inställningar sparade"
 
-#: functions/user.php:716 functions/user.php:759
+#: functions/user.php:730 functions/user.php:773
 #: functions/feedback/func.php:429
 msgid "Name"
 msgstr "Namn"
 
-#: functions/user.php:718
+#: functions/user.php:732
 msgid "Reputation points"
 msgstr "Ryktespoäng"
 
-#: functions/user.php:719 sample-custom_content/functions/user.php:16
+#: functions/user.php:733 sample-custom_content/functions/user.php:16
 msgid "Registered"
 msgstr "Registrerad"
 
-#: functions/user.php:720 functions/user.php:761
+#: functions/user.php:734 functions/user.php:775
 #: sample-custom_content/functions/user.php:20
 msgid "Last logged in"
 msgstr "Senast inloggad"
 
-#: functions/user.php:743
+#: functions/user.php:757
 msgid "Found no current friends"
 msgstr "Hittade inga vänner"
 
-#: functions/user.php:760
+#: functions/user.php:774
 msgid "Friends since"
 msgstr "Vänner sedan"
 
-#: functions/user.php:778
+#: functions/user.php:792
 msgid "Friend request rejected"
 msgstr "Vänskapsförfrågan avvisades"
 
-#: functions/user.php:788
+#: functions/user.php:802
 msgid "Friend request accepted"
-msgstr "Vänskapsförfrågan accepterades. Ni är nu vänner."
+msgstr "Vänskapsförfrågan accepterades. Ni är nu vänner"
 
-#: functions/user.php:794
+#: functions/user.php:808
 msgid "Friend request sent"
 msgstr "Vänskapsförfrågan skickad"
 
-#: functions/user.php:797
+#: functions/user.php:811
 msgid "Befriending unsuccessful"
 msgstr "Det gick inte att bli vänner"
 
-#: functions/user.php:882
+#: functions/user.php:896
 #, php-format
 msgid "Friendship requested %s"
 msgstr "Vänskap begärdes %s"
 
-#: functions/user.php:886
+#: functions/user.php:900
 #, php-format
 msgid "Friendship accepted %s"
 msgstr "Vänskap accepterad %s"
 
-#: functions/user.php:890
+#: functions/user.php:904
 #, php-format
 msgid "Friendship rejected %s"
 msgstr "Vänskap avvisad %s"
 
-#: functions/user.php:895 functions/user.php:903
+#: functions/user.php:909 functions/user.php:917
 msgid "Add as friend"
 msgstr "Lägg till som vän"
 
-#: functions/user.php:901
+#: functions/user.php:915
 msgid "Accept friend request"
 msgstr "Acceptera vänförfrågan"
 
-#: functions/user.php:908
+#: functions/user.php:922
 msgid "Reject friend request"
 msgstr "Avvisa vänförfrågan"
 
@@ -669,7 +724,7 @@ msgstr "Inga kommentarer nyligen"
 msgid "(Admin)"
 msgstr "(Admin)"
 
-#: functions/comment/func.php:527 functions/feedback/func.php:1819
+#: functions/comment/func.php:527 functions/feedback/func.php:1900
 #, php-format
 msgid "Posted at <a href=\"%s\">%s</a>"
 msgstr "Postat <a href=\"%s\">%s</a>"
@@ -677,7 +732,7 @@ msgstr "Postat <a href=\"%s\">%s</a>"
 #: functions/comment/func.php:529 functions/comment/func.php:531
 #, php-format
 msgid "Posted by %s%s at <a href=\"%s\">%s</a>"
-msgstr "Postat av %s%s vid tidpunkten <a href=\"%s\">%s</a>"
+msgstr "Postat av %s%s <a href=\"%s\">%s</a>"
 
 #: functions/feedback/func.php:100
 msgid "Permanent link to your feedback"
@@ -696,10 +751,6 @@ msgstr "Du har skickat in följande"
 msgid "Feedbacks page %s"
 msgstr "Förbättringsförslag på %s"
 
-#: functions/feedback/func.php:299 functions/display.php:24
-msgid "Feedback"
-msgstr "Förbättringsförslag"
-
 #: functions/feedback/func.php:305
 msgid "Suggestions for improvements, bufixes and ideas!"
 msgstr "Förslag för förbättringar, buggfixar och idéer!"
@@ -707,10 +758,6 @@ msgstr "Förslag för förbättringar, buggfixar och idéer!"
 #: functions/feedback/func.php:306
 msgid "List all feedbacks"
 msgstr "Lista alla förslag"
-
-#: functions/feedback/func.php:327
-msgid "Search results"
-msgstr "Sökresultat"
 
 #: functions/feedback/func.php:334
 msgid "Uncategorized"
@@ -728,8 +775,8 @@ msgstr "Föreslagna"
 msgid "Reported bugs"
 msgstr "Rapporterade buggar"
 
-#: functions/feedback/func.php:352 functions/feedback/func.php:829
-#: functions/feedback/func.php:831
+#: functions/feedback/func.php:352 functions/feedback/func.php:902
+#: functions/feedback/func.php:904
 msgid "Required"
 msgstr "Nödvändig"
 
@@ -741,7 +788,7 @@ msgstr "Små förbättringar"
 msgid "Big changes"
 msgstr "Stora förändringar"
 
-#: functions/feedback/func.php:358 functions/feedback/func.php:1506
+#: functions/feedback/func.php:358 functions/feedback/func.php:1579
 msgid "Resolved"
 msgstr "Klarmarkerad"
 
@@ -758,7 +805,7 @@ msgstr "Incheckade förslag"
 msgid "%s feedbacks checked in (staged) but not yet live"
 msgstr "%s förslag incheckade (stagade) men ännu inte live"
 
-#: functions/feedback/func.php:372 functions/feedback/func.php:1501
+#: functions/feedback/func.php:372 functions/feedback/func.php:1574
 msgid "Checked in"
 msgstr "Incheckad"
 
@@ -772,10 +819,6 @@ msgstr ""
 #: functions/feedback/func.php:406
 msgid "Search existing feedbacks"
 msgstr "Sök i existerande förbättringsförslag"
-
-#: functions/feedback/func.php:411
-msgid "Search"
-msgstr "Sök"
 
 #: functions/feedback/func.php:423
 msgid "Add feedback"
@@ -797,122 +840,122 @@ msgstr "Förbättringsförslag"
 msgid "Tell us!"
 msgstr "Berätta!"
 
-#: functions/feedback/func.php:738
+#: functions/feedback/func.php:811
 #, php-format
 msgid "Marked not implemented %s"
 msgstr "Markerad som utförs ej %s"
 
-#: functions/feedback/func.php:740
+#: functions/feedback/func.php:813
 #, php-format
 msgid "Solution live %s"
 msgstr "Lösning live %s"
 
-#: functions/feedback/func.php:742
+#: functions/feedback/func.php:815
 #, php-format
 msgid "Solution checked in %s"
 msgstr "Lösning incheckad %s"
 
-#: functions/feedback/func.php:744
+#: functions/feedback/func.php:817
 #, php-format
 msgid "Accepted %s"
 msgstr "Accepterad %s"
 
-#: functions/feedback/func.php:755
+#: functions/feedback/func.php:828
 msgid "Checked in solution does not work"
 msgstr "Incheckad lösning funkar inte"
 
-#: functions/feedback/func.php:758
+#: functions/feedback/func.php:831
 msgid "Unresolve"
 msgstr "Ej klar"
 
-#: functions/feedback/func.php:761
+#: functions/feedback/func.php:834
 msgid "Accept this task"
 msgstr "Acceptera denna uppgift"
 
-#: functions/feedback/func.php:768
+#: functions/feedback/func.php:841
 msgid "Solution is checked in"
 msgstr "Lösningen är incheckad"
 
-#: functions/feedback/func.php:772
+#: functions/feedback/func.php:845
 msgid "Solution is live"
 msgstr "Lösning är live"
 
-#: functions/feedback/func.php:777
+#: functions/feedback/func.php:850
 msgid "Unaccept"
 msgstr "Ångra acceptera"
 
-#: functions/feedback/func.php:779
+#: functions/feedback/func.php:852
 msgid "Will not be implemented"
 msgstr "Utförs ej"
 
-#: functions/feedback/func.php:822
+#: functions/feedback/func.php:895
 msgid "Size"
 msgstr "Storlek"
 
-#: functions/feedback/func.php:825 functions/feedback/func.php:827
+#: functions/feedback/func.php:898 functions/feedback/func.php:900
 msgid "Bugfix"
 msgstr "Buggfix"
 
-#: functions/feedback/func.php:833 functions/feedback/func.php:835
+#: functions/feedback/func.php:906 functions/feedback/func.php:908
 msgid "Small improvement"
 msgstr "Liten förbättring"
 
-#: functions/feedback/func.php:837 functions/feedback/func.php:839
+#: functions/feedback/func.php:910 functions/feedback/func.php:912
 msgid "Big change"
 msgstr "Stor förändring"
 
-#: functions/feedback/func.php:1355
+#: functions/feedback/func.php:1428
 #, php-format
 msgid "Merged with %s"
 msgstr "Kopplad till %s"
 
-#: functions/feedback/func.php:1356
+#: functions/feedback/func.php:1429
 msgid "Detach"
 msgstr "Koppla ifrån"
 
-#: functions/feedback/func.php:1362
+#: functions/feedback/func.php:1435
 msgid "Merge with"
 msgstr "Koppla med"
 
-#: functions/feedback/func.php:1363
+#: functions/feedback/func.php:1436
 msgid "Merge"
 msgstr "Koppla"
 
-#: functions/feedback/func.php:1491
+#: functions/feedback/func.php:1564
 msgid "Merged"
 msgstr "Kopplad"
 
-#: functions/feedback/func.php:1496
+#: functions/feedback/func.php:1569
 msgid "Not implemented"
 msgstr "Ej genomfört"
 
-#: functions/feedback/func.php:1605
+#: functions/feedback/func.php:1678
 msgid "All feedbacks that was checked in are now set to live"
 msgstr "Alla förslag som var incheckade är nu satta till live"
 
-#: functions/feedback/func.php:1677
+#: functions/feedback/func.php:1751
 msgid "Attached feedbacks"
 msgstr "Kopplade förbättringsförslag"
 
-#: functions/feedback/func.php:1821
+#: functions/feedback/func.php:1902
 #, php-format
 msgid "Posted by %s at <a href=\"%s\">%s</a>"
-msgstr "Postat av %s vid tidpunkten <a href=\"%s\">%s</a>"
+msgstr "Postat av %s <a href=\"%s\">%s</a>"
 
-#: functions/feedback/func.php:1823
+#: functions/feedback/func.php:1904
 #, php-format
 msgid "Posted by <a href=\"%s\">%s</a> at <a href=\"%s\">%s</a>"
-msgstr "Postat av <a href=\"%s\">%s</a> vid tidpunkten <a href=\"%s\">%s</a>"
+msgstr "Postat av <a href=\"%s\">%s</a> <a href=\"%s\">%s</a>"
 
-#: functions/feedback/func.php:1910
+#: functions/feedback/func.php:1995
 msgid "bugs"
 msgstr "buggar"
 
-#: functions/feedback/func.php:1912
+#: functions/feedback/func.php:1997
 msgid "required"
 msgstr "nödvändig"
 
-#: functions/feedback/func.php:1916
+#: functions/feedback/func.php:2001
 #, php-format
 msgid "Progress %s"
 msgstr "Framsteg %s"
@@ -942,7 +985,7 @@ msgstr ""
 "\t\t\t\t\t\t<br />SQL: %s\n"
 "\t\t\t\t\t\t<br />ERROR: %s"
 
-#: functions/version.php:134
+#: functions/version.php:155
 msgid "Changelog"
 msgstr "Ändringslogg"
 
@@ -951,7 +994,7 @@ msgstr "Ändringslogg"
 msgid "Notice could not be closed.<br />SQL: %s<br />Error: %s"
 msgstr "Notis kunde inte stängas.<br />SQL: %s<br />Error: %s"
 
-#: functions/string.php:30
+#: functions/string.php:33
 msgid "link"
 msgstr "länk"
 
@@ -960,31 +1003,31 @@ msgstr "länk"
 msgid "Posted on %s"
 msgstr "Postad %s"
 
-#: functions/display.php:20
-msgid "Home"
-msgstr "Hem"
-
-#: functions/display.php:22
+#: functions/display.php:42
 msgid "About"
 msgstr "Om"
 
-#: functions/display.php:115
+#: functions/display.php:149
 msgid "This site is presented by"
 msgstr "Denna hemsida presenteras av"
 
-#: functions/display.php:119
+#: functions/display.php:153
 msgid "Select language:"
 msgstr "Välj språk:"
 
-#: functions/flattr.php:93
+#: functions/flattr.php:82
+msgid "Flattr this"
+msgstr "Flattr det här"
+
+#: functions/flattr.php:122
 msgid "New Flattr ID set"
 msgstr "Nytt FlattrID sparat"
 
-#: functions/flattr.php:112
+#: functions/flattr.php:141
 msgid "New flattr choices set"
 msgstr "Nya Flattr-inställningar satta"
 
-#: functions/flattr.php:114
+#: functions/flattr.php:143
 #, php-format
 msgid "New flattr choices could not be set. Error: %s"
 msgstr "Nya Flattr-inställningar kunde inte sättas. Fel: %s"
@@ -1087,36 +1130,36 @@ msgstr "Det här är ännu ett block"
 msgid "This content is last on this page."
 msgstr "Det här innehållet är sist på den här sidan."
 
-#: sample-custom_content/globals.php:9
+#: sample-custom_content/globals.php:11
 msgid "Page without sub pages"
 msgstr "Sida utan undersidor"
 
-#: sample-custom_content/globals.php:17 sample-custom_content/globals.php:28
+#: sample-custom_content/globals.php:19 sample-custom_content/globals.php:30
 msgid "Things 1"
 msgstr "Saker 1"
 
-#: sample-custom_content/globals.php:20 sample-custom_content/globals.php:31
+#: sample-custom_content/globals.php:22 sample-custom_content/globals.php:33
 msgid "Things 2"
 msgstr "Saker 2"
 
-#: sample-custom_content/globals.php:25
+#: sample-custom_content/globals.php:27
 msgid "Things"
 msgstr "Saker"
 
-#: sample-custom_content/globals.php:42
+#: sample-custom_content/globals.php:44
 #: sample-custom_content/functions/page.php:24
 msgid "Friends"
 msgstr "Vänner"
 
-#: sample-custom_content/globals.php:53
+#: sample-custom_content/globals.php:55
 msgid "Some object"
 msgstr "Något objekt"
 
-#: sample-custom_content/globals.php:54
+#: sample-custom_content/globals.php:56
 msgid "Some setting you might want to have"
 msgstr "Någon inställning du vill ha"
 
-#: sample-custom_content/globals.php:55
+#: sample-custom_content/globals.php:57
 msgid "Some OTHER setting"
 msgstr "Någon ANNAN inställning"
 

@@ -114,7 +114,7 @@ else if(isset($_REQUEST['p']))
 		{
 			if(!strcmp($_GET['s'],"active"))
 			{
-				echo "<h1>"._("Active userss")."</h1>";
+				echo "<h1>"._("Active users")."</h1>";
 				user_display_active_users(FALSE);
 				return TRUE;
 			}
