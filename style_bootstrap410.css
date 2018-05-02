@@ -267,9 +267,13 @@ ul.commentlist
 	background-color: white;
 }
 /* Shapes */
+.feedback.card
+{
+    overflow: auto;
+}
 .feedback .card-title
 {
-    height: 3em;
+    min-height: 3em;
     font-size: 2em;
     padding: 1em 1em;
 	margin-bottom: 0;
@@ -281,7 +285,7 @@ ul.commentlist
 	font-size: 0.4em;
     font-weight: initial;
     position: absolute;
-    top: 0.5em;
+    top: 0;
     right: 0;
 }
 
