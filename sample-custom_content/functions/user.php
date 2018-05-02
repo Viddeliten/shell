@@ -24,4 +24,14 @@ function user_profile_custom_content($user_id)
 		</div>
 	</div>';
 }
+/********************************************************/
+/*		function: user_profile_edit_inputs  			*/
+/*														*/
+/*		return html for any input fields you want to    */
+/*      add in profile editing form!					*/
+/********************************************************/
+function user_profile_edit_inputs()
+{
+    return "";
+}
 ?>

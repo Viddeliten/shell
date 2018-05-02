@@ -265,6 +265,7 @@ function user_display_profile($user_id)
 				</div>
 			</div>
 			<input type="submit" class="btn btn-success" name="profile_save" value="'._("Save").'">
+            '.(function_exists("user_profile_edit_inputs") ? user_profile_edit_inputs() : "").'
 		</form>';
 	}
 	else
