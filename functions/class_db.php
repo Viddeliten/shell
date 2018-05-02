@@ -30,7 +30,10 @@ class db_class
     { 
 		$result=$this->connection->query($query);
 		if($result)
+        {
 			$this->insert_id=$this->connection->insert_id;
+            $this->error=NULL;
+        }
 		else
 			$this->error=$query." : ".$this->connection->error;
 		return $result;

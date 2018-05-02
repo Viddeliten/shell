@@ -24,6 +24,17 @@ function user_profile_custom_content($user_id)
 		</div>
 	</div>';
 }
+
+/********************************************************************************/
+/*		function: user_profile_edit_receive  			                        */
+/*														                        */
+/*		Handle the inputs you added in function user_profile_edit_inputs        */
+/*      here and return TRUE if it went all right, otherwise FALSE				*/
+/********************************************************************************/
+function user_profile_edit_receive()
+{
+    return TRUE;
+}
 /********************************************************/
 /*		function: user_profile_edit_inputs  			*/
 /*														*/

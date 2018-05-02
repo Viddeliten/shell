@@ -18,6 +18,11 @@ img{
 	max-width: 100%;
 }
 
+label
+{
+	font-weight: bold;
+}
+
 select.form-control.small
 {
     font-size: 85%;

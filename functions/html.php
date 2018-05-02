@@ -414,7 +414,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 	{
 		if(!strcmp($column['Field'],"id") || in_array($column['Field'],$skip_members))
 			continue;
-
+        
 		//Decide input type based on field type or override
 		if(isset($field_type_override[$column['Field']]))
 			$type=$field_type_override[$column['Field']];
@@ -423,7 +423,6 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 			$type="text";
 			if(!strcmp($column['Type'],"text"))
 				$type="textarea";
-			
 			else if(!strcmp(substr($column['Type'],0,3),"int"))
 			{
 				//Default just number
@@ -476,7 +475,16 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 						
 				}
 			}
-			
+           else if(!strcmp(substr($column['Type'],0,4),"enum"))
+           {
+                $type="droplist";
+                
+                $enum_choices=explode(",",str_replace("enum(","", str_replace(")","",str_replace("'","",$column['Type']))));
+                foreach($enum_choices as $ec)
+                {
+                    $options[$ec]=string_unslugify($ec);
+                }
+           }
 			//tinyint should be a checkbox
 			else if(!strcmp(substr($column['Type'],0,7),"tinyint"))
 				$type="checkbox";
@@ -487,7 +495,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 		if(isset($custom_labels[$column['Field']]))
 			$label=$custom_labels[$column['Field']];
 		else
-			$label=ucfirst($column['Field']);
+			$label=string_unslugify($column['Field']);
 
 		if($nr_id!==NULL)
 			$name=$table_name."[".$nr_id."][".$column['Field']."]";
