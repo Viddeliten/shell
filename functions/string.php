@@ -38,12 +38,71 @@ function string_get_link_from_url($url, $get_title=true)
 
 function string_get_title_from_url($url)
 {
-  $str = file_get_contents($url);
-  if(strlen($str)>0){
-    $str = trim(preg_replace('/\s+/', ' ', $str)); // supports line breaks inside <title>
-    preg_match("/\<title\>(.*)\<\/title\>/i",$str,$title); // ignore case
-    return $title[1];
-  }
+    $html = string_curlurl($url, true);
+    if(strlen($html)>0)
+    {
+        // Look for meta tag with property og:title
+        libxml_use_internal_errors(true);
+        $dom = new DOMDocument();
+        $dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
+        // Find all <meta property="og:title" content="[title]"
+        $title="";
+        foreach($xpath->query('//meta') as $item) 
+        {				
+            $property=$item->getAttribute('property');
+            if(!strcmp($property,"og:title"))
+            {
+                $title = $item->getAttribute('content');
+            }
+        }
+        if($title!="")
+            return $title;
+        
+        // Look for contents of title tag
+        $html = trim(preg_replace('/\s+/', ' ', $html)); // supports line breaks inside <title>
+        preg_match("/\<title\>(.*)\<\/title\>/i",$html,$title); // ignore case
+        if(isset( $title[1]))
+            return $title[1];
+    }
+    return NULL;
+}
+
+function string_curlurl($url, $zipped=FALSE) {
+    $handle = curl_init();
+	
+	$useragent = $_SERVER['HTTP_USER_AGENT'];
+	$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
+	
+	session_write_close();
+
+	if($zipped)
+		curl_setopt($handle, CURLOPT_ENCODING , "gzip");
+    curl_setopt($handle, CURLOPT_URL, $url);
+    curl_setopt($handle, CURLOPT_POST, false);
+    curl_setopt($handle, CURLOPT_BINARYTRANSFER, false);
+    curl_setopt($handle, CURLOPT_HEADER, true);
+	curl_setopt($handle, CURLOPT_USERAGENT, $useragent);
+	curl_setopt($handle, CURLOPT_COOKIE, $strCookie );
+    curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 10);
+	curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, 0);
+	curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, 0);
+
+    $response = curl_exec($handle);
+    $hlength  = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
+    $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+    $body     = substr($response, $hlength);
+
+    // If HTTP response is not 200, throw exception
+    if ($httpCode == 0) {
+        throw new Exception("Host not found");
+	}
+    else if ($httpCode != 200) {
+        throw new Exception($httpCode);
+    }
+
+    return $body;
 }
 
 function curPageURL() {
