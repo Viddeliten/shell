@@ -181,7 +181,7 @@ function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $r
 		$columns=$nr;
 	
 	if($columns==0)
-		error_log("html_row 0 columns: ".print_r(array($min_columns, $max_columns, $elements, $element_class, $row_class),1));
+		error_log("html_row 0 columns! Params: ".print_r(array($min_columns, $max_columns, $elements, $element_class, $row_class),1));
 	
 	$col_size=(int)(12/$columns);
 	$md_columns=ceil(($min_columns+$columns)/2);
