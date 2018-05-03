@@ -65,7 +65,18 @@ function string_get_title_from_url($url)
         if(isset( $title[1]))
             return $title[1];
     }
-    return NULL;
+    return string_get_url_title($url);
+}
+
+function string_get_url_title($url)
+{
+	$parts=explode("/",$url);
+	for($i=count($parts)-1; $i>=0 ; $i--)
+	{
+		if(!is_numeric($parts[$i]))
+			return string_unslugify($parts[$i]);
+	}
+	return NULL;
 }
 
 function string_curlurl($url, $zipped=FALSE) {
