@@ -72,9 +72,8 @@ function flattr_button_show($uid, $url, $title, $description, $button, $language
 	// echo "<script id='fbwxhy2'>
     
     //Remove all tags from descriptions
-    $pattern = "/<(.*?)>/";
-    $replacement = "";
-    $description=preg_replace($pattern, $replacement, $description);
+	$description=string_remove_tags($description);
+	string_replace_urls_with_word($description, _("link"));
 	$params="?uid=".$uid."&title=".$title."&description=".sql_safe($description);
 	if($static)
 	{

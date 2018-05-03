@@ -304,6 +304,17 @@ function string_replace_urls_with_links(&$the_text, $get_link_titles=false)
 	}
 }
 
+function string_replace_urls_with_word(&$the_text, $word="link")
+{
+	if(preg_match_all("/(\s|^|\n|\r)[a-zA-Z]+:\/\/[a-zA-Z0-9-_]*[\.[a-zA-Z0-9-_]*]*[a-zA-Z0-9-_\?=&\/\#]*($|\b)/", $the_text, $matches))
+	{
+		foreach($matches[0] as $m)
+		{
+			$the_text=str_replace(trim($m) ,$word, $the_text);
+		}
+	}
+}
+
 function string_break_long_words(&$text)
 {
 	if(preg_match_all("/[\S]{32}/",$text, $matches))
@@ -357,7 +368,17 @@ function in_array_r($needle, $haystack, $strict = false) {
 
 function string_remove_tags($string)
 {
-	return preg_replace('/<(.?)*>/', "", $string);
+	$string=preg_replace('/<(.?)*>/', "", $string);
+	
+	$replacement = "";
+    $pattern = "/<(.*?)$/";
+    $string=preg_replace($pattern, $replacement, $string);
+    $pattern = "/^(.*?)>/";
+    $string=preg_replace($pattern, $replacement, $string);
+	
+	return $string;
 }
+
+
 
 ?>
