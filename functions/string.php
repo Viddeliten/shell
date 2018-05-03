@@ -38,32 +38,41 @@ function string_get_link_from_url($url, $get_title=true)
 
 function string_get_title_from_url($url)
 {
-    $html = string_curlurl($url, true);
-    if(strlen($html)>0)
+    try
     {
-        // Look for meta tag with property og:title
-        libxml_use_internal_errors(true);
-        $dom = new DOMDocument();
-        $dom->loadHTML($html);
-        $xpath = new DOMXPath($dom);
-        // Find all <meta property="og:title" content="[title]"
-        $title="";
-        foreach($xpath->query('//meta') as $item) 
-        {				
-            $property=$item->getAttribute('property');
-            if(!strcmp($property,"og:title"))
-            {
-                $title = $item->getAttribute('content');
+        $html = string_curlurl($url, TRUE); // Using curl and gzip in case the site is zipped (like TSR fex)
+        // echo $html;
+    } catch (Exception $e) {
+        message_trigger_warning(461616, $url, $e); // Trigger warning for log
+    }
+    if(isset($html))
+    {
+        if(strlen($html)>0)
+        {
+            // Look for meta tag with property og:title
+            libxml_use_internal_errors(true);
+            $dom = new DOMDocument();
+            $dom->loadHTML($html);
+            $xpath = new DOMXPath($dom);
+            // Find all <meta property="og:title" content="[title]"
+            $title="";
+            foreach($xpath->query('//meta') as $item) 
+            {				
+                $property=$item->getAttribute('property');
+                if(!strcmp($property,"og:title"))
+                {
+                    $title = $item->getAttribute('content');
+                }
             }
+            if($title!="")
+                return $title;
+            
+            // Look for contents of title tag
+            $html = trim(preg_replace('/\s+/', ' ', $html)); // supports line breaks inside <title>
+            preg_match("/\<title\>(.*)\<\/title\>/i",$html,$title); // ignore case
+            if(isset( $title[1]))
+                return $title[1];
         }
-        if($title!="")
-            return $title;
-        
-        // Look for contents of title tag
-        $html = trim(preg_replace('/\s+/', ' ', $html)); // supports line breaks inside <title>
-        preg_match("/\<title\>(.*)\<\/title\>/i",$html,$title); // ignore case
-        if(isset( $title[1]))
-            return $title[1];
     }
     return string_get_url_title($url);
 }
