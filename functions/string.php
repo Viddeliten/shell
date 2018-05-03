@@ -100,6 +100,7 @@ function string_curlurl($url, $zipped=FALSE) {
 		curl_setopt($handle, CURLOPT_ENCODING , "gzip");
     curl_setopt($handle, CURLOPT_URL, $url);
     curl_setopt($handle, CURLOPT_POST, false);
+    curl_setopt($handle, CURLOPT_FOLLOWLOCATION, 1);
     curl_setopt($handle, CURLOPT_BINARYTRANSFER, false);
     curl_setopt($handle, CURLOPT_HEADER, true);
 	curl_setopt($handle, CURLOPT_USERAGENT, $useragent);

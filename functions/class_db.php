@@ -50,11 +50,26 @@ class db_class
 
 		return $this->insert($sql);
 	}
+	public function delete_from_array($table, $values)
+	{
+		$requirements=array();
+		foreach($values as $key => $val)
+		{
+			$requirements[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+		}
+		$sql="DELETE FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 
+		return $this->query($sql);
+	}
 
     public function query($query)
     { 
-		return $this->connection->query($query);
+		$result=$this->connection->query($query);
+		if($result)
+			$this->error=NULL;
+		else
+			$this->error=$query." : ".$this->connection->error;
+		return $result;
 	}
 
     public function del($id, $table)
