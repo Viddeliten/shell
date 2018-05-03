@@ -940,7 +940,7 @@ function html_carousel($image_array)
 		foreach($image_array as $key => $image)
 			$r.='<div class="carousel-item  '.(!strcmp($first_key, $key) ? 'active' : "").'">
 				'.(isset($image['link']) ? '<a href="'.$image['link'].'">' : '').'
-				  <img class="d-block w-100" src="'.$image['url'].'" alt="'.$image['alt'].'">
+				  <img class="d-block w-100" src="'.$image['url'].'" alt="'.(isset($image['alt']) ? $image['alt'] : "Image").'">
 					'.(isset($image['caption']) ? '<div class="carousel-caption d-none d-md-block">
 						'.$image['caption'].'
 					</div>' :'').
