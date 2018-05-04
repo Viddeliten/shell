@@ -472,11 +472,13 @@ function login_display_link($a_text="", $return_html=FALSE)
         else // v4
         {
             // https://getbootstrap.com/docs/4.0/utilities/display/#hiding-elements
-            echo '
+            echo '<ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link d-block d-sm-none" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.$a_text.'>'._("Log in").'</a>'; //Just on small (xs) devices
-            echo '<a class="nav-link d-none d-sm-block" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.'>'._("Log in").'</a>
-            </li>'; //Not on small (xs) devices
+                    <a class="nav-link d-block d-lg-none" href="#" 
+                        onclick="$(\'#navbarSupportedContent\').collapse(\'toggle\'); $( \'#main_login_form\' ).slideDown( \'normal\');" '.$a_text.'>'._("Log in").'</a>'; //Just on small and medium (xs md) devices
+            echo '<a class="nav-link d-none d-lg-block" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.'>'._("Log in").'</a>
+            </li>
+            </ul>'; //Not on small and medium (xs md) devices
         }
 	}
     
