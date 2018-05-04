@@ -85,7 +85,7 @@ function display_friend_request_drop_menu($return_html=FALSE)
 	ob_start();
     
 	if(login_check_logged_in_mini()<1)
-		return 0;
+		return FALSE;
 	
 	if(isset($_SESSION[PREFIX.'user_id']))
 		$requests=user_friend_get_requests($_SESSION[PREFIX.'user_id']);
