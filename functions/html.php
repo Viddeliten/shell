@@ -261,9 +261,9 @@ function html_form_input($input_id, $label, $type, $name, $value, $placeholder=N
 		'</div>';
 }
 
-function html_form_checkbox($label, $id, $name, $checked=NULL, $required=FALSE, $onclick=NULL)
+function html_form_checkbox($label, $id, $name, $checked=NULL, $required=FALSE, $onclick=NULL, $inline=TRUE)
 {
-	return '<div class="checkbox">'.
+	$return='<div class="checkbox">'.
 		'<label>'.
 			'<input type="checkbox" id="'.$id.'" name="'.$name.'"'.
 		  ($checked ? ' checked="checked"' : '').
@@ -272,6 +272,9 @@ function html_form_checkbox($label, $id, $name, $checked=NULL, $required=FALSE, 
 			'> '.$label.
 		'</label>'.
 	'</div>';
+	if($inline)
+		$return=html_tag("div",html_tag("div","","col-sm-2").html_tag("div",$return,"col-sm-2"),"row");
+	return $return;
 }
 function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=NULL)
 {
@@ -412,7 +415,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
     
 	foreach($table as $column)
 	{
-		if(!strcmp($column['Field'],"id") || in_array($column['Field'],$skip_members))
+		if(!strcmp($column['Field'],"id") || (!empty($skip_members) && in_array($column['Field'],$skip_members)))
 			continue;
         
 		//Decide input type based on field type or override
@@ -505,7 +508,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 		if(!strcmp($type,"textarea"))
 			$inputs[]=html_form_textarea($column['Field']."_text_".$id, $label, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL));
 		else if(!strcmp($type,"droplist"))
-			$inputs[]=html_form_droplist($column['Field']."_text_".$id, $label, $name, $options, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), $onchange, $class);
+			$inputs[]=html_form_droplist($column['Field']."_text_".$id, $label, $name, $options, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), (isset($onchange) ? $onchange : NULL), $class);
 		else if(!strcmp($type,"checkbox"))
 			$inputs[]=html_form_checkbox($label, $column['Field']."_checkbox_".$id, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : ($column['Default'] ? TRUE : NULL)), FALSE, NULL);
 		else
