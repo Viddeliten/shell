@@ -156,6 +156,13 @@ function login_get_user()
 	return FALSE;
 }
 
+function login_get_level()
+{
+	if(login_check_logged_in_mini()>0)
+		return $_SESSION[PREFIX.'inloggad'];
+	return FALSE;
+}
+
 function login_check_logged_in_mini()
 {
 	// echo "<br />Inloggad: ".$_SESSION["".PREFIX."inloggad"];
