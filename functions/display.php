@@ -232,8 +232,8 @@ function display_dropdown_menu($name, $slug, $subpages)
 				echo '<div class="dropdown-divider"></div>';
 			else if(!strcmp($s_content['slug'],"logout"))
 				echo '<a class="dropdown-item" href="'.SITE_URL.'/?'.$s_content['slug'].'">'._($s_name).'</a>';
-            else if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
-                echo '<a class="dropdown-item" href="'.SITE_URL.'/'.$slug.'/'.$s_content['slug'].'">'._($s_name).'</a>';
+			else if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
+				echo '<a class="dropdown-item" href="'.SITE_URL.'/'.$slug.'/'.$s_content['slug'].'">'._($s_name).'</a>';
         }
         echo '
                 </div>
