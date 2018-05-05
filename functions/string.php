@@ -36,6 +36,66 @@ function string_get_link_from_url($url, $get_title=true)
 	return '<a href="'.trim($url).'">'.$link_text.'</a>';
 }
 
+function string_get_tag_content_from_url($url, $tag="ul", $attribute=array("class"=>"post-tags"))
+{
+	$result=array();
+	try
+	{
+		$html = string_curlurl($url, TRUE); // Using curl and gzip in case the site is zipped (like TSR fex)
+	} catch (Exception $e) {
+		trigger_error("Could not get html : ".prestr($e)); // Trigger warning for log
+		preprint($e);
+	}
+	if(isset($html))
+	{
+		libxml_use_internal_errors(true);
+		$dom = new DOMDocument();
+		$dom->loadHTML($html);
+		$xpath = new DOMXPath($dom);
+
+		// Find all images in img tags
+		foreach($xpath->query('//'.$tag) as $item) 
+		{
+			$result[] =  $item->getAttribute($attribute);
+		}
+	}
+	return $result;
+}
+
+function string_get_tag_attribute_from_url($url, $tag="meta", $required_attribute=array("name" => "keywords"), $attribute="content")
+{
+	$result=array();
+	try
+	{
+		$html = string_curlurl($url, TRUE); // Using curl and gzip in case the site is zipped (like TSR fex)
+	} catch (Exception $e) {
+		trigger_error("Could not get html: ",$e); // Trigger warning for log
+	}
+	if(isset($html))
+	{
+		libxml_use_internal_errors(true);
+		$dom = new DOMDocument();
+		$dom->loadHTML($html);
+		$xpath = new DOMXPath($dom);
+
+		// Find all images in img tags
+		foreach($xpath->query('//'.$tag) as $item) 
+		{
+			foreach($required_attribute as $rq_attr => $rq_content)
+			{
+				$content =  $item->getAttribute($rq_attr);
+				if(strcmp($content, $rq_content))
+					continue(2);
+			}
+			$result_string=$item->getAttribute($attribute);
+			if($result_string)
+				$result[]=$result_string;
+		}
+	}
+	return $result;
+}
+
+
 function string_get_title_from_url($url)
 {
     try
@@ -116,7 +176,7 @@ function string_curlurl($url, $zipped=FALSE) {
     $body     = substr($response, $hlength);
 
     // If HTTP response is not 200, throw exception
-    if ($httpCode == 0) {
+    if ($httpCode == 0 || $httpCode == 404) {
         throw new Exception("Host not found");
 	}
     else if ($httpCode != 200) {
