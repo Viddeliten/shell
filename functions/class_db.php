@@ -117,7 +117,10 @@ class db_class
 	}
     public function set($table, $column, $new_value, $id)
 	{
-		$result = $this->query("UPDATE `".$table."` SET `".$column."`='".$new_value."' WHERE id=".$id);
+		if(!in_array($new_value, array("NOW()", "NULL", "TRUE", "FALSE")))
+			$new_value="'".sql_safe($new_value)."'";
+		
+		$result = $this->query("UPDATE `".sql_safe($table)."` SET `".sql_safe($column)."`=".$new_value." WHERE id=".sql_safe($id));
 		return $result;
 	}
 	
@@ -126,7 +129,10 @@ class db_class
 		$updates=array();
 		foreach($values as $key => $val)
 		{
-			$updates[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+			if(!in_array($val, array("NOW()", "NULL", "TRUE", "FALSE")))
+				$updates[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+			else
+				$updates[]='`'.sql_safe($key)."`=".$val;
 		}
 		$sql="UPDATE ".sql_safe($table)." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
 
