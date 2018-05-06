@@ -40,14 +40,14 @@ function html_link($url, $text, $class=NULL)
 
 function html_card($card_link="", $card_link_text="Go somewhere", $card_title="", $card_text="", $img_source=NULL, $image_alt="Image")
 {
-    return '<div class="card">'. // style="width: 18rem;">
+    return (($card_link!="" && $card_link_text=="" ) ? '<a href="'.$card_link.'">' : '').'<div class="card">'. // style="width: 18rem;">
       '<span class="card-img-top">'.($img_source!=NULL ? '<img class="card-img" src="'.$img_source.'" alt="'.$image_alt.'">' : '').'</span>
       <div class="card-body">
         <h5 class="card-title">'.$card_title.'</h5>
         <p class="card-text">'.$card_text.'</p>'.
-        ($card_link!="" ? '<a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a>' : "").
+        (($card_link!="" && $card_link_text!="") ? '<a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a>' : "").
       '</div>
-    </div>';
+    </div>'.(($card_link!="" && $card_link_text ) ? '</a>' : '');
 }
 
 function html_card_from_array_parts($array)
@@ -923,13 +923,13 @@ function html_show_hide_clicker($div_id, $label, $contents)
 *       image_array -   array of "images"; array("url"    =>  string
                                                  "alt"   =>  string)
 ***/
-function html_carousel($image_array)
+function html_carousel($image_array, $div_class="", $images_full_width=TRUE)
 {
 	reset($image_array);
 	$first_key = key($image_array);
 
 	// https://getbootstrap.com/docs/4.1/components/carousel/#with-indicators
-	$r='<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+	$r='<div id="carouselExampleIndicators" class="carousel slide '.$div_class.'" data-ride="carousel">
   <ol class="carousel-indicators">';
     // <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
     // <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
@@ -944,7 +944,7 @@ function html_carousel($image_array)
 		foreach($image_array as $key => $image)
 			$r.='<div class="carousel-item  '.(!strcmp($first_key, $key) ? 'active' : "").'">
 				'.(isset($image['link']) ? '<a href="'.$image['link'].'">' : '').'
-				  <img class="d-block w-100" src="'.$image['url'].'" alt="'.(isset($image['alt']) ? $image['alt'] : "Image").'">
+				  <img class="d-block '.($images_full_width ? "w-100" : "").'" src="'.$image['url'].'" alt="'.(isset($image['alt']) ? $image['alt'] : "Image").'">
 					'.(isset($image['caption']) ? '<div class="carousel-caption d-none d-md-block">
 						'.$image['caption'].'
 					</div>' :'').
