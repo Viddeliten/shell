@@ -312,7 +312,6 @@ function html_form_textarea($input_id, $label, $name, $value="", $placeholder=NU
 
 function html_form_droplist($input_id, $label, $name, $options, $selected="", $onchange=NULL, $class=NULL)
 {
-    // preprint(array($input_id, $label, $name, $options, $selected, $onchange, $class),"html_form_droplist__");
 	if($label!==NULL && $label!="")
 		$return='<label for="'.$input_id.'">'.$label.'</label>';
 	else
@@ -434,7 +433,6 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 				$type="number";
 				
 				//int that is foreign key to other table should be a droplist
-				// preprint($column,"column");
 				if(!strcmp($column['Key'], "MUL"))
 				{
 					//Check if it is a reference to foreign key
@@ -445,9 +443,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 							WHERE `TABLE_SCHEMA`='".($db_name!=NULL ? $db_name : db_name)."'
 							AND `COLUMN_NAME`='".$column['Field']."'
 							AND REFERENCED_TABLE_NAME IS NOT NULL;";
-					// preprint($sql);
 					$fk=sql_get_first($sql);
-					// preprint($fk);
 
 					if(isset($fk['REFERENCED_TABLE_NAME']))
 					{
