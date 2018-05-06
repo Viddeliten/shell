@@ -381,7 +381,7 @@ function html_form($method, $inputs, $multipart=FALSE)
     return $r;
 }
 
-function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL, $just_inputs=FALSE, $field_type_override=NULL, $custom_labels=NULL, $nr_id=NULL)
+function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL, $just_inputs=FALSE, $field_type_override=NULL, $custom_labels=NULL, $nr_id=NULL, $only_members=NULL)
 {
 	// Get table columns
 	$table=sql_get("SHOW COLUMNS FROM ".($db_name!=NULL ? $db_name.".":"").sql_safe($table_name).";");
@@ -416,6 +416,8 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 	foreach($table as $column)
 	{
 		if(!strcmp($column['Field'],"id") || (!empty($skip_members) && in_array($column['Field'],$skip_members)))
+			continue;
+		if(!empty($only_members) && !in_array($column['Field'],$only_members))
 			continue;
         
 		//Decide input type based on field type or override
@@ -481,6 +483,9 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
            else if(!strcmp(substr($column['Type'],0,4),"enum"))
            {
                 $type="droplist";
+				$options=array();
+				if(!strcmp($column['Null'],"YES"))
+					$options["NULL"]=_("No value");
                 
                 $enum_choices=explode(",",str_replace("enum(","", str_replace(")","",str_replace("'","",$column['Type']))));
                 foreach($enum_choices as $ec)
@@ -508,7 +513,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 		if(!strcmp($type,"textarea"))
 			$inputs[]=html_form_textarea($column['Field']."_text_".$id, $label, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL));
 		else if(!strcmp($type,"droplist"))
-			$inputs[]=html_form_droplist($column['Field']."_text_".$id, $label, $name, $options, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), (isset($onchange) ? $onchange : NULL), $class);
+			$inputs[]=html_form_droplist($column['Field']."_text_".$id, $label, $name, $options, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), (isset($onchange) ? $onchange : NULL), (isset($class) ? $class : NULL));
 		else if(!strcmp($type,"checkbox"))
 			$inputs[]=html_form_checkbox($label, $column['Field']."_checkbox_".$id, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : ($column['Default'] ? TRUE : NULL)), FALSE, NULL);
 		else
