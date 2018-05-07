@@ -40,14 +40,29 @@ function html_link($url, $text, $class=NULL)
 
 function html_card($card_link="", $card_link_text="Go somewhere", $card_title="", $card_text="", $img_source=NULL, $image_alt="Image")
 {
-    return (($card_link!="" && $card_link_text=="" ) ? '<a href="'.$card_link.'">' : '').'<div class="card">'. // style="width: 18rem;">
-      '<span class="card-img-top">'.($img_source!=NULL ? '<img class="card-img" src="'.$img_source.'" alt="'.$image_alt.'">' : '').'</span>
-      <div class="card-body">
-        <h5 class="card-title">'.$card_title.'</h5>
-        <p class="card-text">'.$card_text.'</p>'.
-        (($card_link!="" && $card_link_text!="") ? '<a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a>' : "").
-      '</div>
-    </div>'.(($card_link!="" && $card_link_text ) ? '</a>' : '');
+	if($card_link!="" && $card_link_text!="")
+		$card_text.='<a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a>';
+	if($card_link!="" && $card_link_text=="")
+	{
+		$card_title=html_link($card_link, $card_title);
+		$card_image_link=$card_link;
+	}
+	
+	$card_parts=array( array(	"type" =>"img",
+								"content" => array( "src" => $img_source,
+													"alt" => $image_alt,
+													"link" => (isset($card_image_link) ? $card_image_link : NULL)
+												)
+							),
+						array(	"type" => "body",
+								"content"	=>	array(	array(	"type"	 => "title",
+																"content"	=> $card_title),
+														array(	"type"	 => "text",
+																"content" => $card_text)
+										)
+							)
+					);
+	return html_card_from_array($card_parts);
 }
 
 function html_card_from_array_parts($array)
@@ -55,13 +70,41 @@ function html_card_from_array_parts($array)
     $content="";
     foreach($array as $part)
     {
-        if(is_array($part['content']))
+		if(!isset($part['content']) && is_array($part))
+		{
+			foreach($part as $p)
+			{
+				if(is_array($p))
+					$content.=html_card_from_array_parts($p);
+			}
+			return $content;
+		}
+		
+		if(!isset($part['content']))
+			return $content;
+		
+		if(!isset($part['type']))
+			$part['type']="text";
+        
+		if(is_array($part['content']) && strcmp($part['type'],"img"))
             $part['content']=html_card_from_array_parts($part['content']);
         
+		if(!isset($part['class']))
+			$part['class']="";
+		
         switch ($part['type'])
         {
             case "title":
                  $content.=html_tag("h5",$part['content'],"card-title ".$part['class'], FALSE, NULL, FALSE);
+                break;
+            case "img":
+				$image='<img src="'.$part['content']['src'].'" alt="'.$part['content']['alt'].'" />';
+				if(isset($part['content']['link']) && $part['content']['link']!=NULL)
+					$image=html_link($part['content']['link'], $image);
+                 $content.=html_tag("span",$image,"card-img-top ".$part['class'], FALSE, NULL, FALSE);
+                break;
+            case "text":
+                 $content.=html_tag("p",$part['content'],"card-text ".$part['class'], FALSE, NULL, TRUE);
                 break;
             case "list":
                  $content.=html_tag("ul",$part['content'],"list-group list-group-flush ".$part['class'], FALSE, NULL, FALSE);;
