@@ -148,27 +148,29 @@ function string_get_url_title($url)
 	return NULL;
 }
 
-function string_curlurl($url, $zipped=FALSE) {
+function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_URL, $send_cookie=FALSE)
+{
     $handle = curl_init();
 	
 	$useragent = $_SERVER['HTTP_USER_AGENT'];
+	// $useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36";
+	$useragent = "Mozilla/".mt_rand(1,5).".0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/".mt_rand(1,66).".0.3359.139 Safari/537.36";
 	$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
 	
 	session_write_close();
 
 	if($zipped)
 		curl_setopt($handle, CURLOPT_ENCODING , "gzip");
+		
     curl_setopt($handle, CURLOPT_URL, $url);
-    curl_setopt($handle, CURLOPT_POST, false);
     curl_setopt($handle, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt($handle, CURLOPT_BINARYTRANSFER, false);
-    curl_setopt($handle, CURLOPT_HEADER, true);
+    curl_setopt($handle, CURLOPT_MAXREDIRS, $follow_redirects);
+    curl_setopt($handle, CURLOPT_REFERER, $referer);
 	curl_setopt($handle, CURLOPT_USERAGENT, $useragent);
-	curl_setopt($handle, CURLOPT_COOKIE, $strCookie );
+	if($send_cookie)
+		curl_setopt($handle, CURLOPT_COOKIE, $strCookie );
     curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 10);
-	curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, 0);
-	curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, 0);
 
     $response = curl_exec($handle);
     $hlength  = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
