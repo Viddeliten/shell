@@ -129,9 +129,19 @@ function string_get_title_from_url($url)
             
             // Look for contents of title tag
             $html = trim(preg_replace('/\s+/', ' ', $html)); // supports line breaks inside <title>
-            preg_match("/\<title\>(.*)\<\/title\>/i",$html,$title); // ignore case
+            preg_match("/<title>([^<]*)<\/title>/i",$html,$title); // ignore case
+			preprint($title, "title match");
             if(isset( $title[1]))
                 return $title[1];
+            preg_match("/<h1([^>]*?)>([^<]*)<\/h1>/i",$html,$title); // ignore case
+			preprint($title, "title match");
+            if(isset( $title[2]))
+                return $title[2];
+            preg_match("/<h2([^>]*?)>([^<]*)<\/h2>/i",$html,$title); // ignore case
+			preprint($title, "title match");
+            if(isset( $title[2]))
+                return $title[2];
+			preprint(string_html_to_text($html));
         }
     }
     return string_get_url_title($url);
@@ -154,7 +164,7 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
 	
 	$useragent = $_SERVER['HTTP_USER_AGENT'];
 	// $useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36";
-	$useragent = "Mozilla/".mt_rand(1,5).".0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/".mt_rand(1,66).".0.3359.139 Safari/537.36";
+	// $useragent = "Mozilla/".mt_rand(1,5).".0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/".mt_rand(1,66).".0.3359.139 Safari/537.36";
 	$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
 	
 	session_write_close();
@@ -163,6 +173,7 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
 		curl_setopt($handle, CURLOPT_ENCODING , "gzip");
 		
     curl_setopt($handle, CURLOPT_URL, $url);
+    curl_setopt($handle, CURLOPT_HEADER, true); // Needed if we want to find title tags and such (and we do most of the time)
     curl_setopt($handle, CURLOPT_FOLLOWLOCATION, 1);
     curl_setopt($handle, CURLOPT_MAXREDIRS, $follow_redirects);
     curl_setopt($handle, CURLOPT_REFERER, $referer);
