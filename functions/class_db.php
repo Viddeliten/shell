@@ -44,11 +44,30 @@ class db_class
 		$updates=array();
 		foreach($values as $key => $val)
 		{
-			$updates[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+			if(!in_array($val, array("NOW()", "NULL", "TRUE", "FALSE")))
+				$val="'".sql_safe($val)."'";
+			else 
+				$val=sql_safe($val);
+
+			$updates[]='`'.sql_safe($key)."`=".$val;
 		}
 		$sql="INSERT INTO ".sql_safe($table)." SET ".implode(", ",$updates).";";
 
 		return $this->insert($sql);
+	}
+	public function get_from_array($table, $values, $just_first=FALSE)
+	{
+		$requirements=array();
+		foreach($values as $key => $val)
+		{
+			$requirements[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+		}
+		$sql="SELECT * FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+
+		if($just_first)
+			return $this->select_first($sql);
+		
+		return $this->select($sql);
 	}
 	public function delete_from_array($table, $values)
 	{
