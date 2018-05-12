@@ -129,20 +129,19 @@ function string_get_title_from_url($url)
             
             // Look for contents of title tag
             $html = trim(preg_replace('/\s+/', ' ', $html)); // supports line breaks inside <title>
+
             preg_match("/<title>([^<]*)<\/title>/i",$html,$title); // ignore case
-			preprint($title, "title match");
             if(isset( $title[1]))
                 return $title[1];
             preg_match("/<h1([^>]*?)>([^<]*)<\/h1>/i",$html,$title); // ignore case
-			preprint($title, "title match");
+
             if(isset( $title[2]))
                 return $title[2];
             preg_match("/<h2([^>]*?)>([^<]*)<\/h2>/i",$html,$title); // ignore case
-			preprint($title, "title match");
+
             if(isset( $title[2]))
                 return $title[2];
-			preprint(string_html_to_text($html));
-        }
+			}
     }
     return string_get_url_title($url);
 }
