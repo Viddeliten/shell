@@ -223,4 +223,46 @@ function news_search_get($search_string)
 	return $results;
 }
 
+function news_get($nr=4, $offset=0)
+{
+	$db=new db_class();
+	$search_string=strtolower($search_string); // To make search case insensitive
+	
+	$sql="SELECT DISTINCT news.id, news.author, news.published, news.headline, news.text
+	FROM news
+	WHERE published<=NOW()
+	ORDER BY news.published DESC
+	LIMIT ".sql_safe($offset).", ".sql_safe($nr);
+	
+	return $db->select($sql);
+}
+
+function news_cards($nr, $offset=0)
+{
+	$news_posts=news_get($nr, $offset);
+	$html_cards=array();
+	if(!empty($news_posts))
+	{
+		foreach($news_posts as $n)
+		{
+			$news_array=array( array( "type" =>	"title",
+										"content"	=>	html_link(news_get_link_url($n['id']), $n['headline'])
+										),
+								array(	"type"	=>	"author",
+										"class"	=>	"date",
+										"content"	=>	sprintf(_("Published by %s at %s"), user_get_link($n['author']) ,date("Y-m-d H:i",strtotime($n['published'])))
+									),
+								array(	"type"	=>	"body",
+										"content"	=>	substr($n['text'],0,200).(strlen($n['text'])>200 ? html_link(news_get_link_url($n['id']), _("... Keep reading")) : "")
+									),
+								array(	"type"	=>	"footer",
+										"content"	=>	comments_show_comments_and_replies($n['id'], "news", FALSE)
+									)
+								);
+			$html_cards[]=html_card_from_array($news_array);
+		}
+	}
+	return $html_cards;
+}
+
 ?>

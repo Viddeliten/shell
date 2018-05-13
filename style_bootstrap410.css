@@ -76,6 +76,8 @@ select.form-control.small
 }
 
 
+
+
 .inline
 {
 	display: inline-block;
@@ -267,6 +269,18 @@ ul.commentlist
 	background-color: white;
 }
 /* Shapes */
+.news .card
+{
+	border-width: 0px;
+}
+.news .card .card-title
+{
+    font-size: 145%;
+}
+.news .card .card-body
+{
+	padding: 1.25rem 0;
+}
 .feedback.card
 {
     overflow: auto;
