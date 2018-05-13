@@ -161,10 +161,13 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
 {
     $handle = curl_init();
 	
-	$useragent = $_SERVER['HTTP_USER_AGENT'];
-	// $useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36";
 	// $useragent = "Mozilla/".mt_rand(1,5).".0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/".mt_rand(1,66).".0.3359.139 Safari/537.36";
-	$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
+	// In case cron is running this, some pages don't like bots and this is what I had in my access log :)
+	$useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36";
+	if(isset($_SERVER['HTTP_USER_AGENT']))
+		$useragent = $_SERVER['HTTP_USER_AGENT'];
+	if(isset($_COOKIE['PHPSESSID']))
+		$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
 	
 	session_write_close();
 
@@ -177,7 +180,7 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
     curl_setopt($handle, CURLOPT_MAXREDIRS, $follow_redirects);
     curl_setopt($handle, CURLOPT_REFERER, $referer);
 	curl_setopt($handle, CURLOPT_USERAGENT, $useragent);
-	if($send_cookie)
+	if($send_cookie && isset($strCookie))
 		curl_setopt($handle, CURLOPT_COOKIE, $strCookie );
     curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 10);
