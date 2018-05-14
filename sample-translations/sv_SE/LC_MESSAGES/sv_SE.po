@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: texts-sv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-02 18:18+0200\n"
-"PO-Revision-Date: 2018-05-02 18:27+0200\n"
+"POT-Creation-Date: 2018-05-14 20:23+0200\n"
+"PO-Revision-Date: 2018-05-14 20:43+0200\n"
 "Last-Translator: Johanna Julén <johanna.julen@loopia.se>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.5\n"
+"X-Generator: Poedit 2.0.7\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: .\n"
@@ -40,34 +40,34 @@ msgstr "gettext är inte installerat"
 msgid "gettext is supported"
 msgstr "gettext stöds"
 
-#: content.php:51 content.php:82
+#: content.php:56 content.php:87
 #, php-format
 msgid "News for %s"
 msgstr "Nyheter för %s"
 
-#: content.php:56 content.php:74 content.php:88
+#: content.php:61 content.php:79 content.php:93
 msgid "Nothing to see here..."
 msgstr "Ingenting att se här..."
 
-#: content.php:67
+#: content.php:72
 #, php-format
 msgid "Content: %s #%s"
 msgstr "Innehåll: %s #%s"
 
-#: content.php:69
+#: content.php:74
 msgid "Comment on this"
 msgstr "Kommentera på detta"
 
-#: content.php:97
+#: content.php:102
 msgid "Missing user id"
 msgstr "Användar-id saknas"
 
-#: content.php:117 sample-custom_content/globals.php:41
+#: content.php:122 sample-custom_content/globals.php:41
 #: sample-custom_content/functions/page.php:18
 msgid "Active users"
 msgstr "Aktiva användare"
 
-#: content.php:135
+#: content.php:140
 msgid "Unknown page"
 msgstr "Sidan kunde inte hittas"
 
@@ -83,38 +83,38 @@ msgstr "Exempelmall"
 msgid "Insert your selling text here.<br>It should be snappy."
 msgstr "Ange din säljande text här.<br>Den bör vara kort och medryckande."
 
-#: orig_html.php:460 functions/html.php:523
+#: orig_html.php:460 functions/html.php:570
 msgid "Update"
 msgstr "Uppdatera"
 
-#: orig_html.php:534 functions/html.php:597
+#: orig_html.php:534 functions/html.php:644
 msgid "Empty array"
 msgstr "Tom array"
 
-#: orig_html.php:641 functions/html.php:704
+#: orig_html.php:641 functions/html.php:751
 msgid "current"
 msgstr "nuvarande"
 
-#: orig_html.php:692 functions/html.php:755 functions/display.php:40
+#: orig_html.php:692 functions/html.php:802 functions/display.php:40
 msgid "Home"
 msgstr "Hem"
 
-#: orig_html.php:704 functions/html.php:767 functions/feedback/func.php:299
+#: orig_html.php:704 functions/html.php:814 functions/feedback/func.php:299
 #: functions/display.php:44
 msgid "Feedback"
 msgstr "Förbättringsförslag"
 
-#: orig_html.php:759 orig_html.php:760 functions/html.php:822
-#: functions/html.php:823 functions/feedback/func.php:411
+#: orig_html.php:759 orig_html.php:760 functions/html.php:870
+#: functions/html.php:871 functions/feedback/func.php:411
 msgid "Search"
 msgstr "Sök"
 
-#: orig_html.php:816 functions/html.php:905
+#: orig_html.php:816 functions/html.php:953
 #, php-format
 msgid "Hide %s"
 msgstr "Göm %s"
 
-#: orig_html.php:822 functions/html.php:911
+#: orig_html.php:822 functions/html.php:959
 #, php-format
 msgid "Show %s"
 msgstr "Visa %s"
@@ -397,6 +397,10 @@ msgstr "Felkod %s<br />SQL: %s<br />ERROR: %s"
 msgid "Error code %s\tSQL: %s\tERROR: %s"
 msgstr "Felkod %s\tSQL: %s\tERROR: %s"
 
+#: functions/html.php:527
+msgid "No value"
+msgstr "Inget värde"
+
 #: functions/admin.php:32
 msgid "Unknown admin page"
 msgstr "Okänd admin-sida"
@@ -460,63 +464,63 @@ msgstr "Inloggning genomfördes med lyckat resultat"
 msgid "Login fail"
 msgstr "Inloggning misslyckades"
 
-#: functions/login.php:230 functions/user.php:342 functions/user.php:343
+#: functions/login.php:237 functions/user.php:342 functions/user.php:343
 msgid "Username"
 msgstr "Användarnamn"
 
-#: functions/login.php:231
+#: functions/login.php:238
 msgid "password"
 msgstr "lösenord"
 
-#: functions/login.php:232 functions/login.php:469 functions/login.php:470
-#: functions/login.php:477 functions/login.php:478
+#: functions/login.php:239 functions/login.php:476 functions/login.php:477
+#: functions/login.php:485 functions/login.php:486
 msgid "Log in"
 msgstr "Logga in"
 
-#: functions/login.php:234
+#: functions/login.php:241
 msgid "Sign up"
 msgstr "Registrera dig"
 
-#: functions/login.php:235
+#: functions/login.php:242
 msgid "Recover password"
 msgstr "Återfå användaruppgifter"
 
-#: functions/login.php:286
+#: functions/login.php:293
 #, php-format
 msgid "[%s] - Password reset"
 msgstr "[%s] - Återställning av användaruppgifter"
 
-#: functions/login.php:287
+#: functions/login.php:294
 #, php-format
 msgid "Hi"
 msgstr "Hej"
 
-#: functions/login.php:287
+#: functions/login.php:294
 #, php-format
 msgid "We have received a request to reset your password."
 msgstr "Vi har mottagit en begäran om återställning av användaruppgifter."
 
-#: functions/login.php:288
+#: functions/login.php:295
 #, php-format
 msgid "Visit %s/?lostpassword&password_reset=%s to set your password."
 msgstr ""
 "Besök %s/?lostpassword&password_reset=%s för att sätta önskat lösenord."
 
-#: functions/login.php:289
+#: functions/login.php:296
 #, php-format
 msgid "Regards,"
 msgstr "Med vänliga hälsningar,"
 
-#: functions/login.php:289
+#: functions/login.php:296
 #, php-format
 msgid "The %s Team"
 msgstr "Gänget på %s"
 
-#: functions/login.php:297
+#: functions/login.php:304
 msgid "Message successfully sent!"
 msgstr "Meddelandet sändes med lyckat resultat!"
 
-#: functions/login.php:301
+#: functions/login.php:308
 #, php-format
 msgid ""
 "Message delivery failed. Please send an email to %s for further assistance! "
@@ -994,7 +998,7 @@ msgstr "Ändringslogg"
 msgid "Notice could not be closed.<br />SQL: %s<br />Error: %s"
 msgstr "Notis kunde inte stängas.<br />SQL: %s<br />Error: %s"
 
-#: functions/string.php:33
+#: functions/string.php:33 functions/flattr.php:83
 msgid "link"
 msgstr "länk"
 
@@ -1015,22 +1019,53 @@ msgstr "Denna hemsida presenteras av"
 msgid "Select language:"
 msgstr "Välj språk:"
 
-#: functions/flattr.php:82
+#: functions/flattr.php:7
+msgid "This site uses Flattr"
+msgstr "Denna site använder Flattr"
+
+#: functions/flattr.php:88
 msgid "Flattr this"
 msgstr "Flattr det här"
 
-#: functions/flattr.php:122
+#: functions/flattr.php:128
 msgid "New Flattr ID set"
 msgstr "Nytt FlattrID sparat"
 
-#: functions/flattr.php:141
+#: functions/flattr.php:147
 msgid "New flattr choices set"
 msgstr "Nya Flattr-inställningar satta"
 
-#: functions/flattr.php:143
+#: functions/flattr.php:149
 #, php-format
 msgid "New flattr choices could not be set. Error: %s"
 msgstr "Nya Flattr-inställningar kunde inte sättas. Fel: %s"
+
+#: functions/flattr.php:191
+#, php-format
+msgid "Flattr on %s"
+msgstr "Flattr på %s"
+
+#: functions/flattr.php:192
+#, php-format
+msgid ""
+"%s has Flattr support, which means you can pay creators on the site with "
+"flat-rate micropayments!\n"
+"\tWith Flattr, you pay a <strong>set amount</strong> each month, and that "
+"amount get divided to all the people you support.\n"
+"\tSo you can support an unlimited amount of creators without increasing your "
+"cost. To be honest, it's pretty awesome!"
+msgstr ""
+"%s har Flattr-support, vilket innebär att du kan betala skapare på "
+"webbplatsen med mikrobetalningar till en fast månadskostnad du själv "
+"bestämmer!\n"
+"Med Flattr betalar du ett <strong>fast belopp</ strong> varje månad, och det "
+"beloppet delas upp till alla de personer du stöder.\n"
+"Det betyder att du kan stödja en obegränsad mängd kreatörer utan att öka din "
+"kostnad. Helt ärligt är det ganska häftigt!"
+
+#: functions/flattr.php:197
+msgid "Read more about Flattr"
+msgstr "Läs mer om Flattr"
 
 #: functions/mailer.php:26
 msgid "Best regards"
@@ -1077,10 +1112,14 @@ msgstr "Text:"
 msgid "The news content"
 msgstr "Nyhetsinnehållet"
 
-#: functions/news.php:130
+#: functions/news.php:130 functions/news.php:253
 #, php-format
 msgid "Published by %s at %s"
 msgstr "Publicerad av %s %s"
+
+#: functions/news.php:256
+msgid "... Keep reading"
+msgstr "... Fortsätt läsa"
 
 #: sample-custom_content/start.php:3
 #, php-format
@@ -1224,14 +1263,77 @@ msgstr "Det här är en halvkolumn."
 msgid "Other stuff"
 msgstr "Andra grejer"
 
+#: sample-custom_content/functions/flattr.php:16
+msgid "I am a creator, does this mean you will pay me?"
+msgstr "Jag skapar innehåll på den här sidan, kommer jag få betalt?"
+
+#: sample-custom_content/functions/flattr.php:17
+#, php-format
+msgid ""
+"Well, it actually means you can get paid by the visitors to the site through "
+"Flattr.\n"
+"    What you need to do is:"
+msgstr ""
+"Vad det faktiskt betyder är att du kan får betalt av besökarna här på sidan "
+"genom Flattr.\n"
+"Vad du behöver göra är:"
+
+#: sample-custom_content/functions/flattr.php:20
+#: sample-custom_content/functions/flattr.php:29
+#, php-format
+msgid "<a href=\"%s\">Sign up for Flattr</a>"
+msgstr "<a href=\"%s\">Skapa konto på Flattr</a>"
+
+#: sample-custom_content/functions/flattr.php:21
+#, php-format
+msgid ""
+"Find your Flattr id. Your Flattr-id can be found in the <a href=\"%s"
+"\">Flattr-settings</a> once you have your Flattr account.\n"
+"    You will see something like &lt;meta name=\"flattr:id\" content="
+"\"8dpk18\"&gt; in wich case '8dpk18' is your id (it is not, that is my id)."
+msgstr ""
+"Hitta ditt Flattr-ID. Ditt Flattr-ID finns i <a href=\"%s\"> Flattr-"
+"inställningarna </a> när du har ditt Flattr-konto.\n"
+"     Du kommer att se något I stil med &lt;meta name=\"flattr:id\" content="
+"\"8dpk18\"&gt; i vilket fall '8dpk18' är ditt id (det är inte det, det är "
+"mitt ID)."
+
+#: sample-custom_content/functions/flattr.php:23
+#, php-format
+msgid "<a href=\"%s\">Sign up for %s</a>"
+msgstr "<a href=\"%s\">Skapa konto på %s</a>"
+
+#: sample-custom_content/functions/flattr.php:24
+#, php-format
+msgid ""
+"Enter your Flattr-id in <a href=\"%s\">your settings</a> and check what "
+"should be flattred"
+msgstr ""
+"Ange ditt Flattr-id i <a href=\"%s\"> dina inställningar </a> och kryssa för "
+"vad som ska flattras"
+
+#: sample-custom_content/functions/flattr.php:27
+msgid "I want to support creators, how do I do that?"
+msgstr "Jag vill stödja skapare, hur gör jag det?"
+
+#: sample-custom_content/functions/flattr.php:30
+msgid ""
+"Add the Flattr extension to your browser. See <a href=\"https://flattr.com/"
+"faq\">Flattr FAQ for details</a>"
+msgstr ""
+"Installera Flattr-tillägget i din webbläsare. Se <a href=\"https://flattr."
+"com/faq\"> Flattr FAQ för mer information</a>"
+
+#: sample-custom_content/functions/flattr.php:31
+#, php-format
+msgid "Make sure you enable the extension to flattr %s!"
+msgstr "Se till att du aktiverar Flattr-tillägget när du är på %s!"
+
 #~ msgid "Once:"
 #~ msgstr "En gång:"
 
 #~ msgid "Column name:"
 #~ msgstr "Kolumnnamn:"
-
-#~ msgid "Column value:"
-#~ msgstr "Kolumnvärde:"
 
 #~ msgid "Compose message"
 #~ msgstr "Skriv meddelande"
