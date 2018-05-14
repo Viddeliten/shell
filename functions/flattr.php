@@ -1,5 +1,12 @@
 <?php
 
+function flattr_button_site($flattr_info_url=NULL)
+{
+	if($flattr_info_url==NULL)
+		$flattr_info_url=SITE_URL."/flattr";
+	return html_link($flattr_info_url, _("This site uses Flattr"), "flattr_button"); //'<a href="#" class="flattr_button">This site uses Flattr</a>';
+}
+
 function flattr_get_flattr_choice($user_id, $type)
 {
 	if($uu=mysql_query("SELECT flattrID, showFlattr FROM ".PREFIX."flattr WHERE user_id='".sql_safe($user_id)."';"))
@@ -175,5 +182,23 @@ function flattr_button_conditional($user_id, $type, $url, $title, $description, 
 		return $content;
 	else
 		echo $content;
+}
+
+function flattr_display_information_page()
+{
+	$content=array();
+	
+	$content[]=html_tag("h1", sprintf(_("Flattr on %s"), SITE_NAME));
+	$content[]=html_tag("p", sprintf(_("%s has Flattr support, which means you can pay creators on the site with flat-rate micropayments!
+	With Flattr, you pay a <strong>set amount</strong> each month, and that amount get divided to all the people you support.
+	So you can support an unlimited amount of creators without increasing your cost. To be honest, it's pretty awesome!"), SITE_NAME));
+
+	// $content[]=html_link("https://flattr.com/about", _("Read more about Flattr"));
+	$content[]=html_action_button("https://flattr.com/about", _("Read more about Flattr"), NULL, "primary", FALSE);
+
+	echo html_rows(1,3,$content);
+    
+    if(function_exists("flattr_custom_info_page"))
+        echo html_row(1,1,flattr_custom_info_page());
 }
 ?>

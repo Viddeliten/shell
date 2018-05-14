@@ -35,6 +35,11 @@ else if(isset($_REQUEST['p']))
 	{
 		//Do nothing else. =)
 	}
+	else if(!strcmp($_GET['p'],"flattr"))
+	{
+		//Display information page about Flattr
+		flattr_display_information_page();
+	}
 	else if(!strcmp($_GET['p'],"add_comment"))
 	{
 		$type=$_GET['s'];

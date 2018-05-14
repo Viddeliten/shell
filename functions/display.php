@@ -1,6 +1,6 @@
 <?php
 
-function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=true, $icon_path=NULL)
+function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=true, $icon_path=NULL, $site_uses_flattr=TRUE)
 {
     
 	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);

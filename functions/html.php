@@ -819,7 +819,8 @@ function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_li
             '
             </ul>
             ';
-		// User menu items
+		// Right hand side menu items
+		$r.=flattr_button_site();
 		$r.=login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"', TRUE);
         $r.=display_friend_request_drop_menu(TRUE);
 		
