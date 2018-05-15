@@ -191,7 +191,10 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
     $body     = substr($response, $hlength);
 
     // If HTTP response is not 200, throw exception
-    if ($httpCode == 0 || $httpCode == 404) {
+    if ($httpCode == 0) {
+		throw new Exception(curl_error($handle));
+	}
+	else if($httpCode == 404) {
         throw new Exception("Host not found");
 	}
     else if ($httpCode != 200) {
@@ -199,6 +202,106 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
     }
 
     return $body;
+}
+
+function string_get_images_from_url($url)
+{
+	//https://stackoverflow.com/questions/43598781/scraping-images-from-url-using-php
+	try
+	{
+		$html = string_curlurl($url, TRUE); // Using curl and gzip in case the site is zipped (like TSR fex)
+		// echo $html;
+	} catch (Exception $e) {
+		message_trigger_warning(2491613, $url, $e); // Trigger warning for log
+		return NULL;
+	}
+	$new_images=array();
+	
+	$main_site_url=string_get_base_url($url);
+	
+	preprint($main_site_url, "main_site_url");
+
+	libxml_use_internal_errors(true);
+	$dom = new DOMDocument();
+	$dom->loadHTML($html);
+	$xpath = new DOMXPath($dom);
+
+	// Find all <meta property="og:image" content="imgurl"  // Tumblr has this on my page at least (apparently it is some kind of web standard)
+	foreach($xpath->query('//meta') as $item) 
+	{				
+		$property=$item->getAttribute('property');
+		if(!strcmp($property,"og:image"))
+		{
+			$img_src =  $item->getAttribute('content');
+			//If first char is "/", the add type url
+			if(substr($img_src,0,2)=="//")
+				$img_src="https:".$img_src;
+			
+			//If first char is "/", the add type url
+			if(substr($img_src,0,1)=="/")
+				$img_src=$main_site_url.$img_src;
+
+			$img_alt="image";
+
+			if(!in_array_r($img_src, $new_images))
+			{
+				$size=getimagesize($img_src);
+				$new_images[]=array('src' => $img_src, 'alt' => $img_alt, 'size' => ($size[0]*$size[1]));
+			}
+		}
+	}
+
+	// Find all images in img tags
+	foreach($xpath->query('//img') as $item) 
+	{
+		$img_src =  $item->getAttribute('src');
+		$img_alt = $item->getAttribute('alt');
+		if(!stristr($img_src,"avatar") && !stristr($img_src, "logo.png") && !stristr($img_src, "mariadb-badge") && !stristr($img_src, "icon") && !stristr($img_src, "magnifyglass.gif"))
+		{
+			//If first char is "/", the add type url
+			if(substr($img_src,0,2)=="//")
+				$img_src="https:".$img_src;
+			
+			//If first char is "/", the add type url
+			if(substr($img_src,0,1)=="/")
+				$img_src=$main_site_url.$img_src;
+				
+			if(!in_array_r($img_src, $new_images))
+			{
+				$size=getimagesize($img_src);
+				$new_images[]=array('src' => $img_src, 'alt' => $img_alt, 'size' => ($size[0]*$size[1]));
+			}
+		}
+	}
+	// Wixsite hides images in code like "src":"\/\/static.wixstatic.com\/media\/81457a_670d51090f0e46aab578dfdaa22a8db8~mv2.jpg"
+	if(stristr($url,"wixsite.com"))
+	{
+		preg_match_all('/"src":"([^"]*)"/i',$html,$wiximages);
+		if(!empty($wiximages[1]))
+		{
+			foreach($wiximages[1] as $wim)
+			{
+				if(stristr($wim, "static.wixstatic.com"))
+				{
+					$img_src=str_replace("\\","",$wim);
+				
+					//If first char is "/", the add https:
+					if(substr($img_src,0,2)=="//")
+						$img_src="https:".$img_src;
+													
+					if(!in_array_r($img_src, $new_images))
+					{
+						$size=getimagesize($img_src);
+						$new_images[]=array('src' => $img_src, 'size' => ($size[0]*$size[1]));
+					}
+				}
+			}
+		}
+	}
+	
+	//Sort by size
+	string_array_multisort($new_images, "size", SORT_DESC);
+	return $new_images;
 }
 
 function curPageURL() {
@@ -363,7 +466,10 @@ function string_get_defined_constants()
 
 function string_get_base_url($adress)
 {
-	if(preg_match_all("/^[a-zA-Z]+:\/\/[a-zA-Z0-9-_]*[\.[a-zA-Z0-9-_]*]*$/", $adress, $matches))
+	preprint($adress, "string_get_base_url");
+	preg_match("/^[a-zA-Z]+:\/\/[a-zA-Z0-9-_]*[\.[a-zA-Z0-9-_]*]*/", $adress, $matches);
+	preprint($matches, "matches");
+	if(!empty($matches))
 		return $matches[0];
 	return NULL;
 }
