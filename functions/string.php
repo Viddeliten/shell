@@ -219,8 +219,6 @@ function string_get_images_from_url($url)
 	
 	$main_site_url=string_get_base_url($url);
 	
-	preprint($main_site_url, "main_site_url");
-
 	libxml_use_internal_errors(true);
 	$dom = new DOMDocument();
 	$dom->loadHTML($html);
@@ -466,9 +464,7 @@ function string_get_defined_constants()
 
 function string_get_base_url($adress)
 {
-	preprint($adress, "string_get_base_url");
 	preg_match("/^[a-zA-Z]+:\/\/[a-zA-Z0-9-_]*[\.[a-zA-Z0-9-_]*]*/", $adress, $matches);
-	preprint($matches, "matches");
 	if(!empty($matches))
 		return $matches[0];
 	return NULL;
