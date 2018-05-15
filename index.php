@@ -17,9 +17,11 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	 <meta name="author" content="">
 	<?php require_once("config.php"); 
-	
+
 	require_once("functions/include.php");
 	include_all_in_path("functions");
+
+	language_setup();
 
 	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
 		require_once(CUSTOM_CONTENT_PATH."/globals.php");
@@ -73,7 +75,6 @@ else
 	
    
   <?php  
-  language_setup();
 
   login_receive();
   
