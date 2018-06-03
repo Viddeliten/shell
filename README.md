@@ -21,4 +21,6 @@ You can also refer to .htaccess where you will find the following rule:
 
 RewriteRule ^([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$	index.php?p=$1&s=$2&id=$3&param1=$4&param2=$5&param3=$6			[QSA,L]
 
+<i>How you use these members of GET really is up to you, but the reason I named them like that is because I usually have a page, subpage and an id. Like for instance https://shell.viddewebb.se/feedback/single/1 where page ($_GET['p']) is feedback, subpage ($_GET['s']) is single and id ($_GET['id']) is 1. It just looks a little bit clearer in the code than if I just named them 1,2,3 or something. :)</i>
+
 (to be continued)
