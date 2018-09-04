@@ -556,6 +556,21 @@ function string_remove_tags($string)
 	return $string;
 }
 
+function string_file_get_output($filepath, $return_html=true)
+{
+    ob_start();
+    
+    include($filepath);
+    
+    $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
+}
+
 
 
 ?>

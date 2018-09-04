@@ -185,7 +185,7 @@ function html_rows($min_columns, $max_columns, $elements, $element_class=NULL, $
 	return $return;
 }
 
-function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=NULL)
+function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=NULL, $html_format_text=TRUE)
 {
 	$return='<div class="row'.($row_class==NULL ? "":" ".$row_class).'">';
 	foreach($lg_sizes as $key => $val)
@@ -207,7 +207,7 @@ function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=N
 
 		$col_xs_size=12; //Always make it full columns on mobile for now
 
-		$return.= html_tag("div", $elements[$key], "col-lg-".$col_lg_size." col-md-".$col_md_size." col-sm-".$col_sm_size." col-xs-".$col_xs_size);
+		$return.= html_tag("div", $elements[$key], "col-lg-".$col_lg_size." col-md-".$col_md_size." col-sm-".$col_sm_size." col-xs-".$col_xs_size, false, NULL, $html_format_text);
 	}
 	$return.='</div>';
 	return $return;
