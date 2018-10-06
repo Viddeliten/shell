@@ -168,6 +168,9 @@ function usermessage_admin_show_form($SOURCE)
 		<?php
 		echo html_form_textarea("message_textarea", _("message:"), "message", (isset($SOURCE['message'])?$SOURCE['message']:""));
 		
+		// Help with function use
+		echo html_rows(1, 1, array(html_tag("h4",_("To use functions")).html_tag("code","FUNCTION:"._("function_name(comma separated parameters)"))), "well");
+
 		//Display all constants that can be used
 		echo html_rows(1, 1, array("<h4>"._("Available constants")."</h4>[".implode("] [",string_get_defined_constants())."]"), "well");
 		?>
