@@ -160,9 +160,9 @@ $(function() {
  });
  
  
- // For heights of carosel
+ // For heights of carousel
 function carouselNormalization() {
-	var items = $('.carousel-item'), //grab all slides
+	var items = $('.auto_height_resize .carousel-item'), //grab all slides
 		heights = [], //create empty array to store height values
 		tallest; //create variable to make note of the tallest slide
 	// console.log(items);

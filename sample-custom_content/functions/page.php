@@ -1,5 +1,9 @@
 <?php
-/*	custom_page_display should try to display a page based on page $_GET['p'] and subpage $_GET['s'] and return TRUE on success or FALSE on fail	*/
+/***
+/*	function custom_page_display 
+*			should try to display a page based on page $_GET['p'] and subpage $_GET['s'] and return TRUE on success or FALSE on fail
+*			If this function returns FALSE, Shell code will try to display a page, otherwise it will assume a page has already been displayed.
+*/
 function custom_page_display()
 {
 	if(isset($_GET['p']))

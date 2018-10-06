@@ -17,9 +17,11 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	 <meta name="author" content="">
 	<?php require_once("config.php"); 
-	
+
 	require_once("functions/include.php");
 	include_all_in_path("functions");
+
+	language_setup();
 
 	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
 		require_once(CUSTOM_CONTENT_PATH."/globals.php");
@@ -51,7 +53,8 @@ if(defined('BOOTSTRAP_VERSION'))
 else
     $bootstrap_version="3.3.4";
 ?>
-
+	<!-- OPENICONIC https://useiconic.com/open/ -->
+	<link href="<?php echo SITE_URL; ?>/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet">
     
     <!-- Bootstrap core CSS -->
     <link href="<?php echo SITE_URL; ?>/bootstrap-<? echo $bootstrap_version; ?>-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -72,7 +75,6 @@ else
 	
    
   <?php  
-  language_setup();
 
   login_receive();
   

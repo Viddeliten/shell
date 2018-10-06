@@ -35,6 +35,11 @@ else if(isset($_REQUEST['p']))
 	{
 		//Do nothing else. =)
 	}
+	else if(!strcmp($_GET['p'],"flattr"))
+	{
+		//Display information page about Flattr
+		flattr_display_information_page();
+	}
 	else if(!strcmp($_GET['p'],"add_comment"))
 	{
 		$type=$_GET['s'];
@@ -133,6 +138,10 @@ else if(isset($_REQUEST['p']))
 	}
 	else 
 		echo "<p class=\"well message_box\">"._("Unknown page")."</p>";
+}
+else if(isset($_GET['search']))
+{
+	search_display_results($_GET['search']);
 }
 else
 {

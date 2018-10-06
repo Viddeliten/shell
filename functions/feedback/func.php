@@ -447,7 +447,7 @@ function feedback_form_show()
 	</div>';
 }
 
-function feedback_search($search_str, $from, $to)
+function feedback_search_sql($search_str, $from, $to)
 {
 	//hämtar sökresultat
 	$str="%".sql_safe(str_replace(" ","%",$search_str))."%";
@@ -458,8 +458,23 @@ function feedback_search($search_str, $from, $to)
 	AND is_spam<1
 	ORDER BY ".ORDER_STR."
 	LIMIT ".sql_safe($from).",".sql_safe($to).";";
-	//echo "<br />DEBUG: $sql";
+
+	return $sql;
+}
+
+function feedback_search_results($search_str, $from, $to)
+{
+	$db=new db_class();
 	
+	$sql=feedback_search_sql($search_str, $from, $to);
+	$results=$db->select($sql);
+	
+	return $results;
+}
+
+function feedback_search($search_str, $from, $to)
+{
+	$sql=feedback_search_sql($search_str, $from, $to);
 	feedback_display_headline_list($sql, "", 1);
 }
 
@@ -1786,8 +1801,7 @@ function feedback_display_body($id, $hidden=FALSE)
 	{
 		if($d=mysql_fetch_array($dd))
 		{
-			echo '<div class="row">';
-			echo "<div id=\"feedback_body_".$id."\" ".$hide_str." class=\"feedback_body col-lg-12\">";
+			echo '<div id="feedback_body_'.$id.'" class="row feedback_body" '.$hide_str.'>';
 				//Text
 				$text_body=$d['text'];
 				echo "<div class=\"col-sm-8 feedback_text\">".html_tag_text_ref("p",$text_body, NULL, true);
@@ -1798,7 +1812,17 @@ function feedback_display_body($id, $hidden=FALSE)
 				
 				//Side thing with buttons
 				echo "<div class=\"col-sm-4 feedback_buttons\">";
-					echo "<div class=\"col-md-4  col-lg-12 right\" id=\"feedback_".$id."_flattr\">";
+					echo "<div class=\"col-md-4  col-lg-12 right\">";
+						//Plus-knapp
+						echo "<div class=\"plusone\">";
+							// echo "<p>Plus-knapp</p>";
+							echo "<form method=\"post\">";
+							echo "<input type=\"submit\" name=\"feedback_plusone\" value=\"+".($d['plusones']+1)."\">
+								<input type=\"hidden\" name=\"id\" value=\"".$d['id']."\">";
+							echo "</form>";
+						echo "</div>";
+					echo "</div>";
+                    echo "<div class=\"col-md-4  col-lg-12 right\" id=\"feedback_".$id."_flattr\">";
 						//Eventuellt Flattr-knapp
 						// echo "<p>Eventuellt Flattr-knapp</p>";
 						if($d['user']!=NULL)
@@ -1813,16 +1837,7 @@ function feedback_display_body($id, $hidden=FALSE)
 							flattr_button_show($d['flattrID'], SITE_URL."?p=feedback&amp;id=".$d['id'] , feedback_get_title($id)." - a feedback post on ".SITE_NAME, $d['text'], 'compact', 'en_GB');
 						}
 					echo "</div>";
-					echo "<div class=\"col-md-4  col-lg-12 right\">";
-						//Plus-knapp
-						echo "<div class=\"plusone\">";
-							// echo "<p>Plus-knapp</p>";
-							echo "<form method=\"post\">";
-							echo "<input type=\"submit\" name=\"feedback_plusone\" value=\"+".($d['plusones']+1)."\">
-								<input type=\"hidden\" name=\"id\" value=\"".$d['id']."\">";
-							echo "</form>";
-						echo "</div>";
-					echo "</div>";
+					
 					echo "<div class=\"col-md-4 col-lg-12 right\">";
 						//Kolla om det är användarens feedback.
 						if($d['user']==NULL || (isset($_SESSION[PREFIX.'user_id']) && strcmp($d['user'],$_SESSION[PREFIX.'user_id'])))
@@ -1831,7 +1846,6 @@ function feedback_display_body($id, $hidden=FALSE)
 						}
 					echo "</div>";
 				echo "</div>";
-			echo "</div>";
 			$shown=1;
 			echo "</div>";
 		}

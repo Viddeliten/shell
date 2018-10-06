@@ -40,14 +40,29 @@ function html_link($url, $text, $class=NULL)
 
 function html_card($card_link="", $card_link_text="Go somewhere", $card_title="", $card_text="", $img_source=NULL, $image_alt="Image")
 {
-    return '<div class="card">'. // style="width: 18rem;">
-      '<span class="card-img-top">'.($img_source!=NULL ? '<img class="card-img" src="'.$img_source.'" alt="'.$image_alt.'">' : '').'</span>
-      <div class="card-body">
-        <h5 class="card-title">'.$card_title.'</h5>
-        <p class="card-text">'.$card_text.'</p>'.
-        ($card_link!="" ? '<a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a>' : "").
-      '</div>
-    </div>';
+	if($card_link!="" && $card_link_text!="")
+		$card_text.='<a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a>';
+	if($card_link!="" && $card_link_text=="")
+	{
+		$card_title=html_link($card_link, $card_title);
+		$card_image_link=$card_link;
+	}
+	
+	$card_parts=array( array(	"type" =>"img",
+								"content" => array( "src" => $img_source,
+													"alt" => $image_alt,
+													"link" => (isset($card_image_link) ? $card_image_link : NULL)
+												)
+							),
+						array(	"type" => "body",
+								"content"	=>	array(	array(	"type"	 => "title",
+																"content"	=> $card_title),
+														array(	"type"	 => "text",
+																"content" => $card_text)
+										)
+							)
+					);
+	return html_card_from_array($card_parts);
 }
 
 function html_card_from_array_parts($array)
@@ -55,13 +70,41 @@ function html_card_from_array_parts($array)
     $content="";
     foreach($array as $part)
     {
-        if(is_array($part['content']))
+		if(!isset($part['content']) && is_array($part))
+		{
+			foreach($part as $p)
+			{
+				if(is_array($p))
+					$content.=html_card_from_array_parts($p);
+			}
+			return $content;
+		}
+		
+		if(!isset($part['content']))
+			return $content;
+		
+		if(!isset($part['type']))
+			$part['type']="text";
+        
+		if(is_array($part['content']) && strcmp($part['type'],"img"))
             $part['content']=html_card_from_array_parts($part['content']);
         
+		if(!isset($part['class']))
+			$part['class']="";
+		
         switch ($part['type'])
         {
             case "title":
                  $content.=html_tag("h5",$part['content'],"card-title ".$part['class'], FALSE, NULL, FALSE);
+                break;
+            case "img":
+				$image='<img src="'.$part['content']['src'].'" alt="'.$part['content']['alt'].'" />';
+				if(isset($part['content']['link']) && $part['content']['link']!=NULL)
+					$image=html_link($part['content']['link'], $image);
+                 $content.=html_tag("span",$image,"card-img-top ".$part['class'], FALSE, NULL, FALSE);
+                break;
+            case "text":
+                 $content.=html_tag("p",$part['content'],"card-text ".$part['class'], FALSE, NULL, TRUE);
                 break;
             case "list":
                  $content.=html_tag("ul",$part['content'],"list-group list-group-flush ".$part['class'], FALSE, NULL, FALSE);;
@@ -142,7 +185,7 @@ function html_rows($min_columns, $max_columns, $elements, $element_class=NULL, $
 	return $return;
 }
 
-function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=NULL)
+function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=NULL, $html_format_text=TRUE)
 {
 	$return='<div class="row'.($row_class==NULL ? "":" ".$row_class).'">';
 	foreach($lg_sizes as $key => $val)
@@ -164,7 +207,7 @@ function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=N
 
 		$col_xs_size=12; //Always make it full columns on mobile for now
 
-		$return.= html_tag("div", $elements[$key], "col-lg-".$col_lg_size." col-md-".$col_md_size." col-sm-".$col_sm_size." col-xs-".$col_xs_size);
+		$return.= html_tag("div", $elements[$key], "col-lg-".$col_lg_size." col-md-".$col_md_size." col-sm-".$col_sm_size." col-xs-".$col_xs_size, false, NULL, $html_format_text);
 	}
 	$return.='</div>';
 	return $return;
@@ -181,7 +224,7 @@ function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $r
 		$columns=$nr;
 	
 	if($columns==0)
-		error_log("html_row 0 columns: ".print_r(array($min_columns, $max_columns, $elements, $element_class, $row_class),1));
+		error_log("html_row 0 columns! Params: ".print_r(array($min_columns, $max_columns, $elements, $element_class, $row_class),1));
 	
 	$col_size=(int)(12/$columns);
 	$md_columns=ceil(($min_columns+$columns)/2);
@@ -261,9 +304,9 @@ function html_form_input($input_id, $label, $type, $name, $value, $placeholder=N
 		'</div>';
 }
 
-function html_form_checkbox($label, $id, $name, $checked=NULL, $required=FALSE, $onclick=NULL)
+function html_form_checkbox($label, $id, $name, $checked=NULL, $required=FALSE, $onclick=NULL, $inline=TRUE)
 {
-	return '<div class="checkbox">'.
+	$return='<div class="checkbox">'.
 		'<label>'.
 			'<input type="checkbox" id="'.$id.'" name="'.$name.'"'.
 		  ($checked ? ' checked="checked"' : '').
@@ -272,6 +315,9 @@ function html_form_checkbox($label, $id, $name, $checked=NULL, $required=FALSE, 
 			'> '.$label.
 		'</label>'.
 	'</div>';
+	if($inline)
+		$return=html_tag("div",html_tag("div","","col-sm-2").html_tag("div",$return,"col-sm-2"),"row");
+	return $return;
 }
 function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=NULL)
 {
@@ -309,7 +355,6 @@ function html_form_textarea($input_id, $label, $name, $value="", $placeholder=NU
 
 function html_form_droplist($input_id, $label, $name, $options, $selected="", $onchange=NULL, $class=NULL)
 {
-    // preprint(array($input_id, $label, $name, $options, $selected, $onchange, $class),"html_form_droplist__");
 	if($label!==NULL && $label!="")
 		$return='<label for="'.$input_id.'">'.$label.'</label>';
 	else
@@ -378,7 +423,7 @@ function html_form($method, $inputs, $multipart=FALSE)
     return $r;
 }
 
-function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL, $just_inputs=FALSE, $field_type_override=NULL, $custom_labels=NULL, $nr_id=NULL)
+function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL, $just_inputs=FALSE, $field_type_override=NULL, $custom_labels=NULL, $nr_id=NULL, $only_members=NULL)
 {
 	// Get table columns
 	$table=sql_get("SHOW COLUMNS FROM ".($db_name!=NULL ? $db_name.".":"").sql_safe($table_name).";");
@@ -412,9 +457,11 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
     
 	foreach($table as $column)
 	{
-		if(!strcmp($column['Field'],"id") || in_array($column['Field'],$skip_members))
+		if(!strcmp($column['Field'],"id") || (!empty($skip_members) && in_array($column['Field'],$skip_members)))
 			continue;
-
+		if(!empty($only_members) && !in_array($column['Field'],$only_members))
+			continue;
+        
 		//Decide input type based on field type or override
 		if(isset($field_type_override[$column['Field']]))
 			$type=$field_type_override[$column['Field']];
@@ -423,14 +470,12 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 			$type="text";
 			if(!strcmp($column['Type'],"text"))
 				$type="textarea";
-			
 			else if(!strcmp(substr($column['Type'],0,3),"int"))
 			{
 				//Default just number
 				$type="number";
 				
 				//int that is foreign key to other table should be a droplist
-				// preprint($column,"column");
 				if(!strcmp($column['Key'], "MUL"))
 				{
 					//Check if it is a reference to foreign key
@@ -441,9 +486,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 							WHERE `TABLE_SCHEMA`='".($db_name!=NULL ? $db_name : db_name)."'
 							AND `COLUMN_NAME`='".$column['Field']."'
 							AND REFERENCED_TABLE_NAME IS NOT NULL;";
-					// preprint($sql);
 					$fk=sql_get_first($sql);
-					// preprint($fk);
 
 					if(isset($fk['REFERENCED_TABLE_NAME']))
 					{
@@ -476,7 +519,19 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 						
 				}
 			}
-			
+           else if(!strcmp(substr($column['Type'],0,4),"enum"))
+           {
+                $type="droplist";
+				$options=array();
+				if(!strcmp($column['Null'],"YES"))
+					$options["NULL"]=_("No value");
+                
+                $enum_choices=explode(",",str_replace("enum(","", str_replace(")","",str_replace("'","",$column['Type']))));
+                foreach($enum_choices as $ec)
+                {
+                    $options[$ec]=string_unslugify($ec);
+                }
+           }
 			//tinyint should be a checkbox
 			else if(!strcmp(substr($column['Type'],0,7),"tinyint"))
 				$type="checkbox";
@@ -487,7 +542,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 		if(isset($custom_labels[$column['Field']]))
 			$label=$custom_labels[$column['Field']];
 		else
-			$label=ucfirst($column['Field']);
+			$label=string_unslugify($column['Field']);
 
 		if($nr_id!==NULL)
 			$name=$table_name."[".$nr_id."][".$column['Field']."]";
@@ -497,7 +552,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 		if(!strcmp($type,"textarea"))
 			$inputs[]=html_form_textarea($column['Field']."_text_".$id, $label, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL));
 		else if(!strcmp($type,"droplist"))
-			$inputs[]=html_form_droplist($column['Field']."_text_".$id, $label, $name, $options, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), $onchange, $class);
+			$inputs[]=html_form_droplist($column['Field']."_text_".$id, $label, $name, $options, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), (isset($onchange) ? $onchange : NULL), (isset($class) ? $class : NULL));
 		else if(!strcmp($type,"checkbox"))
 			$inputs[]=html_form_checkbox($label, $column['Field']."_checkbox_".$id, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : ($column['Default'] ? TRUE : NULL)), FALSE, NULL);
 		else
@@ -764,7 +819,8 @@ function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_li
             '
             </ul>
             ';
-		// User menu items
+		// Right hand side menu items
+		$r.=flattr_button_site();
 		$r.=login_display_link('data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"', TRUE);
         $r.=display_friend_request_drop_menu(TRUE);
 		
@@ -810,8 +866,8 @@ function html_menu($menu=array(), $request_choser="p", $brand_text="", $brand_li
 
 function html_form_search()
 {
-    return '<form class="form-inline my-2 my-lg-0">
-              <input class="form-control mr-sm-2" type="search" placeholder="'._("Search").'" aria-label="'._("Search").'" name="search">
+    return '<form class="form-inline my-2 my-lg-0" action="'.SITE_URL.'">
+              <input class="form-control mr-sm-2" type="search" placeholder="'._("Search").'" aria-label="'._("Search").'" name="search" value="'.(isset($_GET['search']) ? $_GET['search'] : "").'">
               <button class="btn btn-outline-success my-2 my-sm-0" type="submit">'._("Search").'</button>
             </form>';
 }
@@ -911,13 +967,13 @@ function html_show_hide_clicker($div_id, $label, $contents)
 *       image_array -   array of "images"; array("url"    =>  string
                                                  "alt"   =>  string)
 ***/
-function html_carousel($image_array)
+function html_carousel($image_array, $div_class="", $images_full_width=TRUE)
 {
 	reset($image_array);
 	$first_key = key($image_array);
 
 	// https://getbootstrap.com/docs/4.1/components/carousel/#with-indicators
-	$r='<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+	$r='<div id="carouselExampleIndicators" class="carousel slide '.$div_class.'" data-ride="carousel">
   <ol class="carousel-indicators">';
     // <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
     // <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
@@ -932,7 +988,7 @@ function html_carousel($image_array)
 		foreach($image_array as $key => $image)
 			$r.='<div class="carousel-item  '.(!strcmp($first_key, $key) ? 'active' : "").'">
 				'.(isset($image['link']) ? '<a href="'.$image['link'].'">' : '').'
-				  <img class="d-block w-100" src="'.$image['url'].'" alt="'.$image['alt'].'">
+				  <img class="d-block '.($images_full_width ? "w-100" : "").'" src="'.$image['url'].'" alt="'.(isset($image['alt']) ? $image['alt'] : "Image").'">
 					'.(isset($image['caption']) ? '<div class="carousel-caption d-none d-md-block">
 						'.$image['caption'].'
 					</div>' :'').

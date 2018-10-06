@@ -1,6 +1,6 @@
 <?php
 
-function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=true, $icon_path=NULL)
+function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=true, $icon_path=NULL, $site_uses_flattr=TRUE)
 {
     
 	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
@@ -85,7 +85,7 @@ function display_friend_request_drop_menu($return_html=FALSE)
 	ob_start();
     
 	if(login_check_logged_in_mini()<1)
-		return 0;
+		return FALSE;
 	
 	if(isset($_SESSION[PREFIX.'user_id']))
 		$requests=user_friend_get_requests($_SESSION[PREFIX.'user_id']);
@@ -107,9 +107,12 @@ function display_friend_request_drop_menu($return_html=FALSE)
 		}
 		else
 			$r_text="";
-		display_dropdown_menu('<span class="glyphicon glyphicon-user"></span>'.$r_text,
+		
+		echo (defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0") ? '<ul class="navbar-nav user-menu-dropdown">' : "");
+		display_dropdown_menu('<span class="glyphicon glyphicon-user oi oi-person" aria-hidden="true"></span>'.$r_text,
 									"user",
 									$r);
+		echo (defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0") ? '</ul>' : "");
 	}
     
     $contents = ob_get_contents();
@@ -229,8 +232,8 @@ function display_dropdown_menu($name, $slug, $subpages)
 				echo '<div class="dropdown-divider"></div>';
 			else if(!strcmp($s_content['slug'],"logout"))
 				echo '<a class="dropdown-item" href="'.SITE_URL.'/?'.$s_content['slug'].'">'._($s_name).'</a>';
-            else if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
-                echo '<a class="dropdown-item" href="'.SITE_URL.'/'.$slug.'/'.$s_content['slug'].'">'._($s_name).'</a>';
+			else if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
+				echo '<a class="dropdown-item" href="'.SITE_URL.'/'.$slug.'/'.$s_content['slug'].'">'._($s_name).'</a>';
         }
         echo '
                 </div>

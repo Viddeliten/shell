@@ -100,8 +100,6 @@ function privmess_display($return_html=FALSE)
 		
         return TRUE;
 	}
-	else
-		echo preprint("NOT BOOTSTRAP_VERSION");
     
 	// http://getbootstrap.com/javascript/#tabs (works with v3.3.4)
 	echo '
@@ -182,8 +180,6 @@ function privmess_display_single_message($message_id, $return_html)
                 }
 				
 				echo '
-				<div class="row">
-					<div class="col-xm-12">
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								<p class="author">';
@@ -223,8 +219,6 @@ function privmess_display_single_message($message_id, $return_html)
 							}
 							echo '
 							</div>
-						</div>
-					</div>
 				</div>';
 			}
 			else
@@ -317,9 +311,7 @@ function privmess_display_inbox($receiver_id, $return_html=FALSE)
 {
     ob_start();
     
-	echo '<div class="row">
-		<div class="col-xs-12">
-			<h1>'._("Inbox").'</h1>';
+	echo '<h1>'._("Inbox").'</h1>';
 	
 	//Get all messages
 	$sql="SELECT id, sender, sent, subject, opened
@@ -368,10 +360,6 @@ function privmess_display_inbox($receiver_id, $return_html=FALSE)
 			echo '</table>';
 	}
 	
-	echo '
-		</div>
-	</div>';
-    
     $contents = ob_get_contents();
 	ob_end_clean();
 	

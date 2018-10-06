@@ -49,9 +49,19 @@ function user_receive()
 	}
 	else if(isset($_POST['profile_save']))
 	{
+        if(function_exists("user_profile_edit_receive"))
+            $user_profile_edit_receive = user_profile_edit_receive();
+        else
+            $user_profile_edit_receive = TRUE;
+        
 		$sql="UPDATE ".PREFIX."user SET description='".sql_safe($_POST['description'])."' WHERE id=".sql_safe($_SESSION[PREFIX.'user_id']).";";
 		if(mysql_query($sql))
-			add_message(_("Profile updated"));
+        {
+            if($user_profile_edit_receive)
+                add_message(_("Profile updated"));
+            else
+                add_error(_("There was an error updating your things"));
+        }
 		else
 			add_error(sprintf(_("Profile update fail<br />SQL: %s<br />ERROR: %s"),$sql,mysql_error()));
 	}
@@ -264,6 +274,7 @@ function user_display_profile($user_id)
 					<img class="avatar" src="'.$user_image.'">
 				</div>
 			</div>
+            '.(function_exists("user_profile_edit_inputs") ? user_profile_edit_inputs() : "").'
 			<input type="submit" class="btn btn-success" name="profile_save" value="'._("Save").'">
 		</form>';
 	}
@@ -947,6 +958,7 @@ function user_get_browser()
 		$platform = 'windows';
 	}
 	// Next get the name of the useragent yes seperately and for good reason
+	$ub="";
 	if(preg_match('/MSIE/i',$u_agent) && !preg_match('/Opera/i',$u_agent)) {
 		$bname = 'Internet Explorer';
 		$ub = "MSIE";
