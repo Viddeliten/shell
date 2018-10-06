@@ -32,8 +32,10 @@ define('USER_MESSAGE_MAIL_SENDING', FALSE); //Set this to true if you have teste
 /********************************/
 /*			database			*/
 /********************************/
-define("db_pass", "");
+define("granted_db_user", "");
+define("granted_db_pass", "");
 define("db_user", "");
+define("db_pass", "");
 define("db_host", "localhost"); //If database is on same server as web files, leave this line as it is.
 define("db_name", "");
 
