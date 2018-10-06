@@ -92,7 +92,7 @@ function user_display_dropdown()
 	$subpages[_("Profile")]=array("slug" => "profile");
 	$subpages[_("Settings")]=array("slug" => "settings");
 	$subpages["dropdown-divider"]=array();
-	$subpages[_("Log out")]=array("slug" => "logout");
+	$subpages[_("Log out")]=array("slug" => "?logout");
     
 	$name=$_SESSION[PREFIX."username"]; 
 	if($badge_total>0)

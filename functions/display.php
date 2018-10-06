@@ -208,16 +208,19 @@ function display_dropdown_menu($name, $slug, $subpages)
     
     if(!defined("BOOTSTRAP_VERSION") || substr(BOOTSTRAP_VERSION, 0,1)=="3") // v3 (old) type dropdown
     {
+		if(!empty($subpages))
+		{
         echo '<li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">'.$name.'<span class="caret"></span></a>
                           <ul class="dropdown-menu" role="menu">';
                           foreach($subpages as $s_name => $s_content)
                           {
-                                if(!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level'])
+                                if(isset($s_content['slug']) && (!isset($s_content['req_user_level']) || $s_content['req_user_level']<1 || $logged_in_level>=$s_content['req_user_level']))
                                     echo '<li ><a href="'.SITE_URL.'/'.$slug.'/'.$s_content['slug'].'" >'.$s_name.'</a></li>';
                           }
                     echo '</ul>
         </li>';
+		}
     }
     else // version 4.1.0 type dropdown
     {
