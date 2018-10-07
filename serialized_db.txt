@@ -65,7 +65,7 @@ a:22:{i:0;a:2:{s:5:"Table";s:10:"access_log";s:12:"Create Table";s:666:"CREATE T
   `showFlattr` text COLLATE utf8_bin,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:6;a:2:{s:5:"Table";s:17:"messages_to_users";s:12:"Create Table";s:1026:"CREATE TABLE IF NOT EXISTS `messages_to_users` (
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:6;a:2:{s:5:"Table";s:17:"messages_to_users";s:12:"Create Table";s:1159:"CREATE TABLE IF NOT EXISTS `messages_to_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `event` varchar(64) CHARACTER SET latin1 DEFAULT NULL,
   `type` enum('information','success','warning','error') COLLATE utf8_bin NOT NULL DEFAULT 'information',
@@ -76,6 +76,8 @@ a:22:{i:0;a:2:{s:5:"Table";s:10:"access_log";s:12:"Create Table";s:666:"CREATE T
   `once` enum('multiple','one_instance','once') COLLATE utf8_bin NOT NULL DEFAULT 'once' COMMENT 'once=each user will only receive this once,  one_instance=only one instance at once',
   `every_hours` int(11) DEFAULT '0' COMMENT 'how many hours it must be since last message to user of this kind',
   `sendby` varchar(256) COLLATE utf8_bin NOT NULL DEFAULT 'insite_privmess' COMMENT '''email'',''insite_privmess'',''insite_notice''',
+  `active_for` enum('NOONE','SPECIFIC','ALL') COLLATE utf8_bin NOT NULL DEFAULT 'NOONE',
+  `active_for_users` text COLLATE utf8_bin,
   `activated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mess_event_active` (`event`,`activated`)
