@@ -329,6 +329,15 @@ function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=
 		$r.=html_tag("p",html_tag("strong",$label));
 	foreach($options as $value => $option_label)
 	{
+		unset($extra);
+		
+		if(is_array($option_label))
+		{
+			$arr=$option_label;
+			$option_label=$arr['label'];
+			$extra=$arr['extra'];
+		}
+		
 		$r.='<div class="radio">
 		  <label>
 			<input type="radio" name="'.$name.'" id="'.$id."_".$value.'" value="'.$value.'" '.
@@ -338,6 +347,9 @@ function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=
 			$option_label.
 		  '</label>
 		</div>';
+		
+		if(isset($extra))
+			$r.=$extra;
 	}
 	return $r;
 }

@@ -63,7 +63,9 @@ function usermessage_receive()
 			criteria_name='".sql_safe($criteria_name)."',
 			reward='".sql_safe($reward)."',
 			once='".sql_safe($once)."',
-			every_hours='".(isset($_POST['every_hours'])? sql_safe($_POST['every_hours']) : 0)."'
+			every_hours='".(isset($_POST['every_hours'])? sql_safe($_POST['every_hours']) : 0)."',
+			active_for='".strtoupper(sql_safe($_POST['ative_for']))."',
+			active_for_users='".sql_safe($_POST['active_for_users'])."'
 			".$sendby_str.";";
 			
 			// echo "DEBUG1415:<pre>$sql</pre>";
@@ -227,7 +229,18 @@ function usermessage_admin_show_form($SOURCE)
 		
 		<?php
 		$_REQUEST['criteria_name']=(isset($SOURCE['criteria_name'])?$SOURCE['criteria_name']:"");
-		usermessage_criteria_form(); ?>
+		usermessage_criteria_form(); 
+		
+		// form for activating message
+		$options=array();
+		$options["noone"]=_("No one");
+		$value=$SOURCE['active_for_users'];
+		$options["specific"]["label"]="";
+		$options["specific"]["extra"]=html_form_input("active_for_users_text", _("Active for users"), "text", "active_for_users", $value, _("Comma separated usernames"));
+		$options["all"]=_("All");
+		$selected=strtolower($SOURCE['ative_for']);
+		echo html_form_radio(_("Active for"), "ative_for_radio", "ative_for", $options, $selected);
+		?>
 		
 		<br /><input class="btn btn-success" type='submit' name='add_message' value='Save this message'>
 	</form>
@@ -602,19 +615,35 @@ function usermessage_check_messages($user_id=NULL)
 	else
 		$users=user_get_all("all"); //Used to be just active, but we want to send to inactives too. 
 
-	$sql="SELECT event FROM ".PREFIX."messages_to_users GROUP BY event;";
+	$sql="SELECT max.event, active_for, active_for_users 
+		FROM ".PREFIX."messages_to_users 
+		INNER JOIN (SELECT `event`, MAX(`activated`) as max_activated FROM ".PREFIX."messages_to_users GROUP BY `event`) max 
+			ON ".PREFIX."messages_to_users.`event`=max.`event` AND max.max_activated=".PREFIX."messages_to_users.activated;";
 	if($mm=mysql_query($sql))
 	{
 		while($m=mysql_fetch_array($mm))
 		{
-			
-			foreach($users as $user)
-			{			
-				// echo "<br />DEBUG1537: usermessage_check_criteria(".$user.", ".$m['event'].")";
-				if(usermessage_check_criteria($user, $m['event']))
+			if(strcmp($m['active_for'],"NOONE")) // Inactive messages are skipped
+			{
+				if(!empty($m['active_for_users']))
 				{
-					// echo "<br />SEND ".$m['event']."!!!";
-					usermessage_send_to_user($user, $m['event']);
+					$m['active_for_users']=str_replace(" ","",$m['active_for_users']);
+					$specific_user_names=explode(",",$m['active_for_users']);
+					$specific_users=array();
+					foreach($specific_user_names as $username)
+						$specific_users[]=user_get_id_from_username($username);
+				}
+				foreach($users as $user)
+				{			
+					if(!strcmp($m['active_for'],"ALL") || in_array($user, $specific_users))
+					{
+						// echo "<br />DEBUG1537: usermessage_check_criteria(".$user.", ".$m['event'].")";
+						if(usermessage_check_criteria($user, $m['event']))
+						{
+							// echo "<br />SEND ".$m['event']."!!!";
+							usermessage_send_to_user($user, $m['event']);
+						}
+					}
 				}
 			}
 		}
