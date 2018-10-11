@@ -172,10 +172,10 @@ function comment_html_list_users_latest($user_id, $only_last_24_hours=TRUE, $lim
 {
 	if($only_last_24_hours)
 	{
-		$table=PREFIX."comment_for_alert";
+		$table="comment_for_alert";
 	}
 	else
-		$table=PREFIX."comment_related_to_users";
+		$table="comment_related_to_users";
 	
 	$sql="SELECT new_comment_id, type_commented_on, id_commented_on FROM ".$table." WHERE affected_user_id=".sql_safe($user_id)." 
     ORDER BY `time`ASC LIMIT ".sql_safe($offset).", ".sql_safe($limit).";";

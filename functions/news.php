@@ -154,7 +154,7 @@ function news_show($max_nr=10, $extra_headline="", $extra_headline_size=2)
 		{
 			while($news = mysql_fetch_array($nn))
 			{
-				accesslogg_log("news", $news['id']);
+				accesslog_log("news", $news['id']);
 				news_display_post($news['id'], $news['headline'], $news['published'], $news['author'], $news['text'], $extra_headline_size);
 				// echo "<div class=\"news_post\">";
 				// echo "<h$extra_headline_size>$news[headline]</h$extra_headline_size>";

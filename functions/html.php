@@ -9,9 +9,9 @@ function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id
 	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles, $div_id, $html_format_text);
 }
 
-function html_img($source)
+function html_img($source, $alt="image", $height=NULL, $width=NULL)
 {
-	return '<img src="'.$source.'" />';
+	return '<img src="'.$source.'" alt="'.$alt.'" '.($height!=NULL ? ' height="'.$height.'"': "").($width!=NULL ? ' width="'.$width.'"': "").'/>';
 }
 
 function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=false, $div_id=NULL, $html_format_text=TRUE)
