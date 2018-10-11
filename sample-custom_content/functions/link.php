@@ -1,6 +1,4 @@
 <?php
-//TODO: EOL on this file
-
 /*	Function name:		link_get_custom_comment_link_url
 /*	Purpose:			Provide links to specific comments under things that is not part of shell structure
 /*	Parameters:			$comment_id		Id of the comment
