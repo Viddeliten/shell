@@ -64,7 +64,7 @@ function usermessage_receive()
 			reward='".sql_safe($reward)."',
 			once='".sql_safe($once)."',
 			every_hours='".(isset($_POST['every_hours'])? sql_safe($_POST['every_hours']) : 0)."',
-			active_for='".strtoupper(sql_safe($_POST['ative_for']))."',
+			active_for='".strtoupper(sql_safe($_POST['active_for']))."',
 			active_for_users='".sql_safe($_POST['active_for_users'])."'
 			".$sendby_str.";";
 			
@@ -238,8 +238,8 @@ function usermessage_admin_show_form($SOURCE)
 		$options["specific"]["label"]="";
 		$options["specific"]["extra"]=html_form_input("active_for_users_text", _("Active for users"), "text", "active_for_users", $value, _("Comma separated usernames"));
 		$options["all"]=_("All");
-		$selected=strtolower($SOURCE['ative_for']);
-		echo html_form_radio(_("Active for"), "ative_for_radio", "ative_for", $options, $selected);
+		$selected=strtolower($SOURCE['active_for']);
+		echo html_form_radio(_("Active for"), "active_for_radio", "active_for", $options, $selected);
 		?>
 		
 		<br /><input class="btn btn-success" type='submit' name='add_message' value='Save this message'>
@@ -250,13 +250,11 @@ function usermessage_admin_show_form($SOURCE)
 function usermessage_criteria_save($criteria_name, $criteria_arr)
 {
 	$checkarr=array();
-	
+    
 	foreach($criteria_arr as $c)
 	{
 		if($c['table_name']!="")
 		{
-			add_message("<pre>".print_r($c,1)."</pre>");
-			
 			//Check that it doesn't already exist
 			if(strcmp($c['table_name'],PREFIX."user_setting"))
 			{
@@ -266,7 +264,11 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 					AND table_name='".sql_safe($c['table_name'])."'
 					AND user_column='".sql_safe($c['user_column'])."'
 					AND count_required='".sql_safe($c['count_required'])."'
-					AND table_where='".sql_safe($c['table_where'])."'";
+					AND (table_where='".sql_safe($c['table_where'])."'";
+                if($c['table_where']==NULL || $c['table_where']=='')
+					$sql.=" OR table_where IS NULL";
+                $sql.=")";
+                // add_message(prestr($sql,"sql"));
 			
 				if($dd=mysql_query($sql))
 				{
@@ -294,35 +296,49 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 					$user_column=$custom_setting_type;
 					foreach($custom_settings as $setting => $v)
 					{
-						$table_where=$setting;
-						$count_required=$v['value'];
+                        if(isset($v['checked'])) // don't save if not checked.
+                        {
+                            $table_where=$setting;
+                            $count_required=$v['value'];
 
-						$sql="SELECT id 
-						FROM ".PREFIX."criteria
-						WHERE name='".sql_safe($criteria_name)."'
-						AND table_name='".sql_safe($c['table_name'])."'
-						AND user_column='".sql_safe($user_column)."'
-						AND table_where='".sql_safe($table_where)."'
-						AND count_required='".sql_safe($count_required)."';";
-						
-						if($dd=mysql_query($sql))
-						{
-							if(mysql_affected_rows()<1)
-							{
-								$sql="INSERT INTO ".PREFIX."criteria SET 
-								name='".sql_safe($criteria_name)."',
-								 table_name='".sql_safe($c['table_name'])."',
-								 user_column='".sql_safe($user_column)."',
-								 count_required='".sql_safe($count_required)."',
-								 table_where='".sql_safe($table_where)."'";
-							
-								if(!mysql_query($sql))
-								{
-									add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
-								}
-							}
-						}
-						$checkarr[]=$c['table_name'].",".$user_column.",".$table_where.",".($count_required ? $count_required : 0);
+                            $sql="SELECT id 
+                            FROM ".PREFIX."criteria
+                            WHERE name='".sql_safe($criteria_name)."'
+                            AND table_name='".sql_safe($c['table_name'])."'
+                            AND user_column='".sql_safe($user_column)."'
+                            AND table_where='".sql_safe($table_where)."'
+                            AND count_required='".sql_safe($count_required)."';";
+                            
+                            if($dd=mysql_query($sql))
+                            {
+                                if(mysql_affected_rows()<1)
+                                {
+                                    $sql="INSERT INTO ".PREFIX."criteria SET 
+                                    name='".sql_safe($criteria_name)."',
+                                     table_name='".sql_safe($c['table_name'])."',
+                                     user_column='".sql_safe($user_column)."',
+                                     count_required='".sql_safe($count_required)."',
+                                     table_where='".sql_safe($table_where)."'";
+                                
+                                    if(!mysql_query($sql))
+                                    {
+                                        add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
+                                    }
+                                }
+                            }
+                            $checkarr[]=$c['table_name'].",".$user_column.",".$table_where.",".($count_required ? $count_required : 0);
+                        }
+                        else
+                        {
+                            // If not checked, remove all that fits on this, so you can remove settings.
+                            $sql="DELETE
+                            FROM ".PREFIX."criteria
+                            WHERE name='".sql_safe($criteria_name)."'
+                            AND table_name='".sql_safe($c['table_name'])."'
+                            AND user_column='".sql_safe($user_column)."'
+                            AND table_where='".sql_safe($table_where)."';";
+                            mysql_query($sql);
+                        }
 					}
 				}
 			}
@@ -487,7 +503,7 @@ function usermessage_criterias_form_row($nr_id, $SOURCE=NULL, $criteria_name=NUL
 					{
 						$checkbox = html_form_checkbox($label, //label
 								"custom_setting_".$nr_id."_".$cs_type."_".$s."_checkbox",//id
-								"criteria[".$nr_id."][custom_setting][".$cs_type."][".$s."]", //name
+								"criteria[".$nr_id."][custom_setting][".$cs_type."][".$s."][checked]", //name
 								(isset($current_custom_option[$cs_type][$s]) ? TRUE : FALSE) //Checked ToDO: fixa så den är TRUE om det här valet är valt
 							);
 						$radio= html_form_radio(NULL, //_("Must be set/unset"), //label
@@ -602,6 +618,8 @@ function usermessage_get_custom_options($criteria_name)
 
 /************************************************************************************************/
 /*	Function: usermessage_check_messages														*/
+/*	checks for default messages in database and adds missing ones.								*/
+/*	Does not change default messages if they are existing										*/
 /*	checks for messages to send to specific user (or if user_id is NULL, all users)				*/
 /*	If criterias are met, messages are sent.													*/
 /*	Call this from your cron if you have messages that should be sent to users regardless of if	*/
@@ -609,6 +627,52 @@ function usermessage_get_custom_options($criteria_name)
 /************************************************************************************************/
 function usermessage_check_messages($user_id=NULL)
 {
+/*	check for default messages in database and adds missing ones.								*/
+	$default_messages=array();
+	
+	$default_messages['first_login']['event']="Default: User first log in";
+	$default_messages['first_login']['message_values']['event']=$default_messages['first_login']['event'];
+	$default_messages['first_login']['message_values']['type']="information";
+	$default_messages['first_login']['message_values']['subject']="Welcome to [SITE_NAME]";
+	$default_messages['first_login']['message_values']['message']="You are most welcome as a user!";
+	$default_messages['first_login']['message_values']['criteria_name']="first_login";
+	$default_messages['first_login']['message_values']['sendby']="insite_privmess,insite_notice,email";
+	$default_messages['first_login']['criteria_values'][0]['name']=$default_messages['first_login']['message_values']['criteria_name'];
+	$default_messages['first_login']['criteria_values'][0]['table_name']="user";
+	$default_messages['first_login']['criteria_values'][0]['user_column']="id";
+	$default_messages['first_login']['criteria_values'][0]['table_where']="lastlogin IS NOT NULL";
+	$default_messages['first_login']['criteria_values'][0]['count_required']=1;
+	
+	$default_message=array();
+	$default_message['event']="Default: Notice on comment";
+	$default_message['message_values']['event']=$default_message['event'];
+	$default_message['message_values']['type']="information";
+	$default_message['message_values']['subject']="You have new comments on [SITE_NAME]";
+	$default_message['message_values']['message']="Log in to [SITE_URL] to read comments on:
+FUNCTION:comment_html_list_users_latest(USER_ID, TRUE, 20, 0)"; // List commented stuff
+	$default_message['message_values']['criteria_name']="new_comment";
+	$default_message['message_values']['sendby']="email";
+	$default_message['criteria_values'][0]['name']=$default_message['message_values']['criteria_name'];
+	$default_message['criteria_values'][0]['table_name']="comment_for_alert";
+	$default_message['criteria_values'][0]['user_column']="affected_user_id";
+	$default_message['criteria_values'][0]['table_where']=NULL;
+	$default_message['criteria_values'][0]['count_required']=1;
+	$default_messages['new_comment']=$default_message;
+	
+	foreach($default_messages as $message)
+	{
+		// If there is no event with the name, insert it.
+		if(sql_get_single("id", PREFIX."messages_to_users", "event='".$message['event']."'")==NULL)
+		{
+			sql_insert(PREFIX."messages_to_users", $message['message_values'], NULL, "insert_".$message['event'], FALSE, TRUE);
+			foreach($message['criteria_values'] as $key => $criteria_values)
+			{
+				sql_insert(PREFIX."criteria", $criteria_values, NULL, "insert_criteria_".$key."_".$message['event'], FALSE, TRUE);
+			}
+		}
+	}
+
+/*	check for messages to send to specific user (or if user_id is NULL, all users)				*/
 	$users=array();
 	if($user_id!==NULL)
 		$users[]=$user_id;
