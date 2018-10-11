@@ -648,10 +648,13 @@ function usermessage_check_messages($user_id=NULL)
 	$default_message['message_values']['event']=$default_message['event'];
 	$default_message['message_values']['type']="information";
 	$default_message['message_values']['subject']="You have new comments on [SITE_NAME]";
-	$default_message['message_values']['message']="Log in to [SITE_URL] to read comments on:
+	$default_message['message_values']['message']="Check out the following comments on [SITE_URL]:
+    
 FUNCTION:comment_html_list_users_latest(USER_ID, TRUE, 20, 0)"; // List commented stuff
 	$default_message['message_values']['criteria_name']="new_comment";
 	$default_message['message_values']['sendby']="email";
+	$default_message['message_values']['once']="multiple";
+	$default_message['message_values']['every_hours']=24;
 	$default_message['criteria_values'][0]['name']=$default_message['message_values']['criteria_name'];
 	$default_message['criteria_values'][0]['table_name']="comment_for_alert";
 	$default_message['criteria_values'][0]['user_column']="affected_user_id";
@@ -683,20 +686,22 @@ FUNCTION:comment_html_list_users_latest(USER_ID, TRUE, 20, 0)"; // List commente
 		FROM ".PREFIX."messages_to_users 
 		INNER JOIN (SELECT `event`, MAX(`activated`) as max_activated FROM ".PREFIX."messages_to_users GROUP BY `event`) max 
 			ON ".PREFIX."messages_to_users.`event`=max.`event` AND max.max_activated=".PREFIX."messages_to_users.activated;";
+    
 	if($mm=mysql_query($sql))
 	{
 		while($m=mysql_fetch_array($mm))
 		{
 			if(strcmp($m['active_for'],"NOONE")) // Inactive messages are skipped
 			{
+                $specific_users=array();
 				if(!empty($m['active_for_users']))
 				{
 					$m['active_for_users']=str_replace(" ","",$m['active_for_users']);
 					$specific_user_names=explode(",",$m['active_for_users']);
-					$specific_users=array();
 					foreach($specific_user_names as $username)
 						$specific_users[]=user_get_id_from_username($username);
 				}
+                
 				foreach($users as $user)
 				{			
 					if(!strcmp($m['active_for'],"ALL") || in_array($user, $specific_users))
@@ -721,7 +726,7 @@ function usermessage_check_criteria($user, $message_event)
 	
 	//Hämta alla kriterier från den senast sparade av den typen av event
 	$sql="SELECT criteria_name, once, sendby FROM ".PREFIX."messages_to_users WHERE event='".sql_safe($message_event)."' ORDER BY activated DESC LIMIT 0,1;";
-	// echo "<br />DEBUG1310: $sql";
+
 	if($mm=mysql_query($sql))
 	{
 		if($m=mysql_fetch_array($mm))
@@ -868,6 +873,7 @@ function usermessage_send_to_user($user, $message_event)
 				return 0;
 			
 			$message=usermessage_text_processing($m['message'], $user);
+			$m['subject']=usermessage_text_processing($m['subject'], $user);
 			
 			$adress="";
 			$sendby=explode(",",$m['sendby']);
