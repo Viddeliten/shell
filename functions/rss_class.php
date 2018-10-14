@@ -41,14 +41,15 @@ class RSS
   
  private function getItems()
  {
+     $db=new db_class();
   $itemsTable = PREFIX."news";
   $query = "SELECT * FROM ". $itemsTable."
 	WHERE published<NOW()
 	ORDER BY published DESC, id DESC
 	LIMIT 30;";
-  $result = mysql_db_query (db_name, $query, LINK);
+  $result = $db->select($query);
   $items = '';
-  while($row = mysql_fetch_array($result))
+    foreach($result as $row)
   {
    $items .= '<item>
     <title>'. $row["headline"] .'</title>

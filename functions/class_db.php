@@ -9,6 +9,7 @@ class db_class
     private $connection;
 	public $insert_id;
 	public $error;
+    public $affected_rows;
     
     function __construct($db_server=NULL, $db_database=NULL, $db_username=NULL, $db_password=NULL)
     {
@@ -44,6 +45,13 @@ class db_class
 		$updates=array();
 		foreach($values as $key => $val)
 		{
+            if($val===NULL)
+                $val="NULL";
+            if($val===TRUE)
+                $val="TRUE";
+            if($val===FALSE)
+                $val="FALSE";
+
 			if(!in_array($val, array("NOW()", "NULL", "TRUE", "FALSE")))
 				$val="'".sql_safe($val)."'";
 			else 
@@ -52,7 +60,6 @@ class db_class
 			$updates[]='`'.sql_safe($key)."`=".$val;
 		}
 		$sql="INSERT INTO ".sql_safe($table)." SET ".implode(", ",$updates).";";
-
 		return $this->insert($sql);
 	}
 	public function get_from_array($table, $values, $just_first=FALSE)
@@ -85,7 +92,10 @@ class db_class
     { 
 		$result=$this->connection->query($query);
 		if($result)
+        {
 			$this->error=NULL;
+            $this->affected_rows=$this->connection->affected_rows;
+        }
 		else
 			$this->error=$query." : ".$this->connection->error;
 		return $result;
@@ -172,9 +182,36 @@ if(!function_exists("mysql_query"))
 {
 	function mysql_query($query)
 	{
-		$mysqli = new mysqli("p:".db_host, db_user, db_pass, db_name); //VIDDEWEBB_DB_NAME);
-		return $mysqli->query($query);
+		$connection = new db_class(db_host, db_name, db_user, db_pass); //VIDDEWEBB_DB_NAME);
+		return $connection->query($query);
 	}
+    
+    function mysql_error()
+    {
+		$connection = new db_class(db_host, db_name, db_user, db_pass);
+		return $connection->error;
+    }
+    
+    function mysql_fetch_array($result)
+    {
+        return $result->fetch_assoc();
+    }
+    
+    function mysql_fetch_assoc($result)
+    {
+        return mysql_fetch_array($result);
+    }
+    
+    function mysql_affected_rows()
+    {
+		$db = new db_class(db_host, db_name, db_user, db_pass);
+		return $db->affected_rows;
+    }
+    
+    function mysql_close($connection)
+    {
+        // ignore
+    }
 }
 
 ?>
