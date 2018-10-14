@@ -172,7 +172,7 @@ if(!function_exists("mysql_query"))
 {
 	function mysql_query($query)
 	{
-		$mysqli = new mysqli("p:".db_host, db_user, db_pass, VIDDEWEBB_DB_NAME);
+		$mysqli = new mysqli("p:".db_host, db_user, db_pass, db_name); //VIDDEWEBB_DB_NAME);
 		return $mysqli->query($query);
 	}
 }

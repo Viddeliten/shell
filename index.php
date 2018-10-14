@@ -1,4 +1,5 @@
 <?php
+
 //Check for api call first
 require_once("functions/api.php");
 if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['p']),"api"))
@@ -108,28 +109,21 @@ else
 	{
 		include(CUSTOM_CONTENT_PATH."/index.php");
 	}
-	else
+    else
 	{
-		display_topline_menu(); ?>
-		
-		<div class="container" id="main_container">
-			<div id="content">
-				<?php 
-					display_conditional_login();
-				?>
-				<?php 
-				
-				include("content.php"); ?>
-				<div class="clearfix"></div>
-			</div>
-
-			<?php //Footer
-			display_footer(); ?>
-			
-		</div><!-- /.container -->
-	
-	<?php 
-	}
+        display_topline_menu();
+        echo '<div class="container" id="main_container">
+			<div id="content">';
+        display_conditional_login();
+        
+        include("content.php");
+        echo '<div class="clearfix"></div>
+            </div>';
+        //Footer
+        display_footer();
+        echo '</div><!-- /.container -->';
+    }
+       
 	// usermessage_check_messages();
 	db_close($connection); ?>
 	
@@ -144,7 +138,8 @@ else
         s.src = '//api.flattr.com/js/0.6/load.js?mode=auto';
         t.parentNode.insertBefore(s, t);
     })();
-/* ]]> */</script>
+/* ]]> */ 
+</script>
 <!-- Slut Flattr-stuff -->
 
 <!-- Google Analytics -->
@@ -178,7 +173,7 @@ if(defined('PINGDOM_SCRIPT'))
 
     <?php if(file_exists(CUSTOM_CONTENT_PATH."/functions/functions.js")) { ?>
         <script src="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH."/functions/functions.js?v=".date("YmdHis"); ?>"></script>	
-    <?php }
+    <?php  }
     
  //Clearfix just in case
 	echo '<div class="clearfix"></div>';

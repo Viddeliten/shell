@@ -8,6 +8,14 @@ if(!function_exists("sql_safe"))
 		return $str;
 	}
 }
+if(!function_exists("mysql_real_escape_string"))
+{
+    function mysql_real_escape_string($str)
+    {
+        return addslashes($str);
+    }
+}
+
 function number_safe($number, $decimals=20)
 {
     return number_format($number, $decimals, ".", "");
