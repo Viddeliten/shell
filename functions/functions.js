@@ -10,6 +10,28 @@ function replace_html_div(div_id_to, path)
 		$( '#' + div_id_to ).replaceWith();
 }
 
+function datestring_from_date(d)
+{
+    var month=d.getMonth()+1;
+    if(month<10)
+        month='0' + month;
+    var day=d.getDate();
+    if(day<10)
+        day='0' + day;
+    var hour=d.getHours();
+    if(hour<10)
+        hour='0' + hour;
+    var minute=d.getMinutes();
+    if(minute<10)
+        minute='0' + minute;
+    var second=d.getSeconds();
+    if(second<10)
+        second='0' + second;
+    
+    return '' + d.getFullYear() + month + day + hour + minute + second;
+
+}
+
 function replace_html_div_inner(div_id_to, path)
 {
 	if(path !== undefined)
@@ -187,6 +209,20 @@ function carouselNormalization() {
 			normalizeHeights(); //run it again 
 		});
 	}
+}
+
+function dump(obj) {
+    var out = '';
+    for (var i in obj) {
+        out += i + ": " ;
+        if(obj[i] !== null && typeof obj[i] === 'object')
+            out += dump(obj[i]);
+        else
+            out += obj[i];
+        out += "\n";
+    }
+    
+    return out;
 }
 
 $(document).ready(function() {

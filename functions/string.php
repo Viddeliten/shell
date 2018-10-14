@@ -8,6 +8,10 @@ if(!function_exists("sql_safe"))
 		return $str;
 	}
 }
+function number_safe($number, $decimals=20)
+{
+    return number_format($number, $decimals, ".", "");
+}
 
 function password_generate($len)
 {

@@ -175,9 +175,11 @@ if(defined('PINGDOM_SCRIPT'))
     <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.js"></script>
     <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.js"></script> <?php } ?>
-	
+
+    <?php if(file_exists(CUSTOM_CONTENT_PATH."/functions/functions.js")) { ?>
+        <script src="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH."/functions/functions.js?v=".date("YmdHis"); ?>"></script>	
+    <?php }
     
-<?php
  //Clearfix just in case
 	echo '<div class="clearfix"></div>';
 ?>
