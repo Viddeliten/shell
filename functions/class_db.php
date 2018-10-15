@@ -207,7 +207,18 @@ if(!function_exists("mysql_query"))
     
     function mysql_fetch_array($result)
     {
-        return $result->fetch_assoc();
+        $assoc=$result->fetch_assoc();
+        $return=array();
+        $i=0;
+        if(!empty($assoc))
+        {
+            foreach($assoc as $key => $val)
+            {
+                $return[$i]=$val;
+                $i++;
+            }
+        }
+        return $return;
     }
     
     function mysql_fetch_assoc($result)
