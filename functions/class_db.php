@@ -9,6 +9,7 @@ class db_class
     private $connection;
 	public $insert_id;
 	public $error;
+    public $affected_rows;
     
     function __construct($db_server=NULL, $db_database=NULL, $db_username=NULL, $db_password=NULL)
     {
@@ -42,25 +43,45 @@ class db_class
 	public function insert_from_array($table, $values)
 	{
 		$updates=array();
+        $values=$this->prepare_array_for_query($values, false);
 		foreach($values as $key => $val)
 		{
-			if(!in_array($val, array("NOW()", "NULL", "TRUE", "FALSE")))
-				$val="'".sql_safe($val)."'";
-			else 
-				$val=sql_safe($val);
-
-			$updates[]='`'.sql_safe($key)."`=".$val;
+			$updates[]='`'.sql_safe($key)."`".$val;
 		}
 		$sql="INSERT INTO ".sql_safe($table)." SET ".implode(", ",$updates).";";
-
 		return $this->insert($sql);
 	}
+    
+    private function prepare_array_for_query($array, $change_to_is=true)
+    {
+        foreach($array as $key => $val)
+		{
+            if($val===NULL)
+                $val="NULL";
+            if($val===TRUE)
+                $val="TRUE";
+            if($val===FALSE)
+                $val="FALSE";
+
+			if(!in_array($val, array("NOW()", "NOT NULL", "NULL", "TRUE", "FALSE")))
+				$val="='".sql_safe($val)."'";
+            else if(in_array($val, array("NOT NULL", "NULL")) && $change_to_is)
+				$val=" IS ".$val;
+			else 
+				$val="=".$val;
+            $array[$key]=$val;
+        }
+
+        return $array;
+    }
+    
 	public function get_from_array($table, $values, $just_first=FALSE)
 	{
 		$requirements=array();
+        $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
-			$requirements[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
 		$sql="SELECT * FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 
@@ -72,9 +93,10 @@ class db_class
 	public function delete_from_array($table, $values)
 	{
 		$requirements=array();
+        $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
-			$requirements[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
 		$sql="DELETE FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 
@@ -85,7 +107,10 @@ class db_class
     { 
 		$result=$this->connection->query($query);
 		if($result)
+        {
 			$this->error=NULL;
+            $this->affected_rows=$this->connection->affected_rows;
+        }
 		else
 			$this->error=$query." : ".$this->connection->error;
 		return $result;
@@ -146,12 +171,10 @@ class db_class
 	public function update_from_array($table, $values, $id)
 	{
 		$updates=array();
+        $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
-			if(!in_array($val, array("NOW()", "NULL", "TRUE", "FALSE")))
-				$updates[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
-			else
-				$updates[]='`'.sql_safe($key)."`=".$val;
+            $updates[]='`'.sql_safe($key)."`".$val;
 		}
 		$sql="UPDATE ".sql_safe($table)." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
 
@@ -172,9 +195,47 @@ if(!function_exists("mysql_query"))
 {
 	function mysql_query($query)
 	{
-		$mysqli = new mysqli("p:".db_host, db_user, db_pass, db_name); //VIDDEWEBB_DB_NAME);
-		return $mysqli->query($query);
+		$connection = new db_class(db_host, db_name, db_user, db_pass); //VIDDEWEBB_DB_NAME);
+		return $connection->query($query);
 	}
+    
+    function mysql_error()
+    {
+		$connection = new db_class(db_host, db_name, db_user, db_pass);
+		return $connection->error;
+    }
+    
+    function mysql_fetch_array($result)
+    {
+        $assoc=$result->fetch_assoc();
+        $return=array();
+        $i=0;
+        if(!empty($assoc))
+        {
+            foreach($assoc as $key => $val)
+            {
+                $return[$i]=$val;
+                $i++;
+            }
+        }
+        return $return;
+    }
+    
+    function mysql_fetch_assoc($result)
+    {
+        return mysql_fetch_array($result);
+    }
+    
+    function mysql_affected_rows()
+    {
+		$db = new db_class(db_host, db_name, db_user, db_pass);
+		return $db->affected_rows;
+    }
+    
+    function mysql_close($connection)
+    {
+        // ignore
+    }
 }
 
 ?>
