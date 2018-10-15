@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `comment` (
   `nick` varchar(32) COLLATE utf8_bin DEFAULT NULL,
   `email` varchar(64) COLLATE utf8_bin DEFAULT NULL,
   `url` varchar(128) COLLATE utf8_bin DEFAULT NULL,
-  `IP` varchar(32) COLLATE utf8_bin DEFAULT NULL,
+  `IP` varchar(64) COLLATE utf8_bin DEFAULT NULL,
   `flattrID` varchar(32) COLLATE utf8_bin DEFAULT NULL,
   `comment` text COLLATE utf8_bin,
   `added` datetime NOT NULL,
