@@ -82,6 +82,8 @@ function version_increase($amount)
 
 function version_add_unlinked_feedbacks_to_latest($time)
 {
+    $db=new db_class();
+    
 	$sql="SELECT id, resolved FROM ".PREFIX."feedback WHERE resolved>'".sql_safe($time)."';";
 	// echo "<br />DEBUG1351: $sql";
 	if($ff=$db->select($sql))
@@ -150,6 +152,8 @@ function version_show_linked_number($before_str, $link_class="", $return_html=FA
 
 function version_show_latest($nr=10)
 {
+    $db=new db_class();
+    
 	$logged_in_level=login_check_logged_in_mini();	
 	
 	echo "<h3>"._("Changelog")."</h3>";
