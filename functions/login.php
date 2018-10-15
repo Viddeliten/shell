@@ -55,7 +55,7 @@ function login_check()
 		if($post=mysql_query($sql))
 		{
 			//Det finns en användare med den e-posten!
-			$user=mysql_fetch_array($post);
+			$user=mysql_fetch_assoc($post);
 			$login=true;
 		}
 		else echo "No user";
@@ -336,7 +336,7 @@ function login_form_password_recovery_set($code)
 	LIMIT 0,1;";
 	if($cc=mysql_query($sql))
 	{
-		if($c=mysql_fetch_array($cc))
+		if($c=mysql_fetch_assoc($cc))
 		{
 			$correct_link=1;
 			$changed=0;
@@ -387,7 +387,7 @@ function login_form_password_recovery_set($code)
 				// echo "<br />DEBUG1317: $sql";
 				if($kk=mysql_query($sql))
 				{
-					if($k=mysql_fetch_array($kk))
+					if($k=mysql_fetch_assoc($kk))
 					{
 						echo "<p>Ange önskade användaruppgifter nedan.</p>";
 						echo "<form method=\"post\" class=\"form-horizontal\">
@@ -440,7 +440,7 @@ function login_create_reset_code($email)
 
 	if($ee=mysql_query($sql))
 	{
-		if($e=mysql_fetch_array($ee))
+		if($e=mysql_fetch_assoc($ee))
 		{
 			//generera en kod
 			$password=password_generate(16);

@@ -110,6 +110,8 @@ class db_class
         {
 			$this->error=NULL;
             $this->affected_rows=$this->connection->affected_rows;
+            if($this->connection->insert_id)
+                $this->insert_id=$this->connection->insert_id;
         }
 		else
 			$this->error=$query." : ".$this->connection->error;
@@ -193,15 +195,34 @@ class db_class
 
 if(!function_exists("mysql_query"))
 {
+    class static_db extends db_class
+    {
+        private static $instance ;
+
+        public function __construct(){
+          if (self::$instance){
+            exit("Instance on static_db already exists.") ;
+          }
+          parent::__construct();
+        }
+
+        public static function getInstance(){
+          if (!self::$instance){
+            self::$instance = new static_db();
+          }
+          return self::$instance ;
+        }
+    }
+
 	function mysql_query($query)
 	{
-		$connection = new db_class(db_host, db_name, db_user, db_pass); //VIDDEWEBB_DB_NAME);
+        $connection = static_db::getInstance();
 		return $connection->query($query);
 	}
     
     function mysql_error()
     {
-		$connection = new db_class(db_host, db_name, db_user, db_pass);
+        $connection = static_db::getInstance();
 		return $connection->error;
     }
     
@@ -214,22 +235,28 @@ if(!function_exists("mysql_query"))
         {
             foreach($assoc as $key => $val)
             {
-                $return[$i]=$val;
+                $assoc[$i]=$val;
                 $i++;
             }
         }
-        return $return;
+        return $assoc;
     }
     
     function mysql_fetch_assoc($result)
     {
-        return mysql_fetch_array($result);
+        return $result->fetch_assoc();
     }
     
     function mysql_affected_rows()
     {
-		$db = new db_class(db_host, db_name, db_user, db_pass);
-		return $db->affected_rows;
+        $connection = static_db::getInstance();
+		return $connection->affected_rows;
+    }
+    
+    function mysql_insert_id()
+    {
+        $connection = static_db::getInstance();
+		return $connection->insert_id;
     }
     
     function mysql_close($connection)
