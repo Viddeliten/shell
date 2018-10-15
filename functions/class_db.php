@@ -43,7 +43,18 @@ class db_class
 	public function insert_from_array($table, $values)
 	{
 		$updates=array();
+        $values=$this->prepare_array_for_query($values, false);
 		foreach($values as $key => $val)
+		{
+			$updates[]='`'.sql_safe($key)."`".$val;
+		}
+		$sql="INSERT INTO ".sql_safe($table)." SET ".implode(", ",$updates).";";
+		return $this->insert($sql);
+	}
+    
+    private function prepare_array_for_query($array, $change_to_is=true)
+    {
+        foreach($array as $key => $val)
 		{
             if($val===NULL)
                 $val="NULL";
@@ -52,22 +63,25 @@ class db_class
             if($val===FALSE)
                 $val="FALSE";
 
-			if(!in_array($val, array("NOW()", "NULL", "TRUE", "FALSE")))
-				$val="'".sql_safe($val)."'";
+			if(!in_array($val, array("NOW()", "NOT NULL", "NULL", "TRUE", "FALSE")))
+				$val="='".sql_safe($val)."'";
+            else if(in_array($val, array("NOT NULL", "NULL")) && $change_to_is)
+				$val=" IS ".$val;
 			else 
-				$val=sql_safe($val);
+				$val="=".$val;
+            $array[$key]=$val;
+        }
 
-			$updates[]='`'.sql_safe($key)."`=".$val;
-		}
-		$sql="INSERT INTO ".sql_safe($table)." SET ".implode(", ",$updates).";";
-		return $this->insert($sql);
-	}
+        return $array;
+    }
+    
 	public function get_from_array($table, $values, $just_first=FALSE)
 	{
 		$requirements=array();
+        $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
-			$requirements[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
 		$sql="SELECT * FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 
@@ -79,9 +93,10 @@ class db_class
 	public function delete_from_array($table, $values)
 	{
 		$requirements=array();
+        $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
-			$requirements[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
 		$sql="DELETE FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 
@@ -156,12 +171,10 @@ class db_class
 	public function update_from_array($table, $values, $id)
 	{
 		$updates=array();
+        $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
-			if(!in_array($val, array("NOW()", "NULL", "TRUE", "FALSE")))
-				$updates[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
-			else
-				$updates[]='`'.sql_safe($key)."`=".$val;
+            $updates[]='`'.sql_safe($key)."`".$val;
 		}
 		$sql="UPDATE ".sql_safe($table)." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
 
