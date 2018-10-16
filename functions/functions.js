@@ -1,7 +1,23 @@
-function replace_html_div(div_id_to, path)
+function replace_html_div(div_id_to, path, async)
 {
 	if(path !== undefined)
 	{
+        if(async !== undefined)
+        {
+            var result=false;
+            $.ajax({
+                url: path,
+                type: 'get',
+                dataType: 'html',
+                async: true,
+                success: function(data) {
+                    $( '#' + div_id_to ).replaceWith( data );
+                    result = true;
+                } 
+             });
+            return result;
+        }
+    
 		$.get( path, function( data ) {
 			$( '#' + div_id_to ).replaceWith( data );
 		});

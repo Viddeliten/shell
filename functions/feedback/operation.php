@@ -1,5 +1,5 @@
 <?php
-session_start();
+@session_start(); // Ignore warnings about session already started when this is included by functions includer script
 
 //Globals
 // require_once("../../globals/db_info.php");
