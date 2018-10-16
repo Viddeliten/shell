@@ -152,6 +152,12 @@ class db_class
     
     public function get($column, $table, $id)
 	{
+        if($column===NULL)
+        {
+            $sql="SELECT * FROM `".$table."` WHERE id=".$id;
+            return $this->select_first($sql);
+        }
+        
 		$result = $this->select("SELECT ".$column." FROM `".$table."` WHERE id=".$id);
 		if(!empty($result) && isset($result[0][$column]))
 		{
