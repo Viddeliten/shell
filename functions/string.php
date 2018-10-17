@@ -583,6 +583,13 @@ function string_file_get_output($filepath, $return_html=true)
 		echo $contents;
 }
 
-
+function strtotime_micro($time_str)
+{
+    $parts=explode(".", $time_str);
+    
+    $seconds=strtotime($parts[0]);
+    
+    return number_safe($seconds+$parts[1]/1000000, 6);
+}
 
 ?>
