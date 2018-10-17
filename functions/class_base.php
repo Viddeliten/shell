@@ -13,7 +13,7 @@ class base_class
 		if($db_connection!=NULL)
 			$this->db=$db_connection;
 		else
-			$this->db=new db_class();
+			$this->db=static_db::getInstance();
 
 		$this->db_table=$db_table_name;
 		
@@ -72,17 +72,19 @@ class base_class
 	
 	public function update($column, $new_value)
 	{
-		$sql="UPDATE `".sql_safe($this->db_table)."` SET 
-				".sql_safe($column)."='".sql_safe($new_value)."'
-			WHERE id=".sql_safe($this->id).";";
-		$result=$this->db->query($sql);
+        $this->db->set($this->db_table, $column, $new_value, $this->id);
+        
+        // $table=PREFIX.sql_safe($this->db_table);
+		// $sql="UPDATE `".$table."` SET 
+				// ".sql_safe($column)."='".sql_safe($new_value)."'
+			// WHERE id=".sql_safe($this->id).";";
+		// $result=$this->db->query($sql);
 		$this->reload();
 	}
 	
 	protected function reload()
 	{
 		$sql="SELECT * FROM `".sql_safe($this->db_table)."` WHERE id=".sql_safe($this->id);
-		// preprint($sql, $this->db_table." reload");
 		$this->data=$this->db->select_first($sql);
 	}
 }

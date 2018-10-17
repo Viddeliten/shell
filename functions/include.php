@@ -13,6 +13,7 @@ function require_all_in_path($path)
 	{
 		if(is_dir($filename) && strcmp(substr($filename,strlen($filename)-1),"."))
 		{
+            // echo "<br />directory: ".$filename;
 			require_all_in_path($filename);
 		}
 		else if(!strcmp(substr($filename,strlen($filename)-4),".php"))

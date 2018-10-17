@@ -4,6 +4,29 @@
 /*      Class for database connection       */
 /*      https://support.loopia.se/wiki/mysqli/      */
 /********************************************/
+class static_db extends db_class
+{
+    private static $instance ;
+
+    public function __construct(){
+      if (self::$instance){
+        exit("Instance on static_db already exists.") ;
+      }
+      parent::__construct();
+    }
+
+    public static function getInstance(){
+      if (!self::$instance){
+        self::$instance = new static_db();
+      }
+      return self::$instance ;
+    }
+    
+    function __destruct() {
+       parent::__destruct();
+   }
+}
+
 class db_class
 {
     private $connection;
@@ -42,13 +65,14 @@ class db_class
 	
 	public function insert_from_array($table, $values)
 	{
+        $table=sql_safe(PREFIX.$table);
 		$updates=array();
         $values=$this->prepare_array_for_query($values, false);
 		foreach($values as $key => $val)
 		{
 			$updates[]='`'.sql_safe($key)."`".$val;
 		}
-		$sql="INSERT INTO ".sql_safe($table)." SET ".implode(", ",$updates).";";
+		$sql="INSERT INTO ".$table." SET ".implode(", ",$updates).";";
 		return $this->insert($sql);
 	}
     
@@ -56,49 +80,91 @@ class db_class
     {
         foreach($array as $key => $val)
 		{
-            if($val===NULL)
-                $val="NULL";
-            if($val===TRUE)
-                $val="TRUE";
-            if($val===FALSE)
-                $val="FALSE";
-
-			if(!in_array($val, array("NOW()", "NOT NULL", "NULL", "TRUE", "FALSE")))
-				$val="='".sql_safe($val)."'";
-            else if(in_array($val, array("NOT NULL", "NULL")) && $change_to_is)
-				$val=" IS ".$val;
-			else 
-				$val="=".$val;
-            $array[$key]=$val;
+            $array[$key]=$this->prepare_value_for_query($val, $change_to_is);
         }
 
         return $array;
     }
     
-	public function get_from_array($table, $values, $just_first=FALSE)
+    private function prepare_value_for_query($value, $change_to_is=true)
+    {
+        if($value===NULL)
+            $value="NULL";
+        if($value===TRUE)
+            $value="TRUE";
+        if($value===FALSE)
+            $value="FALSE";
+        
+        $special_values=array("NOW()", "NOT NULL", "NULL", "TRUE", "FALSE");
+        for($i=1; $i<=6; $i++)
+        {
+            $special_values[]="NOW(".$i.")";
+        }
+
+        if(!in_array($value, $special_values))
+            $value="='".sql_safe($value)."'";
+        else if(in_array($value, array("NOT NULL", "NULL")) && $change_to_is)
+            $value=" IS ".$value;
+        else 
+            $value="=".$value;
+        return $value;
+    }
+    
+	public function get_all($table)
+    {
+        $table=sql_safe(PREFIX.$table);
+        $result=$this->select("SELECT * FROM ".$table);
+        return $result;
+    }
+	public function get_from_array($table, $values, $just_first=FALSE, $single_column=NULL)
 	{
+        $table="`".sql_safe(PREFIX.$table)."`";
+        
+        if($single_column!==NULL)
+            $column="`".sql_safe($single_column)."`";
+        else
+            $column="*";
+        
 		$requirements=array();
         $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
 			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
-		$sql="SELECT * FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+		$sql="SELECT ".$column." FROM ".$table." WHERE ".implode(" AND ",$requirements).";";
 
 		if($just_first)
-			return $this->select_first($sql);
-		
-		return $this->select($sql);
+        {
+			$return=$this->select_first($sql);
+            if($single_column!==NULL)
+                return $return[$single_column];
+            return $return;
+        }
+		else
+        {
+            $result=$this->select($sql);
+            if($single_column!==NULL)
+            {
+                $return=array();
+                foreach($result as $r)
+                {
+                    $return[]=$r[$single_column];
+                }
+                return $return;
+            }
+            return $result;    
+        }
 	}
 	public function delete_from_array($table, $values)
 	{
+        $table=sql_safe(PREFIX.$table);
 		$requirements=array();
         $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
 			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
-		$sql="DELETE FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+		$sql="DELETE FROM ".$table." WHERE ".implode(" AND ",$requirements).";";
 
 		return $this->query($sql);
 	}
@@ -120,6 +186,7 @@ class db_class
 
     public function del($id, $table)
     { 
+        $table=sql_safe(PREFIX.$table);
 		$query="DELETE FROM `".$table."` WHERE id=".$id.";";
 		$result= $this->query($query);
 		return $result;
@@ -152,6 +219,7 @@ class db_class
     
     public function get($column, $table, $id)
 	{
+        $table=sql_safe(PREFIX.$table);
         if($column===NULL)
         {
             $sql="SELECT * FROM `".$table."` WHERE id=".$id;
@@ -169,22 +237,24 @@ class db_class
 	}
     public function set($table, $column, $new_value, $id)
 	{
-		if(!in_array($new_value, array("NOW()", "NULL", "TRUE", "FALSE")))
-			$new_value="'".sql_safe($new_value)."'";
+        $table=sql_safe(PREFIX.$table);
+		$new_value=$this->prepare_value_for_query($new_value, false);
 		
-		$result = $this->query("UPDATE `".sql_safe($table)."` SET `".sql_safe($column)."`=".$new_value." WHERE id=".sql_safe($id));
+        $sql="UPDATE `".$table."` SET `".sql_safe($column)."`".$new_value." WHERE id=".sql_safe($id);
+		$result = $this->query($sql);
 		return $result;
 	}
 	
 	public function update_from_array($table, $values, $id)
 	{
+        $table=sql_safe(PREFIX.$table);
 		$updates=array();
         $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
             $updates[]='`'.sql_safe($key)."`".$val;
 		}
-		$sql="UPDATE ".sql_safe($table)." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
+		$sql="UPDATE ".$table." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
 
 		return $this->query($sql);
 	}
@@ -201,24 +271,7 @@ class db_class
 
 if(!function_exists("mysql_query"))
 {
-    class static_db extends db_class
-    {
-        private static $instance ;
 
-        public function __construct(){
-          if (self::$instance){
-            exit("Instance on static_db already exists.") ;
-          }
-          parent::__construct();
-        }
-
-        public static function getInstance(){
-          if (!self::$instance){
-            self::$instance = new static_db();
-          }
-          return self::$instance ;
-        }
-    }
 
 	function mysql_query($query)
 	{
