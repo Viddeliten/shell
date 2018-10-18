@@ -56,19 +56,13 @@ class base_class
 	}
 	public function update_from_arr($values)
 	{
-		$vals=array();
-		foreach($values as $key => $val)
-		{
-			$vals[]="`".sql_safe($key)."`='".sql_safe($val)."'";
-		}
-		$sql="UPDATE ".sql_safe($this->db_table)." SET ".implode(", ",$vals)."
-			WHERE id=".sql_safe($this->id).";";
-		echo str_replace("\n","<br />",prestr($sql,"base_class->update_from_arr"));
-		$result = $this->db->query($sql);
-		echo str_replace("\n","<br />",prestr($result,"base_class->update_from_arr result"));
-		$this->reload();
-		return $result;
+		return $this->db->update_from_array($this->db_table, $values, $this->id);
 	}
+    
+    public function select_from_array($values, $just_first=FALSE, $single_column=NULL)
+    {
+        return $this->db->select_from_array($this->db_table, $values, $just_first, $single_column);
+    }
 	
 	public function update($column, $new_value)
 	{

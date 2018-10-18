@@ -63,6 +63,20 @@ class db_class
 		return $result;
 	}
 	
+    public function update_from_array($table, $values, $id)
+	{
+        $table=sql_safe(PREFIX.$table);
+		$updates=array();
+        $values=$this->prepare_array_for_query($values);
+		foreach($values as $key => $val)
+		{
+            $updates[]='`'.sql_safe($key)."`".$val;
+		}
+		$sql="UPDATE ".$table." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
+
+		return $this->query($sql);
+	}
+    
 	public function insert_from_array($table, $values)
 	{
         $table=sql_safe(PREFIX.$table);
@@ -116,6 +130,11 @@ class db_class
         $result=$this->select("SELECT * FROM ".$table);
         return $result;
     }
+    
+	public function select_from_array($table, $values, $just_first=FALSE, $single_column=NULL)
+    {
+        return $this->get_from_array($table, $values, $just_first, $single_column);
+    }
 	public function get_from_array($table, $values, $just_first=FALSE, $single_column=NULL)
 	{
         $table="`".sql_safe(PREFIX.$table)."`";
@@ -132,7 +151,7 @@ class db_class
 			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
 		$sql="SELECT ".$column." FROM ".$table." WHERE ".implode(" AND ",$requirements).";";
-
+echo $sql;
 		if($just_first)
         {
 			$return=$this->select_first($sql);
@@ -243,20 +262,6 @@ class db_class
         $sql="UPDATE `".$table."` SET `".sql_safe($column)."`".$new_value." WHERE id=".sql_safe($id);
 		$result = $this->query($sql);
 		return $result;
-	}
-	
-	public function update_from_array($table, $values, $id)
-	{
-        $table=sql_safe(PREFIX.$table);
-		$updates=array();
-        $values=$this->prepare_array_for_query($values);
-		foreach($values as $key => $val)
-		{
-            $updates[]='`'.sql_safe($key)."`".$val;
-		}
-		$sql="UPDATE ".$table." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
-
-		return $this->query($sql);
 	}
     
     public function close()

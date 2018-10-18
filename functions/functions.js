@@ -44,7 +44,7 @@ function datestring_from_date(d)
     if(second<10)
         second='0' + second;
     
-    return '' + d.getFullYear() + month + day + hour + minute + second;
+    return '' + d.getFullYear() + month + day + hour + minute + second + '000000';
 
 }
 
