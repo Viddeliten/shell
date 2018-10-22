@@ -23,7 +23,7 @@ function api_call_handle()
 			break;
 			default:
 				if(!function_exists("api_custom"))
-					echo "Unknown command";
+					echo "Unknown custom command";
 				else
                 {
                     $custom_result=api_custom();

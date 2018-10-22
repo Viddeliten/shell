@@ -13,7 +13,7 @@ class base_class
 		if($db_connection!=NULL)
 			$this->db=$db_connection;
 		else
-			$this->db=new db_class();
+			$this->db=static_db::getInstance();
 
 		$this->db_table=$db_table_name;
 		
@@ -56,33 +56,29 @@ class base_class
 	}
 	public function update_from_arr($values)
 	{
-		$vals=array();
-		foreach($values as $key => $val)
-		{
-			$vals[]="`".sql_safe($key)."`='".sql_safe($val)."'";
-		}
-		$sql="UPDATE ".sql_safe($this->db_table)." SET ".implode(", ",$vals)."
-			WHERE id=".sql_safe($this->id).";";
-		echo str_replace("\n","<br />",prestr($sql,"base_class->update_from_arr"));
-		$result = $this->db->query($sql);
-		echo str_replace("\n","<br />",prestr($result,"base_class->update_from_arr result"));
-		$this->reload();
-		return $result;
+		return $this->db->update_from_array($this->db_table, $values, $this->id);
 	}
+    
+    public function select_from_array($values, $just_first=FALSE, $single_column=NULL)
+    {
+        return $this->db->select_from_array($this->db_table, $values, $just_first, $single_column);
+    }
 	
 	public function update($column, $new_value)
 	{
-		$sql="UPDATE `".sql_safe($this->db_table)."` SET 
-				".sql_safe($column)."='".sql_safe($new_value)."'
-			WHERE id=".sql_safe($this->id).";";
-		$result=$this->db->query($sql);
+        $this->db->set($this->db_table, $column, $new_value, $this->id);
+        
+        // $table=PREFIX.sql_safe($this->db_table);
+		// $sql="UPDATE `".$table."` SET 
+				// ".sql_safe($column)."='".sql_safe($new_value)."'
+			// WHERE id=".sql_safe($this->id).";";
+		// $result=$this->db->query($sql);
 		$this->reload();
 	}
 	
 	protected function reload()
 	{
 		$sql="SELECT * FROM `".sql_safe($this->db_table)."` WHERE id=".sql_safe($this->id);
-		// preprint($sql, $this->db_table." reload");
 		$this->data=$this->db->select_first($sql);
 	}
 }
