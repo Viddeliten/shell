@@ -205,11 +205,11 @@ if(!function_exists("mysql_query"))
     {
         private static $instance ;
 
-        public function __construct(){
+        public function __construct($db_server=NULL, $db_database=NULL, $db_username=NULL, $db_password=NULL){
           if (self::$instance){
             exit("Instance on static_db already exists.") ;
           }
-          parent::__construct();
+          parent::__construct($db_server, $db_database, $db_username, $db_password);
         }
 
         public static function getInstance(){
