@@ -157,6 +157,13 @@ function string_get_url_title($url)
 	return NULL;
 }
 
+function string_url_is_tumblr($url)
+{
+	if(preg_match('/^http[^.]*.tumblr.com/',$url))
+		return TRUE;
+	return FALSE;
+}
+
 function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_URL, $send_cookie=FALSE)
 {
     $handle = curl_init();
@@ -166,6 +173,9 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
 	$useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36";
 	if(isset($_SERVER['HTTP_USER_AGENT']))
 		$useragent = $_SERVER['HTTP_USER_AGENT'];
+	if(string_url_is_tumblr($url))
+		$useragent='googlebot';
+	
 	if(isset($_COOKIE['PHPSESSID']))
 		$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
 	
