@@ -186,7 +186,7 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
 	if(isset($_SERVER['HTTP_USER_AGENT']))
 		$useragent = $_SERVER['HTTP_USER_AGENT'];
 	if(string_url_is_tumblr($url))
-		$useragent='googlebot';
+		$useragent='Mozilla/5.0 (compatible; Baiduspider; +http://www.baidu.com/search/spider.html)';
 	
 	if(isset($_COOKIE['PHPSESSID']))
 		$strCookie = 'PHPSESSID=' . $_COOKIE['PHPSESSID'] . '; path=/';
