@@ -130,7 +130,7 @@ function comment_form_show($id, $type, $beforetext)
 	
 	if(login_check_logged_in_mini()<1 && !strcmp($type,"comment"))
 	{
-		$action_url=comment_get_link($id);
+		$action_url=comment_get_link_url($id, NULL, $linktitle);
 	}
 	else if(!strcmp($type,"user"))
 	{
@@ -168,6 +168,30 @@ function comment_form_show($id, $type, $beforetext)
 	echo '</div>';
 }
 
+function comment_html_list_users_latest($user_id, $only_last_24_hours=TRUE, $limit=20, $offset=0)
+{
+	if($only_last_24_hours)
+	{
+		$table="comment_for_alert";
+	}
+	else
+		$table="comment_related_to_users";
+	
+	$sql="SELECT new_comment_id, type_commented_on, id_commented_on FROM ".$table." WHERE affected_user_id=".sql_safe($user_id)." 
+    ORDER BY `time`ASC LIMIT ".sql_safe($offset).", ".sql_safe($limit).";";
+	// $comments=sql_get($sql, $array=false, $index_column=NULL, $warning_on_fail=FALSE);
+	$comments=sql_get($sql, true, "id_commented_on", TRUE);
+	$return=array();
+	// return prestr($comments);
+	
+	foreach($comments as $c)
+	{
+		$return[]=comment_get_link($c["new_comment_id"]);
+	}
+	
+	return implode("<br />", $return);
+	
+}
 function comment_show_comments($id, $type)
 {
 	$nr=0;
@@ -256,7 +280,7 @@ function comment_show_comments($id, $type)
 			else
 			{
 				//Om man inte är inloggad ska man kunna svara med captcha på separat sida
-				echo html_link(comment_get_link_add_comment($c['id'], "comment"), _("Reply"));
+				echo html_link(comment_get_link_url_add_comment($c['id'], "comment"), _("Reply"));
 			}
 		
 			//Skriv ut svar på denna
@@ -287,7 +311,7 @@ function comments_show_comments_and_replies($id, $type, $print=TRUE)
 	if(login_check_logged_in_mini()>0)
 		comment_form_show($id, $type, _("Add a comment:"));
 	else if(!isset($_GET['p']) || strcmp($_GET['p'],"add_comment"))
-		echo html_link(comment_get_link_add_comment($id, $type), _("Add a comment"));
+		echo html_link(comment_get_link_url_add_comment($id, $type), _("Add a comment"));
 	
 	echo "</div>";
 	echo "<p>";
@@ -368,7 +392,7 @@ function comment_display_single($comment_id, $max_length=NULL, $print=TRUE)
 	{
 		if($c = mysql_fetch_array($cc))
 		{
-			$comment_link=comment_get_link($c['id']);
+			$comment_link=comment_get_link_url($c['id'], NULL, $linktitle);
 					//Skriv ut info om när kommentaren skrevs och av vem
 				echo "<div class=\"comment_head\">";
 					if($c['user']!=NULL)
@@ -428,12 +452,21 @@ function comment_display_single($comment_id, $max_length=NULL, $print=TRUE)
 		return $contents;
 }
 
-function comment_get_link_add_comment($id, $type)
+function comment_get_link_url_add_comment($id, $type)
 {
 	return SITE_URL."/add_comment/".$type."/".$id;
 }
 
 function comment_get_link($id, $link_id=NULL)
+{
+	$url=comment_get_link_url($id, $link_id, $text);
+	
+	if($text=="")
+		$text=_("Comment on something");
+	
+	return html_link($url, $text);
+}
+function comment_get_link_url($id, $link_id=NULL, &$linktitle)
 {
 	if($link_id===NULL)
 		$link_id=$id;
@@ -444,9 +477,9 @@ function comment_get_link($id, $link_id=NULL)
 		if($c=mysql_fetch_array($cc))
 		{
 			//try to get custom link first
-			if(function_exists("link_get_custom_comment_link"))
+			if(function_exists("link_get_custom_comment_link_url"))
 			{
-				$custom_comment_link = link_get_custom_comment_link($c['id'], $c['comment_type'], $c['comment_on']);
+				$custom_comment_link = link_get_custom_comment_link_url($c['id'], $c['comment_type'], $c['comment_on'], $linktitle);
 				if($custom_comment_link!=NULL)
 					return $custom_comment_link;
 			}
@@ -454,12 +487,17 @@ function comment_get_link($id, $link_id=NULL)
 			// echo "<br />DEBUG2056: ".$c['comment_type'];
 			if(!strcmp($c['comment_type'],"comment"))
 			{
-				return comment_get_link($c['comment_on'], $id);
+				$return=comment_get_link_url($c['comment_on'], $id, $text);
+				$linktitle=sprintf(_("Reply to %s"),strtolower($text));
+				return $return;
 			}
 			else
 			{
 				if(!strcmp($c['comment_type'],"feedback"))
+				{
+					$linktitle=sprintf(_("Comment on feedback: %s"),feedback_get_title($c['comment_on']));
 					return SITE_URL."?comment&amp;p=feedback&amp;id=".$c['comment_on']."#anchor_comment_".$link_id;
+				}
 				else if(!strcmp($c['comment_type'],"user"))
 					// return SITE_URL."?comment&amp;p=user&amp;user=".$c['comment_on']."#anchor_comment_".$link_id;
 					return user_get_link_url($c['comment_on'])."&amp;comment#anchor_comment_".$link_id;
@@ -501,7 +539,7 @@ function comment_display_author_text($comment_id)
 		if($c=mysql_fetch_assoc($cc))
 		{
 			$comment_time=date("Y-m-d H:i",strtotime($c['added']));
-			$comment_link=comment_get_link($comment_id);
+			$comment_link=comment_get_link_url($comment_id, NULL, $linktitle);
 			
 			$user_link=NULL;
 

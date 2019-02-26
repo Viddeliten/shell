@@ -82,11 +82,13 @@ function version_increase($amount)
 
 function version_add_unlinked_feedbacks_to_latest($time)
 {
+    $db=new db_class();
+    
 	$sql="SELECT id, resolved FROM ".PREFIX."feedback WHERE resolved>'".sql_safe($time)."';";
 	// echo "<br />DEBUG1351: $sql";
-	if($ff=mysql_query($sql))
+	if($ff=$db->select($sql))
 	{
-		while($f=mysql_fetch_array($ff))
+        foreach($ff as $f)
 		{
 			//Kolla om denna finns i version_done
 			$sql="SELECT id FROM ".PREFIX."version_done WHERE done_type='feedback' AND done_id=".$f['id'].";"; // AND version IS NULL;";
@@ -150,6 +152,8 @@ function version_show_linked_number($before_str, $link_class="", $return_html=FA
 
 function version_show_latest($nr=10)
 {
+    $db=new db_class();
+    
 	$logged_in_level=login_check_logged_in_mini();	
 	
 	echo "<h3>"._("Changelog")."</h3>";
@@ -169,22 +173,19 @@ function version_show_latest($nr=10)
 				{
 					//Hämta rubrik och text från feedback så vi kan skriva ut en gullig länk
 					$sql="SELECT id, subject, text FROM ".PREFIX."feedback WHERE id=".sql_safe($d['done_id']).";";
-					if($ff=mysql_query($sql))
+					if($f=$db->select_first($sql))
 					{
-						if($f=mysql_fetch_array($ff))
-						{
-							echo "<p>".date("Y-m-d H:i",strtotime($d['time']))." : <a href=\"".SITE_URL."/feedback/single/".$f['id']."\">";
-							if($f['subject']!=NULL && $f['subject']!="")
-							{
-								echo $f['subject'];
-							}
-							else
-							{
-								$f_text=str_replace("\n","<br />",$f['text']);
-								echo $f_text;
-							}
-							echo "</a></p>";
-						}
+                        echo "<p>".date("Y-m-d H:i",strtotime($d['time']))." : <a href=\"".SITE_URL."/feedback/single/".$f['id']."\">";
+                        if($f['subject']!=NULL && $f['subject']!="")
+                        {
+                            echo $f['subject'];
+                        }
+                        else
+                        {
+                            $f_text=str_replace("\n","<br />",$f['text']);
+                            echo $f_text;
+                        }
+                        echo "</a></p>";
 					}
 				}
 			}
@@ -208,25 +209,22 @@ function version_show_latest($nr=10)
 					{
 						//Hämta rubrik och text från feedback så vi kan skriva ut en gullig länk
 						$sql="SELECT id, subject, text FROM ".PREFIX."feedback WHERE id=".sql_safe($d['done_id']).";";
-						if($ff=mysql_query($sql))
+						if($f=$db->select_first($sql))
 						{
-							if($f=mysql_fetch_array($ff))
-							{
-								if($logged_in_level>1)
-									echo "<p>".date("Y-m-d H:i",strtotime($d['time']))." : <a href=\"".SITE_URL."/feedback/single/".$f['id']."\">";
-								else
-									echo "<p>".date("Y-m-d",strtotime($d['time']))." : <a href=\"".SITE_URL."/feedback/single/".$f['id']."\">";
-								if($f['subject']!=NULL && $f['subject']!="")
-								{
-									echo $f['subject'];
-								}
-								else
-								{
-									$f_text=str_replace("\n","<br />",$f['text']);
-									echo $f_text;
-								}
-								echo "</a></p>";
-							}
+                            if($logged_in_level>1)
+                                echo "<p>".date("Y-m-d H:i",strtotime($d['time']))." : <a href=\"".SITE_URL."/feedback/single/".$f['id']."\">";
+                            else
+                                echo "<p>".date("Y-m-d",strtotime($d['time']))." : <a href=\"".SITE_URL."/feedback/single/".$f['id']."\">";
+                            if($f['subject']!=NULL && $f['subject']!="")
+                            {
+                                echo $f['subject'];
+                            }
+                            else
+                            {
+                                $f_text=str_replace("\n","<br />",$f['text']);
+                                echo $f_text;
+                            }
+                            echo "</a></p>";
 						}
 					}
 				}

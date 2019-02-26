@@ -63,7 +63,9 @@ function usermessage_receive()
 			criteria_name='".sql_safe($criteria_name)."',
 			reward='".sql_safe($reward)."',
 			once='".sql_safe($once)."',
-			every_hours='".(isset($_POST['every_hours'])? sql_safe($_POST['every_hours']) : 0)."'
+			every_hours='".(isset($_POST['every_hours'])? sql_safe($_POST['every_hours']) : 0)."',
+			active_for='".strtoupper(sql_safe($_POST['active_for']))."',
+			active_for_users='".sql_safe($_POST['active_for_users'])."'
 			".$sendby_str.";";
 			
 			// echo "DEBUG1415:<pre>$sql</pre>";
@@ -168,6 +170,9 @@ function usermessage_admin_show_form($SOURCE)
 		<?php
 		echo html_form_textarea("message_textarea", _("message:"), "message", (isset($SOURCE['message'])?$SOURCE['message']:""));
 		
+		// Help with function use
+		echo html_rows(1, 1, array(html_tag("h4",_("To use functions")).html_tag("code","FUNCTION:"._("function_name(comma separated parameters)"))), "well");
+
 		//Display all constants that can be used
 		echo html_rows(1, 1, array("<h4>"._("Available constants")."</h4>[".implode("] [",string_get_defined_constants())."]"), "well");
 		?>
@@ -224,7 +229,18 @@ function usermessage_admin_show_form($SOURCE)
 		
 		<?php
 		$_REQUEST['criteria_name']=(isset($SOURCE['criteria_name'])?$SOURCE['criteria_name']:"");
-		usermessage_criteria_form(); ?>
+		usermessage_criteria_form(); 
+		
+		// form for activating message
+		$options=array();
+		$options["noone"]=_("No one");
+		$value=$SOURCE['active_for_users'];
+		$options["specific"]["label"]="";
+		$options["specific"]["extra"]=html_form_input("active_for_users_text", _("Active for users"), "text", "active_for_users", $value, _("Comma separated usernames"));
+		$options["all"]=_("All");
+		$selected=strtolower($SOURCE['active_for']);
+		echo html_form_radio(_("Active for"), "active_for_radio", "active_for", $options, $selected);
+		?>
 		
 		<br /><input class="btn btn-success" type='submit' name='add_message' value='Save this message'>
 	</form>
@@ -234,13 +250,11 @@ function usermessage_admin_show_form($SOURCE)
 function usermessage_criteria_save($criteria_name, $criteria_arr)
 {
 	$checkarr=array();
-	
+    
 	foreach($criteria_arr as $c)
 	{
 		if($c['table_name']!="")
 		{
-			add_message("<pre>".print_r($c,1)."</pre>");
-			
 			//Check that it doesn't already exist
 			if(strcmp($c['table_name'],PREFIX."user_setting"))
 			{
@@ -250,7 +264,11 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 					AND table_name='".sql_safe($c['table_name'])."'
 					AND user_column='".sql_safe($c['user_column'])."'
 					AND count_required='".sql_safe($c['count_required'])."'
-					AND table_where='".sql_safe($c['table_where'])."'";
+					AND (table_where='".sql_safe($c['table_where'])."'";
+                if($c['table_where']==NULL || $c['table_where']=='')
+					$sql.=" OR table_where IS NULL";
+                $sql.=")";
+                // add_message(prestr($sql,"sql"));
 			
 				if($dd=mysql_query($sql))
 				{
@@ -278,35 +296,49 @@ function usermessage_criteria_save($criteria_name, $criteria_arr)
 					$user_column=$custom_setting_type;
 					foreach($custom_settings as $setting => $v)
 					{
-						$table_where=$setting;
-						$count_required=$v['value'];
+                        if(isset($v['checked'])) // don't save if not checked.
+                        {
+                            $table_where=$setting;
+                            $count_required=$v['value'];
 
-						$sql="SELECT id 
-						FROM ".PREFIX."criteria
-						WHERE name='".sql_safe($criteria_name)."'
-						AND table_name='".sql_safe($c['table_name'])."'
-						AND user_column='".sql_safe($user_column)."'
-						AND table_where='".sql_safe($table_where)."'
-						AND count_required='".sql_safe($count_required)."';";
-						
-						if($dd=mysql_query($sql))
-						{
-							if(mysql_affected_rows()<1)
-							{
-								$sql="INSERT INTO ".PREFIX."criteria SET 
-								name='".sql_safe($criteria_name)."',
-								 table_name='".sql_safe($c['table_name'])."',
-								 user_column='".sql_safe($user_column)."',
-								 count_required='".sql_safe($count_required)."',
-								 table_where='".sql_safe($table_where)."'";
-							
-								if(!mysql_query($sql))
-								{
-									add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
-								}
-							}
-						}
-						$checkarr[]=$c['table_name'].",".$user_column.",".$table_where.",".($count_required ? $count_required : 0);
+                            $sql="SELECT id 
+                            FROM ".PREFIX."criteria
+                            WHERE name='".sql_safe($criteria_name)."'
+                            AND table_name='".sql_safe($c['table_name'])."'
+                            AND user_column='".sql_safe($user_column)."'
+                            AND table_where='".sql_safe($table_where)."'
+                            AND count_required='".sql_safe($count_required)."';";
+                            
+                            if($dd=mysql_query($sql))
+                            {
+                                if(mysql_affected_rows()<1)
+                                {
+                                    $sql="INSERT INTO ".PREFIX."criteria SET 
+                                    name='".sql_safe($criteria_name)."',
+                                     table_name='".sql_safe($c['table_name'])."',
+                                     user_column='".sql_safe($user_column)."',
+                                     count_required='".sql_safe($count_required)."',
+                                     table_where='".sql_safe($table_where)."'";
+                                
+                                    if(!mysql_query($sql))
+                                    {
+                                        add_error(sprintf(_("Criteria could not be added. Error: %s"),mysql_error()));
+                                    }
+                                }
+                            }
+                            $checkarr[]=$c['table_name'].",".$user_column.",".$table_where.",".($count_required ? $count_required : 0);
+                        }
+                        else
+                        {
+                            // If not checked, remove all that fits on this, so you can remove settings.
+                            $sql="DELETE
+                            FROM ".PREFIX."criteria
+                            WHERE name='".sql_safe($criteria_name)."'
+                            AND table_name='".sql_safe($c['table_name'])."'
+                            AND user_column='".sql_safe($user_column)."'
+                            AND table_where='".sql_safe($table_where)."';";
+                            mysql_query($sql);
+                        }
 					}
 				}
 			}
@@ -471,7 +503,7 @@ function usermessage_criterias_form_row($nr_id, $SOURCE=NULL, $criteria_name=NUL
 					{
 						$checkbox = html_form_checkbox($label, //label
 								"custom_setting_".$nr_id."_".$cs_type."_".$s."_checkbox",//id
-								"criteria[".$nr_id."][custom_setting][".$cs_type."][".$s."]", //name
+								"criteria[".$nr_id."][custom_setting][".$cs_type."][".$s."][checked]", //name
 								(isset($current_custom_option[$cs_type][$s]) ? TRUE : FALSE) //Checked ToDO: fixa så den är TRUE om det här valet är valt
 							);
 						$radio= html_form_radio(NULL, //_("Must be set/unset"), //label
@@ -586,6 +618,8 @@ function usermessage_get_custom_options($criteria_name)
 
 /************************************************************************************************/
 /*	Function: usermessage_check_messages														*/
+/*	checks for default messages in database and adds missing ones.								*/
+/*	Does not change default messages if they are existing										*/
 /*	checks for messages to send to specific user (or if user_id is NULL, all users)				*/
 /*	If criterias are met, messages are sent.													*/
 /*	Call this from your cron if you have messages that should be sent to users regardless of if	*/
@@ -593,25 +627,92 @@ function usermessage_get_custom_options($criteria_name)
 /************************************************************************************************/
 function usermessage_check_messages($user_id=NULL)
 {
+/*	check for default messages in database and adds missing ones.								*/
+	$default_messages=array();
+	
+	$default_messages['first_login']['event']="Default: User first log in";
+	$default_messages['first_login']['message_values']['event']=$default_messages['first_login']['event'];
+	$default_messages['first_login']['message_values']['type']="information";
+	$default_messages['first_login']['message_values']['subject']="Welcome to [SITE_NAME]";
+	$default_messages['first_login']['message_values']['message']="You are most welcome as a user!";
+	$default_messages['first_login']['message_values']['criteria_name']="first_login";
+	$default_messages['first_login']['message_values']['sendby']="insite_privmess,insite_notice,email";
+	$default_messages['first_login']['criteria_values'][0]['name']=$default_messages['first_login']['message_values']['criteria_name'];
+	$default_messages['first_login']['criteria_values'][0]['table_name']="user";
+	$default_messages['first_login']['criteria_values'][0]['user_column']="id";
+	$default_messages['first_login']['criteria_values'][0]['table_where']="lastlogin IS NOT NULL";
+	$default_messages['first_login']['criteria_values'][0]['count_required']=1;
+	
+	$default_message=array();
+	$default_message['event']="Default: Notice on comment";
+	$default_message['message_values']['event']=$default_message['event'];
+	$default_message['message_values']['type']="information";
+	$default_message['message_values']['subject']="You have new comments on [SITE_NAME]";
+	$default_message['message_values']['message']="Check out the following comments on [SITE_URL]:
+    
+FUNCTION:comment_html_list_users_latest(USER_ID, TRUE, 20, 0)"; // List commented stuff
+	$default_message['message_values']['criteria_name']="new_comment";
+	$default_message['message_values']['sendby']="email";
+	$default_message['message_values']['once']="multiple";
+	$default_message['message_values']['every_hours']=24;
+	$default_message['criteria_values'][0]['name']=$default_message['message_values']['criteria_name'];
+	$default_message['criteria_values'][0]['table_name']="comment_for_alert";
+	$default_message['criteria_values'][0]['user_column']="affected_user_id";
+	$default_message['criteria_values'][0]['table_where']=NULL;
+	$default_message['criteria_values'][0]['count_required']=1;
+	$default_messages['new_comment']=$default_message;
+	
+	foreach($default_messages as $message)
+	{
+		// If there is no event with the name, insert it.
+		if(sql_get_single("id", PREFIX."messages_to_users", "event='".$message['event']."'")==NULL)
+		{
+			sql_insert("messages_to_users", $message['message_values'], NULL, "insert_".$message['event'], FALSE, TRUE);
+			foreach($message['criteria_values'] as $key => $criteria_values)
+			{
+				sql_insert("criteria", $criteria_values, NULL, "insert_criteria_".$key."_".$message['event'], FALSE, TRUE);
+			}
+		}
+	}
+
+/*	check for messages to send to specific user (or if user_id is NULL, all users)				*/
 	$users=array();
 	if($user_id!==NULL)
 		$users[]=$user_id;
 	else
 		$users=user_get_all("all"); //Used to be just active, but we want to send to inactives too. 
 
-	$sql="SELECT event FROM ".PREFIX."messages_to_users GROUP BY event;";
+	$sql="SELECT max.event, active_for, active_for_users 
+		FROM ".PREFIX."messages_to_users 
+		INNER JOIN (SELECT `event`, MAX(`activated`) as max_activated FROM ".PREFIX."messages_to_users GROUP BY `event`) max 
+			ON ".PREFIX."messages_to_users.`event`=max.`event` AND max.max_activated=".PREFIX."messages_to_users.activated;";
+    
 	if($mm=mysql_query($sql))
 	{
 		while($m=mysql_fetch_array($mm))
 		{
-			
-			foreach($users as $user)
-			{			
-				// echo "<br />DEBUG1537: usermessage_check_criteria(".$user.", ".$m['event'].")";
-				if(usermessage_check_criteria($user, $m['event']))
+			if(strcmp($m['active_for'],"NOONE")) // Inactive messages are skipped
+			{
+                $specific_users=array();
+				if(!empty($m['active_for_users']))
 				{
-					// echo "<br />SEND ".$m['event']."!!!";
-					usermessage_send_to_user($user, $m['event']);
+					$m['active_for_users']=str_replace(" ","",$m['active_for_users']);
+					$specific_user_names=explode(",",$m['active_for_users']);
+					foreach($specific_user_names as $username)
+						$specific_users[]=user_get_id_from_username($username);
+				}
+                
+				foreach($users as $user)
+				{			
+					if(!strcmp($m['active_for'],"ALL") || in_array($user, $specific_users))
+					{
+						// echo "<br />DEBUG1537: usermessage_check_criteria(".$user.", ".$m['event'].")";
+						if(usermessage_check_criteria($user, $m['event']))
+						{
+							// echo "<br />SEND ".$m['event']."!!!";
+							usermessage_send_to_user($user, $m['event']);
+						}
+					}
 				}
 			}
 		}
@@ -625,7 +726,7 @@ function usermessage_check_criteria($user, $message_event)
 	
 	//Hämta alla kriterier från den senast sparade av den typen av event
 	$sql="SELECT criteria_name, once, sendby FROM ".PREFIX."messages_to_users WHERE event='".sql_safe($message_event)."' ORDER BY activated DESC LIMIT 0,1;";
-	// echo "<br />DEBUG1310: $sql";
+
 	if($mm=mysql_query($sql))
 	{
 		if($m=mysql_fetch_array($mm))
@@ -772,6 +873,7 @@ function usermessage_send_to_user($user, $message_event)
 				return 0;
 			
 			$message=usermessage_text_processing($m['message'], $user);
+			$m['subject']=usermessage_text_processing($m['subject'], $user);
 			
 			$adress="";
 			$sendby=explode(",",$m['sendby']);

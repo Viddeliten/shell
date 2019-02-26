@@ -53,6 +53,7 @@ define('CUSTOM_PAGES_ARRAY',serialize(array(
 /********************************/
 define('CUSTOM_SETTINGS',serialize(array(
 	"flattr"	=>	array(	"some_object" => _("Some object")),
+	"Notifications on"	=>	array(	"comments" => _("Comments")), // If you keep this, make sure to add a message under Admin tools messages for new comments!
 	"My custom setting"	=>	array(	"some_setting" => _("Some setting you might want to have"),
 									"some_other_setting" => _("Some OTHER setting")
 								)

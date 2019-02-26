@@ -1,4 +1,5 @@
 <?php
+
 //Check for api call first
 require_once("functions/api.php");
 if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['p']),"api"))
@@ -57,7 +58,7 @@ else
 	<link href="<?php echo SITE_URL; ?>/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet">
     
     <!-- Bootstrap core CSS -->
-    <link href="<?php echo SITE_URL; ?>/bootstrap-<? echo $bootstrap_version; ?>-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo SITE_URL; ?>/bootstrap-<?php echo $bootstrap_version; ?>-dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Shell template style -->
     <?php if(!strcmp("4.1.0", $bootstrap_version)) { ?>
@@ -103,33 +104,26 @@ else
   </head>
 
   <body <?php echo BODY_PROPERTIES; ?>>
-    <? 
+    <?php 
 	if(file_exists(CUSTOM_CONTENT_PATH."/index.php"))
 	{
 		include(CUSTOM_CONTENT_PATH."/index.php");
 	}
-	else
+    else
 	{
-		display_topline_menu(); ?>
-		
-		<div class="container" id="main_container">
-			<div id="content">
-				<?php 
-					display_conditional_login();
-				?>
-				<?php 
-				
-				include("content.php"); ?>
-				<div class="clearfix"></div>
-			</div>
-
-			<?php //Footer
-			display_footer(); ?>
-			
-		</div><!-- /.container -->
-	
-	<?php 
-	}
+        display_topline_menu();
+        echo '<div class="container" id="main_container">
+			<div id="content">';
+        display_conditional_login();
+        
+        include("content.php");
+        echo '<div class="clearfix"></div>
+            </div>';
+        //Footer
+        display_footer();
+        echo '</div><!-- /.container -->';
+    }
+       
 	// usermessage_check_messages();
 	db_close($connection); ?>
 	
@@ -144,7 +138,8 @@ else
         s.src = '//api.flattr.com/js/0.6/load.js?mode=auto';
         t.parentNode.insertBefore(s, t);
     })();
-/* ]]> */</script>
+/* ]]> */ 
+</script>
 <!-- Slut Flattr-stuff -->
 
 <!-- Google Analytics -->
@@ -167,17 +162,19 @@ if(defined('PINGDOM_SCRIPT'))
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.min.js"></script>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <?php if(!strcmp("3.3.4", $bootstrap_version)) { ?>
-    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/ie10-viewport-bug-workaround.js"></script> <?php } else { ?>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/ie10-viewport-bug-workaround.js"></script> <?php } else { ?>
 
-    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.js"></script>
-    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.min.js"></script>
-    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<? echo $bootstrap_version; ?>-dist/js/bootstrap.js"></script> <?php } ?>
-	
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.js"></script>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/bootstrap.js"></script> <?php } ?>
+
+    <?php if(file_exists(CUSTOM_CONTENT_PATH."/functions/functions.js")) { ?>
+        <script src="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH."/functions/functions.js?v=".date("YmdHis"); ?>"></script>	
+    <?php  }
     
-<?php
  //Clearfix just in case
 	echo '<div class="clearfix"></div>';
 ?>

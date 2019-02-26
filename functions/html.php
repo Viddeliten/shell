@@ -9,9 +9,9 @@ function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id
 	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles, $div_id, $html_format_text);
 }
 
-function html_img($source)
+function html_img($source, $alt="image", $height=NULL, $width=NULL)
 {
-	return '<img src="'.$source.'" />';
+	return '<img src="'.$source.'" alt="'.$alt.'" '.($height!=NULL ? ' height="'.$height.'"': "").($width!=NULL ? ' width="'.$width.'"': "").'/>';
 }
 
 function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=false, $div_id=NULL, $html_format_text=TRUE)
@@ -185,7 +185,7 @@ function html_rows($min_columns, $max_columns, $elements, $element_class=NULL, $
 	return $return;
 }
 
-function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=NULL)
+function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=NULL, $html_format_text=TRUE)
 {
 	$return='<div class="row'.($row_class==NULL ? "":" ".$row_class).'">';
 	foreach($lg_sizes as $key => $val)
@@ -207,7 +207,7 @@ function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=N
 
 		$col_xs_size=12; //Always make it full columns on mobile for now
 
-		$return.= html_tag("div", $elements[$key], "col-lg-".$col_lg_size." col-md-".$col_md_size." col-sm-".$col_sm_size." col-xs-".$col_xs_size);
+		$return.= html_tag("div", $elements[$key], "col-lg-".$col_lg_size." col-md-".$col_md_size." col-sm-".$col_sm_size." col-xs-".$col_xs_size, false, NULL, $html_format_text);
 	}
 	$return.='</div>';
 	return $return;
@@ -224,7 +224,8 @@ function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $r
 		$columns=$nr;
 	
 	if($columns==0)
-		error_log("html_row 0 columns! Params: ".print_r(array($min_columns, $max_columns, $elements, $element_class, $row_class),1));
+        $columns=1;
+		// error_log("html_row 0 columns! Params: ".print_r(array($min_columns, $max_columns, $elements, $element_class, $row_class),1));
 	
 	$col_size=(int)(12/$columns);
 	$md_columns=ceil(($min_columns+$columns)/2);
@@ -329,6 +330,15 @@ function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=
 		$r.=html_tag("p",html_tag("strong",$label));
 	foreach($options as $value => $option_label)
 	{
+		unset($extra);
+		
+		if(is_array($option_label))
+		{
+			$arr=$option_label;
+			$option_label=$arr['label'];
+			$extra=$arr['extra'];
+		}
+		
 		$r.='<div class="radio">
 		  <label>
 			<input type="radio" name="'.$name.'" id="'.$id."_".$value.'" value="'.$value.'" '.
@@ -338,6 +348,9 @@ function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=
 			$option_label.
 		  '</label>
 		</div>';
+		
+		if(isset($extra))
+			$r.=$extra;
 	}
 	return $r;
 }

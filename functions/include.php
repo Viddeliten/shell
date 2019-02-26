@@ -2,6 +2,7 @@
 
 function include_all_in_path($path)
 {
+    // echo "INCLUDING all in ".$path;
 	require_all_in_path($path);
 
 }

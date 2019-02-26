@@ -8,6 +8,18 @@ if(!function_exists("sql_safe"))
 		return $str;
 	}
 }
+if(!function_exists("mysql_real_escape_string"))
+{
+    function mysql_real_escape_string($str)
+    {
+        return addslashes($str);
+    }
+}
+
+function number_safe($number, $decimals=20)
+{
+    return number_format($number, $decimals, ".", "");
+}
 
 function password_generate($len)
 {
@@ -564,6 +576,21 @@ function string_remove_tags($string)
     $string=preg_replace($pattern, $replacement, $string);
 	
 	return $string;
+}
+
+function string_file_get_output($filepath, $return_html=true)
+{
+    ob_start();
+    
+    include($filepath);
+    
+    $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
 }
 
 

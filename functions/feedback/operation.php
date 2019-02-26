@@ -1,5 +1,5 @@
 <?php
-session_start();
+@session_start(); // Ignore warnings about session already started when this is included by functions includer script
 
 //Globals
 // require_once("../../globals/db_info.php");
@@ -11,17 +11,19 @@ else
 	require_once("../../config.php");
 
 //From functions
-require_once(ABS_PATH."/functions"."/user.php");
-require_once(ABS_PATH."/functions"."/login.php");
-require_once(ABS_PATH."/functions"."/flattr.php");
-require_once(ABS_PATH."/functions"."/spam.php");
-require_once(ABS_PATH."/functions"."/string.php");
-require_once(ABS_PATH."/functions"."/language.php");
-require_once(ABS_PATH."/functions"."/html.php");
-require_once(ABS_PATH."/functions"."/comment/func.php");
-require_once(ABS_PATH."/functions"."/db_connect.php");
+require_once(ABS_PATH."/functions"."/include.php");
+require_all_in_path(ABS_PATH."/functions");
+// require_once(ABS_PATH."/functions"."/user.php");
+// require_once(ABS_PATH."/functions"."/login.php");
+// require_once(ABS_PATH."/functions"."/flattr.php");
+// require_once(ABS_PATH."/functions"."/spam.php");
+// require_once(ABS_PATH."/functions"."/string.php");
+// require_once(ABS_PATH."/functions"."/language.php");
+// require_once(ABS_PATH."/functions"."/html.php");
+// require_once(ABS_PATH."/functions"."/comment/func.php");
+// require_once(ABS_PATH."/functions"."/db_connect.php");
 //From Feedback
-require_once(ABS_PATH."/functions"."/feedback/func.php");
+// require_once(ABS_PATH."/functions"."/feedback/func.php");
 
 language_setup();
 

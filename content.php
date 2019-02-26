@@ -31,7 +31,7 @@ else if(isset($_GET['lostpassword']))
 }
 else if(isset($_REQUEST['p']))
 {
-	if(custom_page_display())
+	if(custom_page_display() || isset($_GET['logout']))
 	{
 		//Do nothing else. =)
 	}

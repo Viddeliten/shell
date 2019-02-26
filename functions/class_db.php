@@ -9,6 +9,7 @@ class db_class
     private $connection;
 	public $insert_id;
 	public $error;
+    public $affected_rows;
     
     function __construct($db_server=NULL, $db_database=NULL, $db_username=NULL, $db_password=NULL)
     {
@@ -42,25 +43,45 @@ class db_class
 	public function insert_from_array($table, $values)
 	{
 		$updates=array();
+        $values=$this->prepare_array_for_query($values, false);
 		foreach($values as $key => $val)
 		{
-			if(!in_array($val, array("NOW()", "NULL", "TRUE", "FALSE")))
-				$val="'".sql_safe($val)."'";
-			else 
-				$val=sql_safe($val);
-
-			$updates[]='`'.sql_safe($key)."`=".$val;
+			$updates[]='`'.sql_safe($key)."`".$val;
 		}
 		$sql="INSERT INTO ".sql_safe($table)." SET ".implode(", ",$updates).";";
-
 		return $this->insert($sql);
 	}
+    
+    private function prepare_array_for_query($array, $change_to_is=true)
+    {
+        foreach($array as $key => $val)
+		{
+            if($val===NULL)
+                $val="NULL";
+            if($val===TRUE)
+                $val="TRUE";
+            if($val===FALSE)
+                $val="FALSE";
+
+			if(!in_array($val, array("NOW()", "NOT NULL", "NULL", "TRUE", "FALSE")))
+				$val="='".sql_safe($val)."'";
+            else if(in_array($val, array("NOT NULL", "NULL")) && $change_to_is)
+				$val=" IS ".$val;
+			else 
+				$val="=".$val;
+            $array[$key]=$val;
+        }
+
+        return $array;
+    }
+    
 	public function get_from_array($table, $values, $just_first=FALSE)
 	{
 		$requirements=array();
+        $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
-			$requirements[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
 		$sql="SELECT * FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 
@@ -72,9 +93,10 @@ class db_class
 	public function delete_from_array($table, $values)
 	{
 		$requirements=array();
+        $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
-			$requirements[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
+			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
 		$sql="DELETE FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 
@@ -85,7 +107,12 @@ class db_class
     { 
 		$result=$this->connection->query($query);
 		if($result)
+        {
 			$this->error=NULL;
+            $this->affected_rows=$this->connection->affected_rows;
+            if($this->connection->insert_id)
+                $this->insert_id=$this->connection->insert_id;
+        }
 		else
 			$this->error=$query." : ".$this->connection->error;
 		return $result;
@@ -125,6 +152,12 @@ class db_class
     
     public function get($column, $table, $id)
 	{
+        if($column===NULL)
+        {
+            $sql="SELECT * FROM `".$table."` WHERE id=".$id;
+            return $this->select_first($sql);
+        }
+        
 		$result = $this->select("SELECT ".$column." FROM `".$table."` WHERE id=".$id);
 		if(!empty($result) && isset($result[0][$column]))
 		{
@@ -146,12 +179,10 @@ class db_class
 	public function update_from_array($table, $values, $id)
 	{
 		$updates=array();
+        $values=$this->prepare_array_for_query($values);
 		foreach($values as $key => $val)
 		{
-			if(!in_array($val, array("NOW()", "NULL", "TRUE", "FALSE")))
-				$updates[]='`'.sql_safe($key)."`='".sql_safe($val)."'";
-			else
-				$updates[]='`'.sql_safe($key)."`=".$val;
+            $updates[]='`'.sql_safe($key)."`".$val;
 		}
 		$sql="UPDATE ".sql_safe($table)." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
 
@@ -170,11 +201,74 @@ class db_class
 
 if(!function_exists("mysql_query"))
 {
+    class static_db extends db_class
+    {
+        private static $instance ;
+
+        public function __construct($db_server=NULL, $db_database=NULL, $db_username=NULL, $db_password=NULL){
+          if (self::$instance){
+            exit("Instance on static_db already exists.") ;
+          }
+          parent::__construct($db_server, $db_database, $db_username, $db_password);
+        }
+
+        public static function getInstance(){
+          if (!self::$instance){
+            self::$instance = new static_db();
+          }
+          return self::$instance ;
+        }
+    }
+
 	function mysql_query($query)
 	{
-		$mysqli = new mysqli("p:".db_host, db_user, db_pass, VIDDEWEBB_DB_NAME);
-		return $mysqli->query($query);
+        $connection = static_db::getInstance();
+		return $connection->query($query);
 	}
+    
+    function mysql_error()
+    {
+        $connection = static_db::getInstance();
+		return $connection->error;
+    }
+    
+    function mysql_fetch_array($result)
+    {
+        $assoc=$result->fetch_assoc();
+        $return=array();
+        $i=0;
+        if(!empty($assoc))
+        {
+            foreach($assoc as $key => $val)
+            {
+                $assoc[$i]=$val;
+                $i++;
+            }
+        }
+        return $assoc;
+    }
+    
+    function mysql_fetch_assoc($result)
+    {
+        return $result->fetch_assoc();
+    }
+    
+    function mysql_affected_rows()
+    {
+        $connection = static_db::getInstance();
+		return $connection->affected_rows;
+    }
+    
+    function mysql_insert_id()
+    {
+        $connection = static_db::getInstance();
+		return $connection->insert_id;
+    }
+    
+    function mysql_close($connection)
+    {
+        // ignore
+    }
 }
 
 ?>

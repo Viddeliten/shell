@@ -92,7 +92,7 @@ function user_display_dropdown()
 	$subpages[_("Profile")]=array("slug" => "profile");
 	$subpages[_("Settings")]=array("slug" => "settings");
 	$subpages["dropdown-divider"]=array();
-	$subpages[_("Log out")]=array("slug" => "logout");
+	$subpages[_("Log out")]=array("slug" => "?logout");
     
 	$name=$_SESSION[PREFIX."username"]; 
 	if($badge_total>0)
@@ -127,7 +127,7 @@ function user_get_name($id)
 	$sql="SELECT username FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
 //	echo "<br />$sql";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['username'];
 	return NULL;
 }
@@ -135,7 +135,7 @@ function user_get_level($id)
 {
 	$sql="SELECT level FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['level'];
 	return NULL;
 }
@@ -143,7 +143,7 @@ function user_get_regdate($id)
 {
 	$sql="SELECT regdate FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['regdate'];
 	return NULL;
 }
@@ -152,7 +152,7 @@ function user_get_reputation($id)
 	$sql="SELECT reputation FROM ".PREFIX."user WHERE id='".sql_safe($id)."';";
 	//echo "<br />$sql";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['reputation'];
 	return NULL;
 }
@@ -160,7 +160,7 @@ function user_get_lastlogin($id)
 {
 	$sql="SELECT lastlogin FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['lastlogin'];
 	return NULL;
 }
@@ -168,7 +168,7 @@ function user_get_description($id)
 {
 	$sql="SELECT description FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['description'];
 	return NULL;
 }
@@ -186,7 +186,7 @@ function user_get_email($id)
 	$sql="SELECT email FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
 //	echo "<br />$sql";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['email'];
 	return NULL;
 }
@@ -195,7 +195,7 @@ function user_get_password_hash($id)
 	$sql="SELECT password FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
 //	echo "<br />$sql";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['password'];
 	return NULL;
 }
@@ -205,7 +205,7 @@ function user_exists($id)
 	$sql="SELECT count(id) as nr FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
 //	echo "<br />$sql";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['nr'];
 	return FALSE;
 }
@@ -217,7 +217,7 @@ function user_get_admin($id)
 		
 	$sql="SELECT level FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['level'];
 	return NULL;
 }
@@ -243,7 +243,7 @@ function user_get_id_from_username($username)
 {
 	$sql="SELECT id FROM ".PREFIX."user WHERE username='".sql_safe($username)."';";
 	if($hh=mysql_query($sql))
-		if($h=@mysql_fetch_array($hh))
+		if($h=@mysql_fetch_assoc($hh))
 			return $h['id'];
 	return NULL;
 }
@@ -432,7 +432,7 @@ function user_get_settings($user_id)
 {
 	if($uu=mysql_query("SELECT settings FROM ".PREFIX."user_setting WHERE user_id='".sql_safe($user_id)."';"))
 	{
-		if($u=mysql_fetch_array($uu))
+		if($u=mysql_fetch_assoc($uu))
 		{
 			$choices=unserialize($u['settings']);
 			return $choices;
@@ -462,7 +462,7 @@ function user_register()
 		
 		//Kolla så att användarnamnet inte innehåller konstiga tecken eller är SITE_NAME
 		//Kolla så att strängen är alfanumerisk
-		if (eregi_replace('[a-z0-9]', '', $_POST['name']) == '')
+		if (ctype_alnum($_POST['name']))
 		{
 			if(user_email_exists($_POST['email']))
 			{
@@ -646,7 +646,7 @@ function user_name_exists($username)
 {
 	if($users=mysql_query("SELECT * FROM ".PREFIX."user WHERE username='".sql_safe($username)."';"))
 	{
-		while($u=mysql_fetch_array($users))
+		while($u=mysql_fetch_assoc($users))
 		{
 			if(!strcasecmp($u['username'],$username))
 				return true;
@@ -660,7 +660,7 @@ function user_email_exists($email)
 	$sql="SELECT * FROM ".PREFIX."user WHERE email='".sql_safe($email)."';";
 	if($users=mysql_query($sql))
 	{
-		while($u=mysql_fetch_array($users))
+		while($u=mysql_fetch_assoc($users))
 		{
 			if(!strcasecmp($u['email'],$email))
 				return true;
@@ -734,7 +734,7 @@ function user_display_active_users($include_reputation=TRUE)
 		 "<th><a href=\"".add_get_to_URL("sortorder", ( strcmp($sort,"lastlogin") ? $sort_order : $other_sort_order ), add_get_to_URL("sortby", "lastlogin"))."\">"._("Last logged in")."</a></th>".
 	"</tr>";
 	
-	for($i=1;$u=mysql_fetch_array($users);$i++)
+	for($i=1;$u=mysql_fetch_assoc($users);$i++)
 	{
 		echo "<tr>".
 				"<td>$i</td>".

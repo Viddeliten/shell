@@ -24,8 +24,17 @@ function api_call_handle()
 			default:
 				if(!function_exists("api_custom"))
 					echo "Unknown command";
-				else if(!api_custom())
-					echo "Unknown command";
+				else
+                {
+                    $custom_result=api_custom();
+                    if(!$custom_result)
+                        echo "Unknown command";
+                    else
+                    {
+                        //Print json encoded
+                        echo json_encode($custom_result);
+                    }
+                }
 		}
 		
 		db_close($conn);
