@@ -24,7 +24,7 @@ if(!defined('ABS_PATH'))
 /********************************/
 define('PREFIX',"");
 define('CONTACT_EMAIL','your@email.se');
-define('SITE_URL','http://your.site.se');
+define('SITE_URL','https://your.site.se');
 define('SITE_NAME','Example Site');
 
 define('USER_MESSAGE_MAIL_SENDING', FALSE); //Set this to true if you have tested and want to send emails by user message
