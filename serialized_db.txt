@@ -1,4 +1,4 @@
-a:24:{i:0;a:2:{s:5:"Table";s:10:"access_log";s:12:"Create Table";s:667:"
+a:25:{i:0;a:2:{s:5:"Table";s:10:"access_log";s:12:"Create Table";s:667:"
 CREATE TABLE IF NOT EXISTS `access_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -183,7 +183,19 @@ CREATE TABLE IF NOT EXISTS `user_friend_history` (
   `user` int(11) NOT NULL COMMENT 'the user the first user wants to be friends with',
   `status` enum('NEW','ACCEPTED','REJECTED') COLLATE utf8_bin NOT NULL DEFAULT 'NEW',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:18;a:2:{s:5:"Table";s:15:"user_reset_code";s:12:"Create Table";s:360:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:18;a:2:{s:5:"Table";s:15:"user_oauth_reff";s:12:"Create Table";s:561:"
+CREATE TABLE IF NOT EXISTS `user_oauth_reff` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` int(11) NOT NULL,
+  `oauth_name` varchar(16) COLLATE utf8_bin NOT NULL,
+  `access_token` varchar(64) COLLATE utf8_bin NOT NULL,
+  `refresh_token` varchar(64) COLLATE utf8_bin NOT NULL,
+  `identifying_id` text COLLATE utf8_bin NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_2` (`user`,`oauth_name`),
+  KEY `user` (`user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:19;a:2:{s:5:"Table";s:15:"user_reset_code";s:12:"Create Table";s:360:"
 CREATE TABLE IF NOT EXISTS `user_reset_code` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user` int(11) NOT NULL,
@@ -192,19 +204,19 @@ CREATE TABLE IF NOT EXISTS `user_reset_code` (
   `used` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `reset_code_customer` (`user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:19;a:2:{s:5:"Table";s:12:"user_setting";s:12:"Create Table";s:225:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:20;a:2:{s:5:"Table";s:12:"user_setting";s:12:"Create Table";s:225:"
 CREATE TABLE IF NOT EXISTS `user_setting` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `settings` text COLLATE utf8_bin,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:20;a:2:{s:5:"Table";s:7:"version";s:12:"Create Table";s:297:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:21;a:2:{s:5:"Table";s:7:"version";s:12:"Create Table";s:297:"
 CREATE TABLE IF NOT EXISTS `version` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` float DEFAULT NULL COMMENT 'version',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'när det blev denna version',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:21;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:521:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:22;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:521:"
 CREATE TABLE IF NOT EXISTS `version_done` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` int(11) DEFAULT NULL COMMENT 'om null så är saken färdig, men version har inte ökat sen dess',
@@ -213,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `version_done` (
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `version_done_id` (`done_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Vad som färdigställts till varje version'";}i:22;a:6:{s:7:"Trigger";s:26:"user_friend_update_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:403:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Vad som färdigställts till varje version'";}i:23;a:6:{s:7:"Trigger";s:26:"user_friend_update_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:403:"
 CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_update_history` AFTER UPDATE ON `user_friend` FOR EACH ROW BEGIN
 
    INSERT INTO user_friend_history
@@ -233,7 +245,7 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_update_history` AFTER UPD
     OLD.status
 );
    
-END";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";s:18:"Database Collation";s:8:"utf8_bin";}i:23;a:6:{s:7:"Trigger";s:26:"user_friend_delete_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:406:"
+END";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";s:18:"Database Collation";s:8:"utf8_bin";}i:24;a:6:{s:7:"Trigger";s:26:"user_friend_delete_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:406:"
 CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_delete_history` AFTER DELETE ON `user_friend` FOR EACH ROW BEGIN
 
    INSERT INTO user_friend_history
