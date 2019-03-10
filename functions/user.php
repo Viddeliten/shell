@@ -474,13 +474,8 @@ function user_register()
 			}
 			else
 			{
-				//generera ett lösenord
-				$password=password_generate(32);
 				//Skriv in info i databasen
-				$sql="INSERT INTO ".PREFIX."user
-				(username, email, password)
-				VALUES ('".$_POST['name']."','".$_POST['email']."','".md5($password)."');";
-				$went_fine=mysql_query($sql);
+				$went_fine=user_insert($_POST['name'], $_POST['email']);
 
 				if($went_fine)
 				{
@@ -1007,6 +1002,50 @@ function user_get_browser()
 			'pattern'    => $pattern
 		);
 }
+
+function user_insert($username, $email)
+{
+	//generera ett lösenord
+	$password=password_generate(32);
+	
+	$db=new db_class();
+	
+	//Check for available username
+	$username_found=FALSE;
+	$existing_user=user_get_id_from_username($username);
+	if($existing_user===NULL)
+		$username_found=TRUE;
+	else
+	{
+		for($i=1; $i<100; $i++)
+		{
+			$existing_user=user_get_id_from_username($username."_".$i);
+			if($existing_user===NULL)
+			{
+				$username.="_".$i;
+				$username_found=TRUE;
+                break;
+			}
+		}
+	}
+	
+	if($db->insert_from_array(PREFIX."user", array(	"username"	=>	$username,
+														"email"		=>	$email,
+														"password"	=>	$password
+                                                )
+                            )
+    ) {
+		$user_id=$db->insert_id;
+        if($db->update_from_array(PREFIX."user", array("password"	=>	crypt($password, $user_id.$email)), $user_id))
+            return $user_id;
+        else
+        {
+            add_error($db->error);
+        }
+    }
+	return FALSE;
+}
+
 
 
 ?>

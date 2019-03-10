@@ -31,6 +31,18 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
 
 	$connection=db_connect(db_host, db_name, db_user, db_pass);
+	
+	if(isset($_GET['p']) && isset($_GET['s']) && !strcmp($_GET['p'],"oauth"))
+	{
+		$login_oauth=unserialize(LOGIN_OAUTH);
+		if(isset($login_oauth[$_GET['s']]))
+		{			
+			if(isset($_REQUEST['code']))
+				login_oath($_GET['s'], $login_oauth[$_GET['s']]["base_uri"], $login_oauth[$_GET['s']]["auth_uri"], $login_oauth[$_GET['s']]["auth_parameters"]);
+			else
+				header('Location: '.$login_oauth[$_GET['s']]["302_uri"], true, 302);
+		}
+	}
 
 	if(function_exists("flattr_custom_page_tag") && $flattr_tag=flattr_custom_page_tag())
 		echo $flattr_tag;

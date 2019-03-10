@@ -29,6 +29,8 @@ define('SITE_NAME','Example Site');
 
 define('USER_MESSAGE_MAIL_SENDING', FALSE); //Set this to true if you have tested and want to send emails by user message
 
+define('DEBUG_PRINTS', TRUE); //Change to false to disable the preprint function
+
 /********************************/
 /*			database			*/
 /********************************/

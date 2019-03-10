@@ -457,7 +457,8 @@ if(!function_exists("preprint"))
 {
 	function preprint($value, $label="")
 	{
-		echo prestr($value, $label);
+		if(!defined("DEBUG_PRINTS") || DEBUG_PRINTS==TRUE)
+			echo prestr($value, $label);
 	}
 }
 if(!function_exists("prestr"))

@@ -2,6 +2,32 @@
 
 // define('BOOTSTRAP_VERSION', "4.1.0"); // Uncomment to switch to newer bootstrap (experimental)
 
+
+// LOGIN_OAUTH example for nightbot
+/* $code="";
+if(isset($_REQUEST['code']))
+	$code=preg_replace("/[^a-z0-9]/", "", $_REQUEST['code']);
+
+define('LOGIN_OAUTH', serialize(array(	"nightbot"	=>	array(	"icon_url"	=>	SITE_URL."/".CUSTOM_CONTENT_PATH."/img/oauth/nightbot_icon.png",
+													"base_uri"	=>	"https://api.nightbot.tv",
+													"302_uri"	=>	"https://api.nightbot.tv/oauth2/authorize?response_type=code".
+																	"&client_id=".NIGHTBOT_CLIENT_ID.
+																	"&redirect_uri=".SITE_URL."/oauth/nightbot".
+																	"&scope=song_requests_playlist channel",
+													"auth_uri"	=>	"https://api.nightbot.tv/oauth2/token",
+													"auth_parameters"	=>	array(
+																					"client_id"		=>	NIGHTBOT_CLIENT_ID,
+																					"client_secret"	=>	NIGHTBOT_CLIENT_SECRET,
+																					"code"			=>	$code,
+																					"grant_type"	=>	"authorization_code",
+																					"redirect_uri"	=>	SITE_URL."/oauth/nightbot"
+																				)
+												)
+									)
+							)
+	);
+ */
+
 /********************************/
 /*		Available pages			*/
 /********************************/

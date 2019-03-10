@@ -38,39 +38,48 @@ function login_captcha_check()
 /************************************************************************/
 /* Kollar om användaren är inloggad, försöker logga ut eller loggar in	*/
 /************************************************************************/
-function login_check()
+function login_check($oauth_success_user_id=NULL, $identifying_id=NULL, $oauth_name=NULL)
 {
 	if(isset($_GET['logout']))
 	{
 		login_logout();
 	}
-	else if(isset($_GET['inlog']) && isset($_POST['username']) && $_POST['username']!="") //Om användaren har sänt inloggningsinfo redan
+	else if(($oauth_success_user_id!=NULL && !isset($_SESSION[PREFIX.'user_id'])) || (isset($_GET['inlog']) && isset($_POST['username']) && $_POST['username']!="")) //Om användaren har sänt inloggningsinfo redan
 	{
 		//Hämta posten (om den finns) där username matchar den inmatade
 		$_SESSION[PREFIX.'inloggad']=0;
 		$login=false;
 
-		$sql="SELECT * FROM ".PREFIX."user WHERE username='".sql_safe($_POST['username'])."';";
+		if($oauth_success_user_id!=NULL)
+		{
+			$username=user_get_name($oauth_success_user_id);
+		}
+		else
+		{
+			$username=$_POST['username'];
+		}
+		
+		$sql="SELECT * FROM ".PREFIX."user WHERE username='".sql_safe($username)."';";
 		// echo "<br />DEBUG0922: $sql";
 		if($post=mysql_query($sql))
 		{
-			//Det finns en användare med den e-posten!
+			//Det finns en användare med det användarnamnet!
 			$user=mysql_fetch_assoc($post);
 			$login=true;
 		}
 		else echo "No user";
 		
 		//Om det inte fanns, eller lösenordet inte stämmer, eller om e-posten inte stämde (hur fabian nu det ska kunna hända)
-		if(!$login || strcmp($user['password'],crypt($_POST['password'], $user['id'].$user['email'])) || strcmp($user['username'],$_POST['username'])) //Om det var inkorrekt
+		if(!$login && strcmp($user['password'],crypt($_POST['password'], $user['id'].$user['email'])) || strcmp($user['username'],$username)) //Om det var inkorrekt
 		{
 			//<-- Felaktig inloggning -->
 			login_logout();
-			add_error(_("Incorrect info"));
+			add_error(sprintf(_("Incorrect info. login: %s"), ($login ? "true": "false")));
 		}
 		
 		//Om det var korrekt
 		// if($login && !strcmp($user['password'],md5($_POST['password'])) && !strcmp($user['email'],$_POST['email']))
-		if($login && !strcmp($user['password'],crypt($_POST['password'], $user['id'].$user['email'])) && !strcmp($user['username'],$_POST['username']))
+		if(($login && $oauth_success_user_id!=NULL) || (!strcmp($user['password'],crypt($_POST['password'], $user['id'].$user['email'])) && !strcmp($user['username'],$username)))
 		{
 			//<-- Korrekt inloggning. Hälsa användaren välkommen -->
 			//<-- skapa en session med användarid't, så att användaren kan smurfa runt -->
@@ -88,7 +97,8 @@ function login_check()
 			
 			$_SESSION[PREFIX.'user_id']=$user['id'];
 			$_SESSION[PREFIX.'username']=$user['username'];
-			$_SESSION[PREFIX.'password']=$_POST['password'];
+			$_SESSION[PREFIX.'password']=($oauth_success_user_id!=NULL ? crypt($identifying_id, $user['password']) : $_POST['password']);
+			$_SESSION[PREFIX.'logged_in_with']=($oauth_name!=NULL ? $oauth_name : NULL);
 			$_SESSION[PREFIX.'inloggad']=$user['level'];
 			$_SESSION[PREFIX."HTTP_USER_AGENT"] = md5($_SERVER['HTTP_USER_AGENT']);
 			setcookie("login",md5($_SESSION[PREFIX.'user_id']),time()+(60*15));
@@ -97,6 +107,7 @@ function login_check()
 			$sql="UPDATE ".PREFIX."user set lastlogin=now(), inactive=NULL WHERE id='".$user['id']."'";
 			if(!mysql_query($sql))
 				add_error(mysql_error());
+            
 		}
 		else
 			add_error(_("Login fail"));
@@ -112,8 +123,23 @@ function login_check()
 				{
 					if($u=mysql_fetch_array($uu))
 					{
-						// if(md5($_SESSION['".PREFIX."password'])==$u['password'])
-						if(crypt($_SESSION[PREFIX.'password'], $u['id'].$u['email'])==$u['password'])
+						// if logged in with another sevice
+						$password_correct=FALSE;
+						preprint($_SESSION,"_SESSION");
+						if(isset($_SESSION[PREFIX.'logged_in_with']) && $_SESSION[PREFIX.'logged_in_with']!=NULL)
+						{
+							// get token from db corresponding to user and oauth_name
+							$db = new db_class();
+							$token=$db->get_from_array(PREFIX."user_oauth_reff", array(	"oauth_name"	=>	$_SESSION[PREFIX.'logged_in_with'],
+																						"user"			=>	$_SESSION[PREFIX.'user_id']), TRUE);
+							if(!strcmp($_SESSION[PREFIX.'password'], crypt($token['identifying_id'], $u['password'])))
+								$password_correct=TRUE;
+							else
+								echo "<br />DEBUG1412: ".$_SESSION[PREFIX.'password']."!=".crypt($token['identifying_id'], $u['password']);
+						}
+						
+						// If we are not acting like we are logged in with something else, or we acutally aren't we check password
+						if($password_correct || crypt($_SESSION[PREFIX.'password'], $u['id'].$u['email'])==$u['password'])
 						{
 							if($_SESSION[PREFIX."HTTP_USER_AGENT"] ==md5($_SERVER['HTTP_USER_AGENT']))
 							{
@@ -142,7 +168,7 @@ function login_check()
 			
 		if($_SESSION[PREFIX.'inloggad']<1)
 		{
-			login_logout();
+			login_logout($_SESSION[PREFIX.'inloggad']);
 		}
 	}
 	
@@ -195,7 +221,7 @@ function login_check_logged_in_mini()
 	
 	return NULL;
 }
-function login_logout()
+function login_logout($reason_code=NULL)
 {
 	//Uppdatera senast inloggning
 	if(isset($_SESSION[PREFIX.'user_id']))
@@ -209,7 +235,7 @@ function login_logout()
 		unset($_SESSION[PREFIX.'inloggad']);
 		unset($_SESSION[PREFIX.'HTTP_USER_AGENT']);
 			
-		add_message("You are now logged out");
+		add_message(sprintf(_("You are now logged out (code %s)"), $reason_code));
 	}
 }
 
@@ -240,6 +266,19 @@ function login_form_login_inline()
 		-
 		<a href=\"?reg\" class=\"btn btn-success\">". _("Sign up") ."</a>
 		<a href=\"?lostpassword\">". _("Recover password") ."</a> </form>";
+	if(defined('LOGIN_OAUTH'))
+	{
+		$login_oath=unserialize(LOGIN_OAUTH);
+		if(!empty($login_oath))
+		{
+			$inputs=array();
+			foreach($login_oath as $name => $content)
+			{
+				$inputs[]=html_link( SITE_URL."/oauth/".$name, html_form_button("s", sprintf(_("Log in with %s"), ucfirst($name)), "default", "return 0;", FALSE, TRUE));
+			}
+			echo implode("", $inputs);
+		}
+	}
 }
 
 function login_form_password_recovery_require_link()
@@ -471,21 +510,23 @@ function login_display_link($a_text="", $return_html=FALSE)
 	}
 	else
 	{
-        if(!defined("BOOTSTRAP_VERSION") || substr(BOOTSTRAP_VERSION, 0,1)=="3") // v3 (old) type dropdown
+		if(!defined("BOOTSTRAP_VERSION") || substr(BOOTSTRAP_VERSION, 0,1)=="3") // v3 (old) type dropdown
         {
-            echo '<a class="hidden-lg hidden-md hidden-sm" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.$a_text.'>'._("Log in").'</a>'; //Just on small (xs) devices
-            echo '<a class="hidden-xs" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.'>'._("Log in").'</a>'; //Not on small (xs) devices
+			echo '<a class="hidden-lg hidden-md hidden-sm" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.$a_text.'>'._("Log in").'</a>'; //Just on small (xs) devices
+			echo '<a class="hidden-xs" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.'>'._("Log in").'</a>'; //Not on small (xs) devices
         }
         else // v4
         {
             // https://getbootstrap.com/docs/4.0/utilities/display/#hiding-elements
-            echo '<ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link d-block d-lg-none" href="#" 
-                        onclick="$(\'#navbarSupportedContent\').collapse(\'toggle\'); $( \'#main_login_form\' ).slideDown( \'normal\');" '.$a_text.'>'._("Log in").'</a>'; //Just on small and medium (xs md) devices
-            echo '<a class="nav-link d-none d-lg-block" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.'>'._("Log in").'</a>
-            </li>
-            </ul>'; //Not on small and medium (xs md) devices
+			echo '<ul class="navbar-nav mr-auto">
+				<li class="nav-item">';
+			echo '
+					<a class="nav-link d-block d-lg-none" href="#" 
+						onclick="$(\'#navbarSupportedContent\').collapse(\'toggle\'); $( \'#main_login_form\' ).slideDown( \'normal\');" '.$a_text.'>'._("Log in").'</a>'; //Just on small and medium (xs md) devices
+			echo '<a class="nav-link d-none d-lg-block" href="#" onclick="$( \'#main_login_form\' ).slideDown( \'normal\');" '.'>'._("Log in").'</a>';
+			echo '
+				</li>
+				</ul>'; //Not on small and medium (xs md) devices
         }
 	}
     
@@ -497,5 +538,76 @@ function login_display_link($a_text="", $return_html=FALSE)
 	else
 		return $contents;
 }
+
+function login_oath($oauth_name, $base_uri, $oauth_uri, $parameters)
+{
+    
+    preprint($_REQUEST);
+/* 	curl -X POST "https://api.nightbot.tv/oauth2/token" \
+  -d "client_id=d3cfa25e47c9c18e51220e4757d8e57a" \
+  -d "client_secret=50951bf21ec9639b210c7fda38665861" \
+  -d "grant_type=authorization_code" \
+  -d "redirect_uri=https%3A%2F%2Ftesting.com%2Fcallback" \
+  -d "code=cfbdb83aaa4d5c2534c23329de35301a" */
+ 
+	// https://stackoverflow.com/questions/2138527/php-curl-http-post-sample-code 
+	$ch = curl_init();
+
+	curl_setopt($ch, CURLOPT_URL, $oauth_uri);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, 
+		http_build_query($parameters));
+
+	// Receive server response ...
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+	$server_output = curl_exec($ch);
+
+	curl_close ($ch);
+	
+	$grant=json_decode($server_output);
+	
+	preprint($grant,"grant");
+	// Example of failed oath:
+	// "message":"Invalid grant: authorization code is invalid","code":400,"name":"invalid_grant"
+	
+	// Example of succesful oath:
+/* 	stdClass Object
+	(
+		[access_token] => 90ed2a2b310f681164f7ff9497da48185dca5dda
+		[token_type] => bearer
+		[expires_in] => 2592000
+		[refresh_token] => 51613f5c432c854e98b18b386ad79638b7209d04
+		[scope] => song_requests_playlist channel 
+	)
+ */
+	if(!isset($grant->access_token))
+	{
+		add_error(sprintf(_("Login failed (%s)"), (isset($grant->message) ? $grant->message : _("Unexpected oauth response"))));
+	}
+	else
+	{
+		// supposedly we now have a logged in user, so we should look for some unique part of their channel info to connect with a user
+		$api=new rest_api_integration($base_uri, $grant->access_token);
+		$result=$api->get(array("1","channel"));
+		if($result->status==200)
+		{
+			$channel=$result->channel;
+			
+			// construct identification string
+			$string=json_encode(array($channel->_id, $channel->name, $channel->provider, $channel->providerId, $channel->chatUrl));
+			
+			preprint($string);
+			
+			$user_id=$api->connect_user($oauth_name, $grant->access_token, $grant->refresh_token, $channel->_id, $channel->name, login_get_user());
+			
+			// If that went well and user is not logged in, log them in!
+            login_check($user_id, $channel->_id, $oauth_name);
+		}
+		else
+			add_error(_("Unable to fetch channel"));
+	}
+ 
+ }
 
 ?>

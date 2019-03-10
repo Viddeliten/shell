@@ -115,6 +115,7 @@ class db_class
         }
 		else
 			$this->error=$query." : ".$this->connection->error;
+        
 		return $result;
 	}
 
@@ -185,7 +186,7 @@ class db_class
             $updates[]='`'.sql_safe($key)."`".$val;
 		}
 		$sql="UPDATE ".sql_safe($table)." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
-
+        
 		return $this->query($sql);
 	}
     
@@ -197,6 +198,19 @@ class db_class
     function __destruct() {
        $this->close();
    }
+   
+   public function start_transaction()
+   {
+		$this->connection->begin_transaction();
+	}
+   public function commit()
+   {
+		$this->connection->commit();
+	}
+   public function rollback()
+   {
+		$this->connection->rollback();
+	}
 }
 
 if(!function_exists("mysql_query"))

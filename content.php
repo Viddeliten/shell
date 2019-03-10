@@ -31,6 +31,17 @@ else if(isset($_GET['lostpassword']))
 }
 else if(isset($_REQUEST['p']))
 {
+	if(!strcmp($_REQUEST['p'],"oauth") && isset($_GET['s']))
+	{
+		$login_oauth=unserialize(LOGIN_OAUTH);
+		if(isset($login_oauth[$_GET['s']]))
+		{			
+			if(!isset($_REQUEST['code']))
+				header('Location: '.$login_oauth[$_GET['s']]["302_uri"], true, 302);
+		}
+	}
+
+
 	if(custom_page_display() || isset($_GET['logout']))
 	{
 		//Do nothing else. =)
@@ -136,6 +147,10 @@ else if(isset($_REQUEST['p']))
 	{
 		version_show_latest();
 	}
+	else if(!isset($_REQUEST['p']) || isset($_REQUEST['inlog']) || !strcmp($_REQUEST['p'],"oauth"))
+	{
+		content_start_page();
+	}
 	else 
 		echo "<p class=\"well message_box\">"._("Unknown page")."</p>";
 }
@@ -144,6 +159,11 @@ else if(isset($_GET['search']))
 	search_display_results($_GET['search']);
 }
 else
+{
+	content_start_page();
+}
+
+function content_start_page()
 {
 	if(file_exists(CUSTOM_CONTENT_PATH."/start.php"))
 	{
