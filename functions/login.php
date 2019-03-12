@@ -125,7 +125,6 @@ function login_check($oauth_success_user_id=NULL, $identifying_id=NULL, $oauth_n
 					{
 						// if logged in with another sevice
 						$password_correct=FALSE;
-						preprint($_SESSION,"_SESSION");
 						if(isset($_SESSION[PREFIX.'logged_in_with']) && $_SESSION[PREFIX.'logged_in_with']!=NULL)
 						{
 							// get token from db corresponding to user and oauth_name
@@ -266,9 +265,9 @@ function login_form_login_inline()
 		-
 		<a href=\"?reg\" class=\"btn btn-success\">". _("Sign up") ."</a>
 		<a href=\"?lostpassword\">". _("Recover password") ."</a> </form>";
-	if(defined('LOGIN_OAUTH'))
+	if(defined('REST_APIS'))
 	{
-		$login_oath=unserialize(LOGIN_OAUTH);
+		$login_oath=unserialize(REST_APIS);
 		if(!empty($login_oath))
 		{
 			$inputs=array();
@@ -539,67 +538,25 @@ function login_display_link($a_text="", $return_html=FALSE)
 		return $contents;
 }
 
-function login_oath($oauth_name, $base_uri, $oauth_uri, $parameters)
+// login_oath($_GET['s'], $login_oauth[$_GET['s']]["base_uri"], $login_oauth[$_GET['s']]["auth_uri"], $login_oauth[$_GET['s']]["auth_parameters"]);
+
+function login_oath($oauth_name) //, $base_uri, $oauth_uri, $parameters)
 {
-    
-    preprint($_REQUEST);
-/* 	curl -X POST "https://api.nightbot.tv/oauth2/token" \
-  -d "client_id=d3cfa25e47c9c18e51220e4757d8e57a" \
-  -d "client_secret=50951bf21ec9639b210c7fda38665861" \
-  -d "grant_type=authorization_code" \
-  -d "redirect_uri=https%3A%2F%2Ftesting.com%2Fcallback" \
-  -d "code=cfbdb83aaa4d5c2534c23329de35301a" */
- 
-	// https://stackoverflow.com/questions/2138527/php-curl-http-post-sample-code 
-	$ch = curl_init();
+	$api=new rest_api_integration($oauth_name);
 
-	curl_setopt($ch, CURLOPT_URL, $oauth_uri);
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, 
-		http_build_query($parameters));
-
-	// Receive server response ...
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-	$server_output = curl_exec($ch);
-
-	curl_close ($ch);
-	
-	$grant=json_decode($server_output);
-	
-	preprint($grant,"grant");
-	// Example of failed oath:
-	// "message":"Invalid grant: authorization code is invalid","code":400,"name":"invalid_grant"
-	
-	// Example of succesful oath:
-/* 	stdClass Object
-	(
-		[access_token] => 90ed2a2b310f681164f7ff9497da48185dca5dda
-		[token_type] => bearer
-		[expires_in] => 2592000
-		[refresh_token] => 51613f5c432c854e98b18b386ad79638b7209d04
-		[scope] => song_requests_playlist channel 
-	)
- */
-	if(!isset($grant->access_token))
+	if(!$api->has_access_token())
 	{
-		add_error(sprintf(_("Login failed (%s)"), (isset($grant->message) ? $grant->message : _("Unexpected oauth response"))));
+		add_error(sprintf(_("Login failed (%s)"), $api->get_error_message()));
 	}
 	else
 	{
 		// supposedly we now have a logged in user, so we should look for some unique part of their channel info to connect with a user
-		$api=new rest_api_integration($base_uri, $grant->access_token);
 		$result=$api->get(array("1","channel"));
 		if($result->status==200)
 		{
 			$channel=$result->channel;
 			
-			// construct identification string
-			$string=json_encode(array($channel->_id, $channel->name, $channel->provider, $channel->providerId, $channel->chatUrl));
-			
-			preprint($string);
-			
-			$user_id=$api->connect_user($oauth_name, $grant->access_token, $grant->refresh_token, $channel->_id, $channel->name, login_get_user());
+			$user_id=$api->connect_user($channel->_id, $channel->name, login_get_user());
 			
 			// If that went well and user is not logged in, log them in!
             login_check($user_id, $channel->_id, $oauth_name);

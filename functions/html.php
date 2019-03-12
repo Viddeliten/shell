@@ -724,7 +724,12 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array(),
 				else
 					$style="";
 
-				$r.="<td $style>".(isset($a[$k]) ? $a[$k] : "")."</td>";
+				if(is_array($a))
+					$r.="<td $style>".(isset($a[$k]) ? $a[$k] : "")."</td>";
+				else if(is_object($a) && (is_object($a->$k) || is_array($a->$k)))
+					$r.="<td $style>".(isset($a->$k) ? json_encode($a->$k) : "")."</td>";
+				else if(is_object($a))
+					$r.="<td $style>".(isset($a->$k) ? $a->$k : "")."</td>";
 			}
 		}
 		$r.="</tr>";

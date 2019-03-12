@@ -34,11 +34,11 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 	
 	if(isset($_GET['p']) && isset($_GET['s']) && !strcmp($_GET['p'],"oauth"))
 	{
-		$login_oauth=unserialize(LOGIN_OAUTH);
+		$login_oauth=unserialize(REST_APIS);
 		if(isset($login_oauth[$_GET['s']]))
 		{			
 			if(isset($_REQUEST['code']))
-				login_oath($_GET['s'], $login_oauth[$_GET['s']]["base_uri"], $login_oauth[$_GET['s']]["auth_uri"], $login_oauth[$_GET['s']]["auth_parameters"]);
+				login_oath($_GET['s']); //, $login_oauth[$_GET['s']]["base_uri"], $login_oauth[$_GET['s']]["auth_uri"], $login_oauth[$_GET['s']]["auth_parameters"]);
 			else
 				header('Location: '.$login_oauth[$_GET['s']]["302_uri"], true, 302);
 		}

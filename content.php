@@ -33,9 +33,8 @@ else if(isset($_REQUEST['p']))
 {
 	if(!strcmp($_REQUEST['p'],"oauth") && isset($_GET['s']))
 	{
-		$login_oauth=unserialize(LOGIN_OAUTH);
-		if(isset($login_oauth[$_GET['s']]))
-		{			
+		if(rest_api_integration::has_support($_GET['s']))
+		{
 			if(!isset($_REQUEST['code']))
 				header('Location: '.$login_oauth[$_GET['s']]["302_uri"], true, 302);
 		}
