@@ -12,8 +12,6 @@ class rest_api_integration
 		$this->oauth_name=$oauth_name;
 		$this->base_uri=$this->get_from_oauth_name($oauth_name, "base_uri");
 		$this->set_grant($fetch_access_token);
-		
-		preprint($this, "this");
 	}
 	
 	public function get_from_oauth_name($oauth_name, $member)
@@ -64,6 +62,29 @@ class rest_api_integration
 		
 		return json_decode($server_output);		
 	}
+
+	public function _delete($parameters)
+	{
+		if(!$this->has_access_token())
+			return FALSE;
+		
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, $this->base_uri."/".implode("/",$parameters));
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			"Authorization: Bearer ".$this->grant->access_token
+		));
+		
+		// Receive server response ...
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$server_output = curl_exec($ch);
+
+		curl_close ($ch);
+		
+		return json_decode($server_output);		
+	}
 	
 	public function get_user_tokens($oauth_name, $logged_in_user_id)
 	{
@@ -85,8 +106,6 @@ class rest_api_integration
 		// https://stackoverflow.com/questions/2138527/php-curl-http-post-sample-code 
 		$ch = curl_init();
 		
-		preprint($this->get_from_oauth_name($this->oauth_name, "auth_parameters"), "auth_parameters");
-
 		curl_setopt($ch, CURLOPT_URL, $this->get_from_oauth_name($this->oauth_name, "auth_uri"));
 		curl_setopt($ch, CURLOPT_POST, 1);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, 
@@ -97,8 +116,6 @@ class rest_api_integration
 
 		$server_output = curl_exec($ch);
 		
-		preprint($server_output, "server_output");
-
 		curl_close ($ch);
 		
 		$this->grant = json_decode($server_output);
