@@ -422,14 +422,21 @@ function html_button($button_text, $class="btn btn-default", $onclick=NULL, $but
 			.'</button>';
 }
 
-function html_form($method, $inputs, $multipart=FALSE)
+function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE)
 {
     $r='<form method="'.$method.'">';
     if(!empty($inputs))
     {
-        foreach($inputs as $i)
-        {
-            $r.=$i;
+		if($all_inline)
+		{
+			$r.=html_row(1, count($inputs), $inputs);
+		}
+		else
+		{
+			foreach($inputs as $i)
+			{
+				$r.=$i;
+			}
         }
     }
     $r.='</form>';
