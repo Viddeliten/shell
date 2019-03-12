@@ -84,11 +84,16 @@ class db_class
 			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
 		$sql="SELECT * FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
-
+		
 		if($just_first)
 			return $this->select_first($sql);
 		
 		return $this->select($sql);
+	}
+	
+	public function get_columns($table)
+	{
+		return sql_get_columns($table);
 	}
 	public function delete_from_array($table, $values)
 	{
