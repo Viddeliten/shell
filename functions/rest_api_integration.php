@@ -63,6 +63,32 @@ class rest_api_integration
 		return json_decode($server_output);		
 	}
 
+	public function post($parameters, $postfields)
+	{
+		if(!$this->has_access_token())
+			return FALSE;
+		
+		$ch = curl_init();
+
+		$postfields_http=http_build_query($postfields);
+		curl_setopt($ch, CURLOPT_URL, $this->base_uri."/".implode("/",$parameters));
+		curl_setopt($ch, CURLOPT_POST, count($postfields));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields_http);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+			"Authorization: Bearer ".$this->grant->access_token."
+			Content-Type: application/x-www-form-urlencoded"
+		));
+		
+		// Receive server response ...
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$server_output = curl_exec($ch);
+
+		curl_close ($ch);
+		
+		return json_decode($server_output);		
+	}
+	
 	public function _delete($parameters)
 	{
 		if(!$this->has_access_token())
