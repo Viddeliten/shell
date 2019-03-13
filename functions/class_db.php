@@ -110,6 +110,7 @@ class db_class
 
     public function query($query)
     { 
+		// preprint($query);
 		$result=$this->connection->query($query);
 		if($result)
         {

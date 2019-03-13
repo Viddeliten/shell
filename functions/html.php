@@ -14,18 +14,25 @@ function html_img($source, $alt="image", $height=NULL, $width=NULL)
 	return '<img src="'.$source.'" alt="'.$alt.'" '.($height!=NULL ? ' height="'.$height.'"': "").($width!=NULL ? ' width="'.$width.'"': "").'/>';
 }
 
+function html_safe($string, $get_link_titles=FALSE)
+{
+	$string=str_replace("\n", "<br />", $string);
+	$string=str_ireplace("\r","<br />",$string);
+	$string=str_ireplace("<br /><br />","</p><p>",$string);
+	//Look for urls
+	string_replace_urls_with_links($string, $get_link_titles);
+	
+	//Break long words
+	string_break_long_words($string);
+
+	return $string;
+}
+
 function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=false, $div_id=NULL, $html_format_text=TRUE)
 {
     if($html_format_text)
     {
-        $text=str_replace("\n", "<br />", $text);
-        $text=str_ireplace("\r","<br />",$text);
-        $text=str_ireplace("<br /><br />","</p><p>",$text);
-        //Look for urls
-        string_replace_urls_with_links($text, $get_link_titles);
-        
-        //Break long words
-        string_break_long_words($text);
+		$text=html_safe($text, $get_link_titles);
     }
 
 	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').($div_id==NULL ? "":' id="'.$div_id.'"').'>'.$text.'</'.$tag_type.'>';
@@ -339,15 +346,15 @@ function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=
 			$extra=$arr['extra'];
 		}
 		
-		$r.='<div class="radio">
-		  <label>
-			<input type="radio" name="'.$name.'" id="'.$id."_".$value.'" value="'.$value.'" '.
+		$r.='<div class="radio">'.
+		  '<label>'.
+			'<input type="radio" name="'.$name.'" id="'.$id."_".$value.'" value="'.$value.'" '.
 			($selected==$value ? ' checked="checked" ' : '').
 			(isset($onclick[$value]) ? 'onclick="'.$onclick[$value].'"' : '').
 			'>'.
 			$option_label.
-		  '</label>
-		</div>';
+		  '</label>'.
+		'</div>';
 		
 		if(isset($extra))
 			$r.=$extra;
