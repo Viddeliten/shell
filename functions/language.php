@@ -28,8 +28,6 @@ function language_setup($override_language=NULL)
 	}
 	else
 	{
-		$_SESSION['language']="sv_SE";
-		
 		//Try to fetch preffered
 		if(isset($_SESSION['language']))
 		{
