@@ -38,11 +38,11 @@ function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=fals
 	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').($div_id==NULL ? "":' id="'.$div_id.'"').'>'.$text.'</'.$tag_type.'>';
 }
 
-function html_link($url, $text, $class=NULL)
+function html_link($url, $text, $class=NULL, $target="_self")
 {
 	$the_text=str_ireplace("\n","<br />",$text);
 	$the_text=str_ireplace("<br /><br />","</p></p>",$the_text);
-	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class.'"').'>'.$the_text.'</a>';
+	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class.'"').' target="'.$target.'">'.$the_text.'</a>';
 }
 
 function html_card($card_link="", $card_link_text="Go somewhere", $card_title="", $card_text="", $img_source=NULL, $image_alt="Image")
