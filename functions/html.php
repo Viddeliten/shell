@@ -245,7 +245,6 @@ function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $r
 	$col_xs_size=(int)(12/$min_columns);
 		
 	$return="";
-    // $return.=prestr(array($columns,$min_columns, $max_columns, $nr),"STUFFS!");
 	if(!empty($elements))
 	{
 		$return.='<div class="row'.($row_class==NULL ? "":" ".$row_class).'">';
@@ -610,20 +609,28 @@ function html_form_add_div($div_id, $button_text, $path, $button_class="btn btn-
 
 }
 
-function html_ajax_div_switcher($div_id, $content_op_keyword, $function_name, $initial_parameters, $switch_parameters, $class, $extra_classes, $switch_all=TRUE)
+function html_ajax_div_switcher($div_id, $content_function, $initial_parameters, $switch_parameters, $class, $switch_all=TRUE, $switching=FALSE)
 {
+	if(is_array($initial_parameters))
+		$initial_parameters=implode(",", $initial_parameters);
+	if(is_array($switch_parameters))
+		$switch_parameters=implode(",", $switch_parameters);
+	
 	$r='<div 
 		id="'.$div_id.'" 
-		class="'.$class.' '.$extra_classes.'" 
-		state="initial" 
-		content_function="'.$content_op_keyword.'" 
+		class="'.$class.'"
+		state="'.($switching ? "switched" : "initial").'" 
+		content_function="'.$content_function.'"
 		initial_parameters="'.$initial_parameters.'"
 		switch_parameters="'.$switch_parameters.'"
-		onclick="'.($switch_all ? "js_switch_all(".$div_id.");" : "js_switch_one(this);" ).'" >';
+		onclick="'.($switch_all ? "js_switch_all('".$div_id."');" : "js_switch_one('".$div_id."');" ).'" >';
 	$r=str_replace("\n","", $r);
-	// $r.=include(ABS_PATH."/op.php?f=".$content_op_keyword."&amp;".implode("&amp;",explode(",", $initial_parameters)));
-	$params=explode(",", $initial_parameters);
-	$r.=call_user_func($function_name, $parametes);
+	if($switching)
+		$parameters=$switch_parameters;
+	else
+		$parameters=$initial_parameters;
+	
+	$r.=call_user_func_array($content_function, explode(",",$parameters));
 	$r.='</div>';
 	return $r;
 } 

@@ -26,6 +26,65 @@ function replace_html_div(div_id_to, path, async)
 		$( '#' + div_id_to ).replaceWith();
 }
 
+function js_switch_all(div_id)
+{
+	var div = document.getElementById(div_id);
+	
+	// alert(div_id + ' is ' + div.getAttribute('state'));
+
+	//If we are switching from initial, switch all others with same class to initial
+	if(div.getAttribute('state')==="initial")
+	{
+		var elements=document.getElementsByClassName(div.getAttribute("class"));
+		var i;
+		for (i = 0; i < elements.length; i++) {
+			if(elements[i].getAttribute('state')!=="initial")
+				js_switch_one(elements[i].getAttribute('id'), "initial");
+		}
+	}
+	
+	//Then lastly, switch the one we wanted
+	js_switch_one(div_id);
+}	
+
+function js_switch_one(div_id, force_state)
+{
+	// alert(div_id + ' to ' + force_state);
+	var div = document.getElementById(div_id);
+	console.log("swithc: "+div_id + ' from ' + div.getAttribute('state'));
+	
+	// html_ajax_div_switcher($div_id, $content_function, $initial_parameters, $switch_parameters, $class, $switch_all=TRUE, $switching=FALSE);
+		// $r='<div 
+		// id="'.$div_id.'" 
+		// class="'.$class.' '.$extra_classes.'" 
+		// state="'.($switching ? "switched" : "initial").'" 
+		// content_function="'.$content_function.'" 
+		// initial_parameters="'.serialize($initial_parameters).'"
+		// switch_parameters="'.serialize($switch_parameters).'"
+		// onclick="'.($switch_all ? "js_switch_all(".$div_id.");" : "js_switch_one(this);" ).'" >';
+
+	var parameters={};
+	
+	parameters.div_id=div_id;
+	parameters.content_function=div.getAttribute('content_function');
+	parameters.initial_parameters=div.getAttribute('initial_parameters');
+	parameters.switch_parameters=div.getAttribute('switch_parameters');
+	parameters.class=div.getAttribute('class');
+	parameters.switch_all=false;
+	if(force_state==="initial")
+		parameters.switching=false;
+	else if(force_state==="switched")
+		parameters.switching=true;
+	else if(div.getAttribute('state')==="initial")
+		parameters.switching=true;
+	else
+		parameters.switching=false;
+
+	var path = get_base_url() + '/op.php?f=switch&parameters='+JSON.stringify( parameters );
+
+	replace_html_div(div.id, path, false);
+}
+
 function datestring_from_date(d)
 {
     var month=d.getMonth()+1;

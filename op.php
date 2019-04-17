@@ -13,10 +13,16 @@ define('ROOT_PATH',"./");
 require_once(ROOT_PATH."operation/op_includer.php");
 $connection=db_connect(db_host, db_name, db_user, db_pass);
 
+// preprint($_REQUEST);
+
 switch($_REQUEST['f'])
 {
 	case "":
 		echo _("No command");
+		break;
+	case "switch":
+		$parameters=(array) json_decode($_REQUEST['parameters']);
+		echo call_user_func_array("html_ajax_div_switcher", $parameters);
 		break;
 	default:
 		if(file_exists(CUSTOM_CONTENT_PATH."/op.php"))

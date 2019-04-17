@@ -176,6 +176,16 @@ function string_url_is_tumblr($url)
 	return FALSE;
 }
 
+/***
+ * function string_curlurl
+ * Parameters:
+ **		$url				- The webb address to be processed
+ **		$zipped				- If the target is zipped. Default: FALSE 
+ **		$follow_redirects	- How many redirects to follow. Default: 3 
+ **		$referer			- url to tell the target we came from. Default: SITE_URL 
+ **		$send_cookie		- If we should send current cookie to the target. Default: FALSE
+ * Returns: Body of url
+ ***/
 function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_URL, $send_cookie=FALSE)
 {
     $handle = curl_init();
