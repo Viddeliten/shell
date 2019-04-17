@@ -610,6 +610,24 @@ function html_form_add_div($div_id, $button_text, $path, $button_class="btn btn-
 
 }
 
+function html_ajax_div_switcher($div_id, $content_op_keyword, $function_name, $initial_parameters, $switch_parameters, $class, $extra_classes, $switch_all=TRUE)
+{
+	$r='<div 
+		id="'.$div_id.'" 
+		class="'.$class.' '.$extra_classes.'" 
+		state="initial" 
+		content_function="'.$content_op_keyword.'" 
+		initial_parameters="'.$initial_parameters.'"
+		switch_parameters="'.$switch_parameters.'"
+		onclick="'.($switch_all ? "js_switch_all(".$div_id.");" : "js_switch_one(this);" ).'" >';
+	$r=str_replace("\n","", $r);
+	// $r.=include(ABS_PATH."/op.php?f=".$content_op_keyword."&amp;".implode("&amp;",explode(",", $initial_parameters)));
+	$params=explode(",", $initial_parameters);
+	$r.=call_user_func($function_name, $parametes);
+	$r.='</div>';
+	return $r;
+} 
+
 function html_tooltip($tip_text)
 {
 	return '<a class="helpmarker" href=# title="'.$tip_text.'">?</a>';
@@ -975,6 +993,8 @@ function html_nav_tabs($tabs=array(), $active=NULL)
 	$r.='</div>';
 	return $r;
 }
+
+// function html_ajax_
 
 function html_show_hide_clicker($div_id, $label, $contents)
 {
