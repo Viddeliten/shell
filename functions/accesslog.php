@@ -26,7 +26,7 @@ function accesslog_log($table, $table_id)
 	$print_now=TRUE;
 	$generate_warning_on_fail=TRUE;
 
-	sql_insert(PREFIX."access_log", $values, NULL, 131312, $print_now, $generate_warning_on_fail);
+	sql_insert("access_log", $values, NULL, 131312, $print_now, $generate_warning_on_fail);
 }
 
 function accesslogg_get_ip($salt)
