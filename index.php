@@ -72,11 +72,13 @@ else
     <!-- Bootstrap core CSS -->
     <link href="<?php echo SITE_URL; ?>/bootstrap-<?php echo $bootstrap_version; ?>-dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Shell template style -->
+    <!-- Shell Bootstrap style -->
     <?php if(!strcmp("4.1.0", $bootstrap_version)) { ?>
     <link href="<?php echo SITE_URL; ?>/style_bootstrap410.css" rel="stylesheet"> <?php } else { ?>
     <link href="<?php echo SITE_URL; ?>/style_bootstrap334.css" rel="stylesheet"><?php } ?>
 
+	<!-- Shell style -->
+    <link href="<?php echo SITE_URL; ?>/style.css" rel="stylesheet">
 	<!-- Custom style -->
     <link href="<?php echo SITE_URL."/".CUSTOM_CONTENT_PATH; ?>/style.css" rel="stylesheet">
 
