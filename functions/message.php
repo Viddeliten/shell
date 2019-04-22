@@ -133,6 +133,10 @@ function add_message($message_body, $headline=NULL)
 		define('MESS'.$i, $message);
 	}
 }
+function message_add_error_message($message)
+{
+	add_error($message);
+}
 function message_add_success_message($message)
 {
 	if(!defined('SUCCESS_MESS'))
