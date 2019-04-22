@@ -5,10 +5,11 @@ class base_class
 	public $id;
 	public $data;
 	
+	protected $criteria;
 	protected $db;
 	protected $db_table;
 	
-	function __construct($db_table_name, $id=NULL, $db_connection=NULL)
+	function __construct($db_table_name, $id=NULL, $db_connection=NULL, $criteria=NULL)
 	{
 		if($db_connection!=NULL)
 			$this->db=$db_connection;
@@ -20,8 +21,9 @@ class base_class
 		if($id!=NULL)
 		{
 			$this->id=$id;
-			$this->reload();
 		}
+		$this->criteria=$criteria;
+		$this->reload();
 	}
 	
 	public function create($values)
@@ -79,11 +81,19 @@ class base_class
 		$this->reload();
 	}
 	
+	public function set_criteria($criteria=NULL)
+	{
+		$this->criteria=$criteria;
+		$this->reload();
+	}
+
 	protected function reload()
 	{
-		$sql="SELECT * FROM `".sql_safe($this->db_table)."` WHERE id=".sql_safe($this->id);
-		// preprint($sql, $this->db_table." reload");
-		$this->data=$this->db->select_first($sql);
+		$criteria=($this->criteria!=NULL ? $this->criteria : array());
+		if($this->id!=NULL)
+			$criteria['id']=$this->id;
+			
+		$this->data=$this->db->get_from_array($this->db_table, $criteria, ($this->id!=NULL ? TRUE : FALSE));
 	}
 }
 
