@@ -67,11 +67,11 @@ function user_receive()
 	}
 	else if(isset($_POST['add_user_friend']))
 	{
-		user_friend_request($_SESSION['user_id'], $_POST['user_id']);
+		user_friend_request(login_get_user(), $_POST['user_id']);
 	}
 	else if(isset($_POST['reject_user_friend']))
 	{
-		user_friend_reject($_SESSION['user_id'], $_POST['user_id']);
+		user_friend_reject(login_get_user(), $_POST['user_id']);
 	}
 }
 
@@ -745,7 +745,7 @@ function user_display_active_users($include_reputation=TRUE)
 
 function user_display_friends()
 {
-	$friends=user_friend_get_accepted($_SESSION['user_id'],$_GET['sortby'],$_GET['order']);
+	$friends=user_friend_get_accepted(login_get_user(),$_GET['sortby'],$_GET['order']);
 
 	if(empty($friends))
 	{
@@ -838,12 +838,15 @@ function user_friend_get_accepted($user_id, $sortby, $order)
 function user_friend_get($user1, $user2)
 {
 	$sql="SELECT user_friend.*, fh.timestamp as update_time
-	FROM user_friend
-	LEFT JOIN (SELECT MAX(id) as id, user_friend_id FROM user_friend_history GROUP BY user_friend_id) fh2 ON fh2.user_friend_id=user_friend.id
-	LEFT JOIN user_friend_history fh ON fh.user_friend_id=user_friend.id AND fh.id=fh2.id
+	FROM ".PREFIX."user_friend user_friend
+	LEFT JOIN (	SELECT MAX(id) as id, user_friend_id 
+				FROM ".PREFIX."user_friend_history user_friend_history 
+				GROUP BY user_friend_id) fh2 
+		ON fh2.user_friend_id=user_friend.id
+	LEFT JOIN ".PREFIX."user_friend_history fh ON fh.user_friend_id=user_friend.id AND fh.id=fh2.id
 	WHERE (user_friend.requested_by=".sql_safe($user1)." AND user_friend.user=".sql_safe($user2).")
 	OR (user_friend.requested_by=".sql_safe($user2)." AND user_friend.user=".sql_safe($user1).");";
-
+	
 	$ff=mysql_query($sql);
 	while($s=mysql_fetch_assoc($ff))
 	{
@@ -878,14 +881,16 @@ function user_friend_get_request_button($user_id)
 	if(login_check_logged_in_mini()<1)
 		return FALSE;
 	
+	$logged_in_user=login_get_user();
+	
 	//Check that it isn't logged in user
-	if($_SESSION['user_id']==$user_id)
+	if($logged_in_user==$user_id)
 		return FALSE;
 
 
 	//Check current friendship status
-	$current_friendship=user_friend_get($user_id, $_SESSION['user_id']);
-	
+	$current_friendship=user_friend_get($user_id, $logged_in_user);
+		
 	if(isset($current_friendship['status']) && $current_friendship['status']=="PENDING")
 	{
 		return "<p><i>".sprintf(_("Friendship requested %s"),date("Y-m-d H:i",strtotime($current_friendship['request_time'])))."</i></p>";
@@ -894,6 +899,7 @@ function user_friend_get_request_button($user_id)
 	{
 		return "<p><i>".sprintf(_("Friendship accepted %s"),date("Y-m-d H:i",strtotime($current_friendship['update_time'])))."</i></p>";
 	}
+	
 	if(isset($current_friendship['status']) && ($current_friendship['status']=="FORBIDDEN" || $current_friendship['status']=="REJECTED"))
 	{
 		$return="<p><i>".sprintf(_("Friendship rejected %s"),date("Y-m-d H:i",strtotime($current_friendship['update_time'])))."</i></p>";
