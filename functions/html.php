@@ -9,9 +9,9 @@ function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id
 	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles, $div_id, $html_format_text);
 }
 
-function html_img($source, $alt="image", $height=NULL, $width=NULL)
+function html_img($source, $alt="image", $height=NULL, $width=NULL, $class="")
 {
-	return '<img src="'.$source.'" alt="'.$alt.'" '.($height!=NULL ? ' height="'.$height.'"': "").($width!=NULL ? ' width="'.$width.'"': "").'/>';
+	return '<img src="'.$source.'" alt="'.$alt.'" '.($height!=NULL ? ' height="'.$height.'"': "").($width!=NULL ? ' width="'.$width.'"': "").' class="'.$class.'"/>';
 }
 
 function html_safe($string, $get_link_titles=FALSE)
@@ -930,8 +930,9 @@ function html_form_search()
 }
 /***
 /*	Populating tabs array:
-	$tabs[]=array(	"id"	=>	"important",
+	$tabs["important"]=array(	"id"	=>	"important",
 						"link"	=>	Url to page this is on. Only needed on the first item,
+						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
 						"text"	=>	_("Tab text"),
 						"content"	=>	All html visible when the tab is active);
 *
@@ -1001,22 +1002,36 @@ function html_nav_tabs($tabs=array(), $active=NULL)
 	return $r;
 }
 
-// function html_ajax_
-
-function html_show_hide_clicker($div_id, $label, $contents)
+function html_show_hide_clicker($div_id, $label, $contents, $glyph_label=NULL)
 {
 	$r='<div id="'.$div_id.'" style="display:none">';
+	
+	if($glyph_label!=NULL)
+		$entire_label=call_user_func_array("html_glyph", $glyph_label);
+	else
+		$entire_label="[-".sprintf(_("Hide %s"),$label)."-]";
+
 	$r.=html_tag("p",'<a class="showhideclicker"'.
 						'onClick="showhide(\''.$div_id."');".
 						"showhide('".string_slugify($label)."_".$div_id."');\">".
-					"[-".sprintf(_("Hide %s"),$label)."-]</a>"); //toggle-pryl! =)
+						$entire_label. 	//toggle-pryl! =)
+				"</a>"); 
 	$r.=$contents;
 	$r.='</div>';
+
+	if($glyph_label!=NULL)
+	{
+		$glyph_label[]=TRUE;
+		$entire_label=call_user_func_array("html_glyph", $glyph_label);
+	}
+	else
+		$entire_label="[-".sprintf(_("Show %s"),$label)."-]";
+
 	$r.=html_tag("p",'<a id="'.string_slugify($label)."_".$div_id.'" onClick="showhide(\''.$div_id."');".
 													"showhide('".string_slugify($label)."_".$div_id."');\"".
 						'class="commentclicker" href="#'.$label.'">'.
-						'[-'.sprintf(_("Show %s"),$label)."-]
-		</a>");
+						$entire_label. 	//toggle-pryl! =)
+					"</a>");
 	return $r;
 }
 
@@ -1064,6 +1079,18 @@ function html_carousel($image_array, $div_class="", $images_full_width=TRUE)
   </a>
 </div>';
 return $r;
+}
+
+/***
+* function html_glyph
+* returns html for printing a symbol.
+* Available symbols: https://useiconic.com/open/
+***/
+function html_glyph($icon_name, $height=NULL, $greyed_out=FALSE)
+{
+	// return '<span class="glyphicon glyphicon-'.$symbol.'"></span>';
+	// return '<img src="'.SITE_URL.'/open-iconic/svg/'.$icon_name.'.svg" alt="'.str_replace("-", " ", $icon_name).'">';
+	return html_img(SITE_URL.'/open-iconic/svg/'.$icon_name.'.svg', str_replace("-", " ", $icon_name), $height, NULL, ($greyed_out ? " disabled" : ""));
 }
 
 ?>
