@@ -36,10 +36,6 @@
 	margin-bottom: 0;
 }
 
-body {
-
-  padding-top: 50px;
-}
 html, body {
   height: 100%; /* needed for container min-height */
 }
@@ -48,10 +44,12 @@ img{
 	max-width: 100%;
 }
 
-th
+.disabled
 {
+	opacity: 0.4;
+	filter: alpha(opacity=40); /* msie */	
 }
-
+	
 select.form-control.small
 {
     font-size: 85%;
