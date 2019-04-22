@@ -110,7 +110,6 @@ class db_class
 
     public function query($query)
     { 
-		// preprint($query);
 		$result=$this->connection->query($query);
 		if($result)
         {
@@ -270,7 +269,9 @@ if(!function_exists("mysql_query"))
     
     function mysql_fetch_assoc($result)
     {
-        return $result->fetch_assoc();
+		if($result)
+			return $result->fetch_assoc();
+		return FALSE;
     }
     
     function mysql_affected_rows()
