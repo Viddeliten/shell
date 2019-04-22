@@ -1,6 +1,6 @@
 <?php
 
-// define('BOOTSTRAP_VERSION', "4.1.0"); // Uncomment to switch to newer bootstrap (experimental)
+define('BOOTSTRAP_VERSION', "4.1.0"); // Comment to switch to older bootstrap (3.3.4)
 
 
 // LOGIN_OAUTH example for nightbot
