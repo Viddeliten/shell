@@ -48,19 +48,25 @@ function language_setup($override_language=NULL)
 					$lang="sv";
 				else if(!strcmp($l['geoplugin_countryCode'],"GB"))
 					$lang="en";
-			}
-			switch ($lang){
-				case "en":
-					$language="en_GB";
-					break;
-				case "sv":
-				case "no":
-				case "dk":
-					$language="sv_SE";
-					break;        
-				default:
+				else
 					$language=DEFAULT_LANGUAGE;
-					break;
+			}
+			
+			if(!isset($language))
+			{
+				switch ($lang){
+					case "en":
+						$language="en_GB";
+						break;
+					case "sv":
+					case "no":
+					case "dk":
+						$language="sv_SE";
+						break;        
+					default:
+						$language=DEFAULT_LANGUAGE;
+						break;
+				}
 			}
 			// echo $language;
 			ini_set('default_socket_timeout', 15);

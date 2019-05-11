@@ -13,6 +13,7 @@
 /* Then to merge from shell translations, do (1 command):													*/
 /*	msgcat sample-translations/sv_SE/LC_MESSAGES/sv_SE.po custom_content/translations/sv_SE/LC_MESSAGES/sv_SE.po -o custom_content/translations/sv_SE/LC_MESSAGES/sv_SE.po --use-first
 /************************************************************************************************************/
+// NOTE: language setting needs to reside in config file, globals can contain translations and must be included after language setup.
 // define('DEFAULT_LANGUAGE', 'sv_SE'); //Swedish
 define('DEFAULT_LANGUAGE', 'en_GB');	//Brittish
 
