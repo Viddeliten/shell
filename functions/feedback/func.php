@@ -1311,14 +1311,14 @@ function feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merg
 		AND checked_in IS NULL
 		AND not_implemented IS NULL";
 	$sql.="
-	ORDER BY ".ORDER_STR." ";
+	ORDER BY ";
+	if($size==SIZE_SUGGESTED) //If size does not matter, we are suggesting. We should list feedbacks with size<SMALL_CHANGE (bugs and required) first
+		$sql.="IF(size < ".SIZE_SMALL_CHANGE.",1,0) DESC, ";
 		// IFNULL(accepted IS NULL, 0) DESC,
 		// IF(not_implemented IS NULL, 0) ASC,
 		// IF(resolved IS NULL, 0) ASC,
 		// IF(checked_in IS NULL, 0) DESC,";
-	if($size==SIZE_SUGGESTED) //If size does not matter, we are suggesting. We should list feedbacks with size<SMALL_CHANGE (bugs and required) first
-		$sql.=", IF(size < ".SIZE_SMALL_CHANGE.",1,0) DESC ";
-	$sql.="LIMIT ".sql_safe($offset).", ".sql_safe($nr).";";
+	$sql.=ORDER_STR." LIMIT ".sql_safe($offset).", ".sql_safe($nr).";";
 	
 	return $sql;
 }
