@@ -75,7 +75,7 @@ class db_class
         return $array;
     }
     
-	public function get_from_array($table, $values, $just_first=FALSE)
+	public function get_from_array($table, $values, $just_first=FALSE, $extra_columns=array())
 	{
 		$requirements=array();
         $values=$this->prepare_array_for_query($values);
@@ -83,7 +83,16 @@ class db_class
 		{
 			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
-		$sql="SELECT * FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+		
+		$extra="";
+		if(!empty($extra_columns))
+		{
+			foreach($extra_columns as $name	=> $val)
+			{
+				$extra.=", ".sql_safe($val)." as '".sql_safe($name)."'";
+			}
+		}
+		$sql="SELECT *".$extra." FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 		
 		if($just_first)
 			return $this->select_first($sql);
@@ -163,8 +172,8 @@ class db_class
             $sql="SELECT * FROM `".$table."` WHERE id=".$id;
             return $this->select_first($sql);
         }
-        
-		$result = $this->select("SELECT ".$column." FROM `".$table."` WHERE id=".$id);
+        $sql="SELECT ".sql_safe($column)." FROM `".sql_safe($table)."` WHERE id=".sql_safe($id);
+		$result = $this->select($sql);
 		if(!empty($result) && isset($result[0][$column]))
 		{
 			$this->$column=$result[0][$column];
