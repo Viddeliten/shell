@@ -23,15 +23,16 @@ require_all_in_path(ABS_PATH."/functions");
 // require_once(ABS_PATH."/functions"."/comment/func.php");
 // require_once(ABS_PATH."/functions"."/db_connect.php");
 //From Feedback
-// require_once(ABS_PATH."/functions"."/feedback/func.php");
+require_once(ABS_PATH."/functions"."/feedback/func.php");
+
+if(file_exists("../../".CUSTOM_CONTENT_PATH."/globals.php"))
+	require_once("../../".CUSTOM_CONTENT_PATH."/globals.php");
 
 language_setup();
 
 //Connecta till databasen
 $conn=db_connect(db_host, db_name, db_user, db_pass);
 // echo $_GET['operation']." - ".$_GET['id'];
-
-preprint($_GET);
 
 if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && $_SESSION[PREFIX."inloggad"]>=3)
 {
@@ -69,7 +70,9 @@ if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && 
 		}
 		else if($_GET['operation']=="assign")
 		{
-			feedback_assign($_GET['id'], $_GET['type'], $_GET['user_id']);
+			$feedback=new feedback($_GET['id']);
+			if(!$feedback->assign_role($_GET['role'], $_GET['user_id']))
+				preprint($feedback->db->error);
 			feedback_assigned_show($_GET['id']);
 		}
 		else if($_GET['operation']=="feedback_unaccept")

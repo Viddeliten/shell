@@ -63,6 +63,38 @@ define('ORDER_STR', "	IF(not_implemented,1,0) ASC,
 						IF(checked_in,checked_in,30000101000000) DESC, 
 						IF(accepted,1,0) DESC, 
 						rel DESC");
+						
+						
+class feedback extends base_class
+{
+	function __construct($id=NULL, $criteria=NULL)
+	{
+		parent::__construct("feedback", $id, NULL, $criteria);
+	}
+	
+	protected function reload()
+	{
+		parent::reload();
+		$roles=$this->get_roles();
+		$this->data['roles']=$roles;
+	}
+	
+	private function get_roles()
+	{
+		$roles=$this->db->get_from_array("feedback_role", array("feedback_id" => $this->id));
+		if(empty($roles))
+			return array();
+		$r=array();
+		foreach($roles as $role)
+			$r[$role['role']]=$role['user_id'];
+		return $r;
+	}
+
+	public function assign_role($role="implementer", $user_id=NULL)
+	{
+		return $this->db->upsert_from_array("feedback_role", array("feedback_id" => $this->id, "user_id" => $user_id, "role" => $role));
+	}
+}
 
 function feedback_recieve()
 {
@@ -715,7 +747,7 @@ function feedback_list_print($data, $id_expanded=NULL)
         feedback_list_print_bs4($data, $id_expanded);
         return true;
     }
-    // preprint(array($data, $id_expanded), "feedback_list_print");
+
 	$inloggad=login_check_logged_in_mini();
 	
 	while($d=@mysql_fetch_array($data)) 
@@ -1777,36 +1809,49 @@ function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL
 		echo $contents;
 }
 
-function feedback_assign($feedback_id, $type, $user_id)
-{
-	echo "<br />TODO: assign ".$type." ".$user_id." to feedback ".$feedback_id."!";
-}
 function feedback_assigned_show($feedback_id, $return_html=FALSE)
 {
 	ob_start();
 
 	echo "<br />TODO: Do not display droplist if not logged in!";
+	
+	// Get roles from global
+	if(defined('FEEDBACK_ROLES'))
+	{
+		$roles=unserialize(FEEDBACK_ROLES);
+	}
+	else
+		$roles=array("implementer");
 
 	$div_id='feedback_'.$feedback_id.'_assigned';
 	echo '<div id="'.$div_id.'">';
-	//If the feedback is assigned to a user, show that, and if logged in user has access, show button to remove assignment
-	
-	// If logged in user has access show searchable droplist to assign to user (with self on top)
-	// $onchange="replace_html_div_inner('feedback_".$feedback_id."_assigned.', path)";
-	$options=array();
-	$user_ids=user_get_all("active", NULL, "level DESC");
-	foreach($user_ids as $user_id)
-	{
-		$options[$user_id]['label']=user_get_name($user_id);
-		$options[$user_id]['onclick']="feedback_operation('assign&type=implementer&user_id=".$user_id."', ".$feedback_id.", '".$div_id."')";
+
+	$feedback=new feedback($feedback_id);
+
+	foreach($roles as $role)
+	{	
+		//If the feedback is assigned to a user, show that, and if logged in user has access, show button to remove assignment
+		$selected="";
+		if(isset($feedback->data['roles'][$role]))
+			$selected=$feedback->data['roles'][$role];
+		
+		// If logged in user has access show searchable droplist to assign to user (with self on top)
+		// $onchange="replace_html_div_inner('feedback_".$feedback_id."_assigned.', path)";
+		$onchange="";
+		$options=array();
+		$user_ids=user_get_all("active", NULL, "level DESC");
+		foreach($user_ids as $user_id)
+		{
+			$options[$user_id]['label']=user_get_name($user_id);
+			$options[$user_id]['onclick']="feedback_operation('assign&role=".$role."&user_id=".$user_id."', ".$feedback_id.", '".$div_id."')";
+		}
+		// $options[0]="";
+		// $options[1]="Vidde";
+		// $options[2]="Not Vidde";
+		$inputs=array(html_form_droplist_searchable("assigned_to_feedback_".$feedback_id, sprintf(_("%s"), ucfirst($role)), "feedback_assignee", $options, $selected, $onchange));
+		
+		echo html_form("post", $inputs);
 	}
-	// $options[0]="";
-	// $options[1]="Vidde";
-	// $options[2]="Not Vidde";
-	$inputs=array(html_form_droplist_searchable("assigned_to_feedback_".$feedback_id, _("Assign implementer"), "feedback_assignee", $options, "", $onchange));
-	
-	echo html_form("post", $inputs);
-	
 	echo '</div>';
 	
 	$contents = ob_get_contents();
