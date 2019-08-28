@@ -203,6 +203,29 @@ class db_class
         
 		return $this->query($sql);
 	}
+	
+	public function upsert_from_array($table, $values)
+	{
+		$updates=array();
+
+		foreach($values as $key => $val)
+		{
+            // $updates[]='`'.sql_safe($key)."`".$val;
+			$keys[]=$key;
+			$vals[]=$val;
+		}
+        $values=$this->prepare_array_for_query($values);
+		foreach($values as $key => $val)
+		{
+            $updates[]='`'.sql_safe($key)."`".$val;
+		}
+
+		$sql="INSERT INTO ".PREFIX.sql_safe($table)." (`".implode("`,`",$keys)."`) VALUES ('".implode("','",$vals)."')
+		ON DUPLICATE KEY UPDATE
+		".implode(", ",$updates).";";
+        
+		return $this->query($sql);
+	}
     
     public function close()
     {
