@@ -427,7 +427,7 @@ function comment_display_single($comment_id, $max_length=NULL, $print=TRUE)
 					if($flattrID)
 					{
 						echo "<br />";
-						flattr_button_show($flattrID, $comment_link , "Comment ".$c['id']." - a ".$c['comment_type']." comment on ".SITE_URL, $c['comment'], 'compact', 'en_GB');
+						flattr_button_show($flattrID, $comment_link , "Comment ".$c['id']." - a ".$c['comment_type']." comment on ".SITE_NAME, $c['comment'], 'compact', 'en_GB');
 					}
 					echo "</div>";
 				echo '<div class="clearfix"></div></div>';
