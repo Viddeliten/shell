@@ -1737,7 +1737,10 @@ function feedback_set_unresolved($id)
 function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL, $return_html=FALSE)
 {
     ob_start();
-	echo '<ul class="list-group">';
+	echo '<ul class="list-group">
+			<li class="list-group-item">';
+				feedback_assigned_show($feedback_id);
+	echo '  </li>';
 				feedback_status_show($feedback_id, NULL, NULL, NULL, NULL, "feedback_status_".$feedback_id, $parent_div_id, '<li class="list-group-item">','</li>');
 				feedback_display_size_buttons($feedback_id, "", '<li class="list-group-item">','</li>');
 				feedback_display_merge_form($feedback_id, "", '<li class="list-group-item">','</li>');
@@ -1766,6 +1769,47 @@ function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL
 					}
 			echo '</ul>';
     $contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
+}
+
+function feedback_assign($feedback_id, $type, $user_id)
+{
+	echo "<br />TODO: assign ".$type." ".$user_id." to feedback ".$feedback_id."!";
+}
+function feedback_assigned_show($feedback_id, $return_html=FALSE)
+{
+	ob_start();
+
+	echo "<br />TODO: Do not display droplist if not logged in!";
+
+	$div_id='feedback_'.$feedback_id.'_assigned';
+	echo '<div id="'.$div_id.'">';
+	//If the feedback is assigned to a user, show that, and if logged in user has access, show button to remove assignment
+	
+	// If logged in user has access show searchable droplist to assign to user (with self on top)
+	// $onchange="replace_html_div_inner('feedback_".$feedback_id."_assigned.', path)";
+	$options=array();
+	$user_ids=user_get_all("active", NULL, "level DESC");
+	foreach($user_ids as $user_id)
+	{
+		$options[$user_id]['label']=user_get_name($user_id);
+		$options[$user_id]['onclick']="feedback_operation('assign&type=implementer&user_id=".$user_id."', ".$feedback_id.", '".$div_id."')";
+	}
+	// $options[0]="";
+	// $options[1]="Vidde";
+	// $options[2]="Not Vidde";
+	$inputs=array(html_form_droplist_searchable("assigned_to_feedback_".$feedback_id, _("Assign implementer"), "feedback_assignee", $options, "", $onchange));
+	
+	echo html_form("post", $inputs);
+	
+	echo '</div>';
+	
+	$contents = ob_get_contents();
 	ob_end_clean();
 	
 	if($return_html)

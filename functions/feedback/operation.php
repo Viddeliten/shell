@@ -30,6 +30,9 @@ language_setup();
 //Connecta till databasen
 $conn=db_connect(db_host, db_name, db_user, db_pass);
 // echo $_GET['operation']." - ".$_GET['id'];
+
+preprint($_GET);
+
 if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && $_SESSION[PREFIX."inloggad"]>=3)
 {
 	if(isset($_GET['operation']) && isset($_GET['id']))
@@ -63,6 +66,11 @@ if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && 
 		{
 			feedback_set_resolved($_GET['id']);
 			f_op_display_new_feedback($_GET['id'],$_GET['div_id']);
+		}
+		else if($_GET['operation']=="assign")
+		{
+			feedback_assign($_GET['id'], $_GET['type'], $_GET['user_id']);
+			feedback_assigned_show($_GET['id']);
 		}
 		else if($_GET['operation']=="feedback_unaccept")
 		{
