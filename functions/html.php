@@ -372,6 +372,48 @@ function html_form_textarea($input_id, $label, $name, $value="", $placeholder=NU
 			'</div>';
 }
 
+/**
+/*	NOTE: this is not a droplist, but it kind of looks like one!
+**/
+function html_form_droplist_searchable($input_id, $label, $name, $options, $selected="", $onchange=NULL, $class=NULL)
+{
+	if($label!==NULL && $label!="")
+		$return='<label for="'.$input_id.'">'.$label.'</label>';
+	else
+		$return="";
+	
+	$selected_label="";
+	
+	$option_list="";
+	foreach($options as $value => $content)
+	{
+		$extra_class="";
+		if(!strcmp($selected, $value))
+		{
+			$selected_label=$content['label'];
+			$extra_class="active";
+		}
+		$option_list.='<a class="dropdown-item '.$extra_class.'" href="#" id="'.$input_id.'_option_'.$value.'" value="'.$value.'" onclick="'.$content['onclick'].'">'.$content['label'].'</a>';
+	}
+	
+	// $return.=html_form_input($input_id, $label, "text", $name."_searchfield", "", NULL, "droplistSearch");
+	
+	// $return.= $return.html_form_droplist($input_id."_droplist", NULL, $name, $options, $selected, $onchange, $class);
+	
+	$return.='
+	<div class="dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    '.$selected_label.'
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="'.$input_id.'_droplist">
+	'.html_form_input($input_id, NULL, "text", $name."_searchfield", "", _("Search"), "droplistSearch").'
+	'.$option_list.'
+  </div>
+</div>';
+	
+	return $return;
+}
+
 function html_form_droplist($input_id, $label, $name, $options, $selected="", $onchange=NULL, $class=NULL)
 {
 	if($label!==NULL && $label!="")
