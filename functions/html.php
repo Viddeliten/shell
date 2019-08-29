@@ -856,8 +856,9 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array(),
 	return $r;
 }
 
-function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1)
+function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1, $return_html=FALSE, $base_link=NULL)
 {
+	ob_start();
 	
 	if(isset($_REQUEST[$page_nr_name]))
 		$pnr=$_REQUEST[$page_nr_name];
@@ -865,46 +866,59 @@ function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1)
 		$pnr=$first_page_number;
 
 	echo '<div class="row center">
-		<nav>
+		<nav aria-label="'._("Page navigation").'">
 		  <ul class="pagination">';
 	
 	// if we are further along than 5 pages in, put a link to first page
 	if($pnr-5>$first_page_number)
-		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $first_page_number).'" aria-label="First"><span aria-hidden="true">|&laquo;</span></a></li>';
+		echo '<li class="page-item"> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $first_page_number).'" aria-label="First"><span aria-hidden="true">|&laquo;</span></a></li>';
 	
 	if($pnr<$first_page_number)
-		echo '<li class="disabled"> <a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
+		echo '<li class="disabled page-item"> <a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
 	else if($pnr>$first_page_number)
-		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $_REQUEST[$page_nr_name]-1).'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
+		echo '<li class="page-item"> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $_REQUEST[$page_nr_name]-1).'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
 
 	for($i=($pnr-5);$i<=$total_pages && $i<($pnr+5); $i++)
 	{
 		if($i>=$first_page_number)
 		{
+            if($base_link==NULL)
+                $link=add_get_to_current_URL($page_nr_name, $i);
+            else
+                $link=$base_link."?".$page_nr_name."=".$i;
+            
 			if($i==$pnr)
 			{
-				echo '<li class="active">
-					<a href="'.add_get_to_current_URL($page_nr_name, $i).'"><span class="sr-only">('._("current").')</span>'.($i).'</a>
+				echo '<li class="active page-item">
+					<a class="page-link" href="'.$link.'"><span class="sr-only">('._("current").')</span>'.($i).'</a>
 				</li>';
 			}
 			else
-				echo '<li><a href="'.add_get_to_current_URL($page_nr_name, $i).'">'.($i).'</a></li>';
+				echo '<li class="page-item"><a class="page-link" href="'.$link.'">'.($i).'</a></li>';
 		}
 	}
 
 	if($pnr<$total_pages)
-		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
+		echo '<li> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
 	else 
-		echo '<li class="disabled"> <a href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
+		echo '<li class="disabled"> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
 	
 	
 	if($i<$total_pages)
-		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $total_pages).'" aria-label="Next"><span aria-hidden="true">&raquo;|</span></a></li>';	
+		echo '<li> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $total_pages).'" aria-label="Next"><span aria-hidden="true">&raquo;|</span></a></li>';	
 	
 	echo '
 		  </ul>
 		</nav>
 	</div>';
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
 }
 
 //Wrapper since this was apparently already done in message.php

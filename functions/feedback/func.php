@@ -356,8 +356,9 @@ function feedback_recieve()
 	}
 }
 
-function feedback_show_all()
+function feedback_show_all($return_html=FALSE, $user_id=NULL)
 {
+	ob_start();
 	feedback_count_children();
 	feedback_count_comments();
 	
@@ -365,8 +366,7 @@ function feedback_show_all()
 		$page=(int)($_REQUEST['page']);
 	else
 		$page=1;
-
-	//what to show
+	
 	$nr_per_page=20;
 	$from=($page-1)*$nr_per_page;
 	$to=($page)*$nr_per_page;
@@ -375,19 +375,30 @@ function feedback_show_all()
 	$total_pages=ceil($total_feedbacks/$nr_per_page);
 	
 	//Get and display suggested
-	$sql=feedback_get_sql(SIZE_SUGGESTED, $nr_per_page, $from, FALSE, FALSE);
+	$sql=feedback_get_sql(SIZE_SUGGESTED, $nr_per_page, $from, FALSE, FALSE, $user_id);
 	feedback_display_headline_list($sql, sprintf(_("Feedbacks page %s"),$page), 1);
 
-	html_pagination_row("page", $total_pages, 1);
+	html_pagination_row("page", $total_pages, 1, FALSE, SITE_URL."/feedback/all");
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
 }
-function feedback_show()
+
+function feedback_html_main($user_id=NULL, $return_html=TRUE)
 {
-	feedback_count_children();
-	feedback_count_comments();
+	ob_start();
 	
 	echo '<div class="row">
 		<div class="col-lg-8">';
-	echo '<h1>'._("Feedback").'</h1>';
+	if($user_id==NULL)
+		echo '<h1>'._("Feedback").'</h1>';
+	else
+		echo html_tag("h1",sprintf(_("Feedbacks assigned to %s"), user_get_name($user_id)));
 	
 	// If we are NOT showing a specific feedback, show a little text, button for listing all feedbacks and progress bars
 	if(!isset($_GET['id']))
@@ -422,7 +433,7 @@ function feedback_show()
 		else
 		{
 			//Visa några okategoriserade SOM länkar! Bara rubriker!
-			feedback_display_list(SIZE_UNSET, 5, _("Uncategorized"), 2);
+			feedback_display_list(SIZE_UNSET, 5, _("Uncategorized"), 2, 0, $user_id);
 			
 			$ongoing=feedback_get_nr_ongoing();
 			if($ongoing>0)
@@ -487,6 +498,75 @@ function feedback_show()
 			echo '</div>';
 		}
 	echo '</div></div>';
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
+}
+
+function feedback_html($page="main")
+{
+	switch($page)
+	{
+		case "main":
+			return feedback_html_main();
+			break;
+		case "my":
+			return feedback_html_my();
+			break;
+		case "all":
+			return feedback_show_all(TRUE);
+			break;
+		default:
+			return sprintf(_("Unknown feedback page '%s'"), $page);
+	}
+}
+
+function feedback_html_my()
+{
+	if(login_check_logged_in_mini()<1)
+		return message_warning_message(_("Missing user id"));
+    return feedback_show_all(TRUE, login_get_user());
+    //TODO: snyggare sida med grejs för egna feedbacks:
+	// return feedback_html_main(login_get_user());
+}
+
+function feedback_show()
+{
+	feedback_count_children();
+	feedback_count_comments();
+
+	
+	$html['my']=_("There will be feedbacks here");
+	
+		/*	Populating tabs array:
+	$tabs["important"]=array(	"id"	=>	"important",
+						"link"	=>	Url to page this is on. Only needed on the first item,
+						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
+						"text"	=>	_("Tab text"),
+						"content"	=>	All html visible when the tab is active);
+*
+***/
+	$tabs["main"]=array(	"id"	=>	"main",
+						"link"	=>	SITE_URL."/feedback",
+						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
+						"text"	=>	_("Main"),
+						"content"	=>	feedback_html());
+	$tabs["my"]=array(	"id"	=>	"feedback-my",
+						"link"	=>	SITE_URL."/feedback/my",
+						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
+						"text"	=>	_("Assigned to me"),
+						"content"	=>	feedback_html("my"));
+	$tabs["all"]=array(	"id"	=>	"feedback-all",
+						"link"	=>	SITE_URL."/feedback/all",
+						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
+						"text"	=>	_("All"),
+						"content"	=>	feedback_html("all"));
+	echo html_nav_tabs($tabs, $_GET['s']);
 }
 
 function feedback_search_show()
@@ -1387,10 +1467,13 @@ function feedback_get_nr_ongoing()
 	return mysql_affected_rows();
 }
 
-function feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merged=TRUE)
+function feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merged=TRUE, $user_id=NULL)
 {
 	$sql="SELECT ".PREFIX."feedback.*, ".REL_STR." as rel
-	FROM ".PREFIX."feedback 
+	FROM ".PREFIX."feedback feedback";
+	if($user_id!=NULL)
+		$sql.=" INNER JOIN ".PREFIX."feedback_role role ON feedback.id=role.feedback_id AND user_id=".sql_safe($user_id);
+	$sql.="
 	WHERE is_spam<1 ";
 	if($no_merged)
 		$sql.=" AND merged_with IS NULL ";
@@ -1410,14 +1493,14 @@ function feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merg
 		// IF(resolved IS NULL, 0) ASC,
 		// IF(checked_in IS NULL, 0) DESC,";
 	$sql.=ORDER_STR." LIMIT ".sql_safe($offset).", ".sql_safe($nr).";";
-	
 	return $sql;
 }
 
 //Visa några nya SOM länkar! Bara rubriker!
-function feedback_display_list($size, $nr, $headline, $headlinesize, $offset=0)
+function feedback_display_list($size, $nr, $headline, $headlinesize, $offset=0, $user_id=NULL)
 {
-	$sql=feedback_get_sql($size, $nr, $offset);
+	preprint($user_id, "user_id");
+	$sql=feedback_get_sql($size, $nr, $offset, TRUE, ($size==SIZE_UNSET?FALSE:TRUE), $user_id);
 	feedback_display_headline_list($sql, $headline, $headlinesize);
 }
 
@@ -1470,8 +1553,9 @@ function feedback_display_headline_list_from_array($feedback_array, $headline, $
 	}
 }
 
-function feedback_display_headline_list($sql, $headline, $headlinesize, $display_user=TRUE)
+function feedback_display_headline_list($sql, $headline, $headlinesize, $display_user=TRUE, $return_html=FALSE)
 {
+	ob_start();
 	$feedback_array=array();
 	if($ff=mysql_query($sql))
 	{
@@ -1479,6 +1563,14 @@ function feedback_display_headline_list($sql, $headline, $headlinesize, $display
 			$feedback_array[]=$f;
 	}
 	feedback_display_headline_list_from_array($feedback_array, $headline, $headlinesize, $display_user);
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
 }
 
 function feedback_display_list_not_implemented($nr, $headline, $headlinesize)
@@ -2135,7 +2227,7 @@ function feedback_get_array($from, $to)
 }
 
 //Show progress bar for reported bugs and required feedback since last version
-function feedback_display_progressbar($size)
+function feedback_display_progressbar($size, $user_id=NULL)
 {
 	//Number of completed feedbacks since last version
 	$sql="SELECT COUNT(f.id) as nr
