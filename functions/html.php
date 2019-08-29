@@ -1043,7 +1043,7 @@ function html_nav_tabs($tabs=array(), $active=NULL)
             // if($tab['has_tab'])
                 $r.='<a class="nav-item nav-link '
 						.(($active!==NULL && !strcmp($active, $id) ) || (!strcmp($first_key, $id) && $active==NULL ) ? "active " :	"") // Active set or first id
-						.(!$tab['has_tab'] && ($active==NULL || strcmp($active, $id)) ? 'd-none' : '').'" id="'.$id.'-tab" data-toggle="tab" href="#'.$id.'" role="tab" aria-controls="'.$id.'" aria-selected="true">'.string_unslugify($id).'</a>';
+						.(!$tab['has_tab'] && ($active==NULL || strcmp($active, $id)) ? 'd-none' : '').'" id="'.$id.'-tab" data-toggle="tab" href="#'.$id.'" role="tab" aria-controls="'.$id.'" aria-selected="true">'.$tab['text'].'</a>';
         }
         $r.='</div>
         </nav>

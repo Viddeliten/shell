@@ -540,8 +540,12 @@ function feedback_show()
 	feedback_count_children();
 	feedback_count_comments();
 
-	
-	$html['my']=_("There will be feedbacks here");
+	$users_feedbacks=0;
+	if(login_check_logged_in_mini()>0)
+	{
+		$ff=mysql_query(feedback_get_sql(SIZE_SUGGESTED, 100, 0, TRUE, FALSE, login_get_user()));
+		$users_feedbacks=mysql_affected_rows();
+	}
 	
 		/*	Populating tabs array:
 	$tabs["important"]=array(	"id"	=>	"important",
@@ -556,7 +560,8 @@ function feedback_show()
 						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
 						"text"	=>	_("Main"),
 						"content"	=>	feedback_html());
-	$tabs["my"]=array(	"id"	=>	"feedback-my",
+	if($users_feedbacks>0)
+		$tabs["my"]=array(	"id"	=>	"feedback-my",
 						"link"	=>	SITE_URL."/feedback/my",
 						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
 						"text"	=>	_("Assigned to me"),
