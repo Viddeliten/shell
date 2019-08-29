@@ -91,9 +91,13 @@ define('NUMBER_OF_EMAIL_NOTIFY',100); //How many emails usermessage system is al
 
 /**
  *			Roles for feedback
+ *			
  **/
  
- define('FEEDBACK_ROLES', serialize(array("implementer","tester")));
+ define('FEEDBACK_ROLES', serialize(array(
+	"implementer"	=>	array("admin" => 1),
+	"tester"		=>	array("admin" => 0)
+)));
 
 /****************************************************/
 /*		Optional properties to add to body tag		*/	

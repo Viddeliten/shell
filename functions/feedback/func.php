@@ -89,10 +89,69 @@ class feedback extends base_class
 			$r[$role['role']]=$role['user_id'];
 		return $r;
 	}
+	
+	public function user_role_access($role)
+	{
+		if(login_check_logged_in_mini()<1)
+			return 0;
+		
+		$logged_in_level=login_get_level();
+		
+		if($logged_in_level>=5)
+			return 5;
+		else
+		{		
+			$logged_in_user_id=login_get_user();
+			$global_roles=feedback_get_roles_global();
+			foreach($this->data['roles'] as $r => $u_id)
+			{
+				if(!strcmp($r,$role) || $u_id!=$logged_in_user_id)
+					continue;
+				if($global_roles[$r]['admin'])
+				{
+					return 5; // If you have admin role on another, you can do whatever you want with this one
+				}
+			}
+		}
+		
+		if($logged_in_level>=3)
+			return 3;
+		
+		return 0;
+	}
 
 	public function assign_role($role="implementer", $user_id=NULL)
 	{
-		return $this->db->upsert_from_array("feedback_role", array("feedback_id" => $this->id, "user_id" => $user_id, "role" => $role));
+		if(login_check_logged_in_mini()<1)
+			return NULL;
+		
+		// Logged in user is allowed to do this if they have ANOTHER admin role for feedback, has level 5 or has level 3 and is assigning themselves
+		$allowed=FALSE;
+		
+		$logged_in_user_id=login_get_user();
+		$logged_in_level=login_get_level();
+		if(($logged_in_level>=5) || ($logged_in_level>=3 && $user_id==$logged_in_user_id))
+		{
+			$allowed=TRUE;
+		}
+		else
+		{		
+			$global_roles=feedback_get_roles_global();
+			foreach($this->data['roles'] as $r => $u_id)
+			{
+				if(!strcmp($r,$role) || $u_id!=$logged_in_user_id)
+					continue;
+				if($global_roles[$r]['admin'])
+				{
+					$allowed=TRUE;
+					break;
+				}
+			}
+		}
+		
+		if($allowed)
+			return $this->db->upsert_from_array("feedback_role", array("feedback_id" => $this->id, "user_id" => $user_id, "role" => $role));
+		return FALSE;
 	}
 }
 
@@ -1813,44 +1872,56 @@ function feedback_assigned_show($feedback_id, $return_html=FALSE)
 {
 	ob_start();
 
-	echo "<br />TODO: Do not display droplist if not logged in!";
-	
-	// Get roles from global
-	if(defined('FEEDBACK_ROLES'))
-	{
-		$roles=unserialize(FEEDBACK_ROLES);
-	}
-	else
-		$roles=array("implementer");
+	$roles=feedback_get_roles_global();
 
 	$div_id='feedback_'.$feedback_id.'_assigned';
 	echo '<div id="'.$div_id.'">';
 
 	$feedback=new feedback($feedback_id);
 
-	foreach($roles as $role)
-	{	
+	foreach($roles as $role => $role_content)
+	{
+		$role_access=$feedback->user_role_access($role);
+		
 		//If the feedback is assigned to a user, show that, and if logged in user has access, show button to remove assignment
 		$selected="";
 		if(isset($feedback->data['roles'][$role]))
 			$selected=$feedback->data['roles'][$role];
 		
-		// If logged in user has access show searchable droplist to assign to user (with self on top)
-		// $onchange="replace_html_div_inner('feedback_".$feedback_id."_assigned.', path)";
-		$onchange="";
-		$options=array();
-		$user_ids=user_get_all("active", NULL, "level DESC");
-		foreach($user_ids as $user_id)
+		if(!$role_access)
 		{
-			$options[$user_id]['label']=user_get_name($user_id);
-			$options[$user_id]['onclick']="feedback_operation('assign&role=".$role."&user_id=".$user_id."', ".$feedback_id.", '".$div_id."')";
+			if($selected!="")
+				echo html_tag("div", html_tag("p", html_tag("strong", ucfirst($role).": ").link_user($selected)));
 		}
-		// $options[0]="";
-		// $options[1]="Vidde";
-		// $options[2]="Not Vidde";
-		$inputs=array(html_form_droplist_searchable("assigned_to_feedback_".$feedback_id, sprintf(_("%s"), ucfirst($role)), "feedback_assignee", $options, $selected, $onchange));
-		
-		echo html_form("post", $inputs);
+		else
+		{		
+			// If logged in user has access show searchable droplist to assign to user
+			// $onchange="replace_html_div_inner('feedback_".$feedback_id."_assigned.', path)";
+			$onchange="";
+			$options=array();
+			if($role_access>=5)
+				$user_ids=user_get_all("active", NULL, "level DESC");
+			else
+			{
+				// If user has level 3 they can select themselves
+				$user_ids=array();
+				$user_ids[]=login_get_user();
+				if($selected!="")
+					$user_ids[]=$selected;
+			}
+
+			foreach($user_ids as $user_id)
+			{
+				$options[$user_id]['label']=user_get_name($user_id);
+				$options[$user_id]['onclick']="feedback_operation('assign&role=".$role."&user_id=".$user_id."', ".$feedback_id.", '".$div_id."')";
+			}
+			// $options[0]="";
+			// $options[1]="Vidde";
+			// $options[2]="Not Vidde";
+			$inputs=array(html_form_droplist_searchable("assigned_to_feedback_".$feedback_id, sprintf(_("%s"), ucfirst($role)), "feedback_assignee", $options, $selected, $onchange));
+			
+			echo html_form("post", $inputs);
+		}
 	}
 	echo '</div>';
 	
@@ -1861,6 +1932,18 @@ function feedback_assigned_show($feedback_id, $return_html=FALSE)
 		return $contents;
 	else
 		echo $contents;
+}
+
+function feedback_get_roles_global()
+{
+	// Get roles from global
+	if(defined('FEEDBACK_ROLES'))
+	{
+		$roles=unserialize(FEEDBACK_ROLES);
+	}
+	else
+		$roles=array("implementer" => array("admin" => 1));
+	return $roles;
 }
 
 function feedback_get_class($id)

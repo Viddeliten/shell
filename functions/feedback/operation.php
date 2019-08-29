@@ -34,7 +34,20 @@ language_setup();
 $conn=db_connect(db_host, db_name, db_user, db_pass);
 // echo $_GET['operation']." - ".$_GET['id'];
 
-if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && $_SESSION[PREFIX."inloggad"]>=3)
+/**
+ * Operations that can be run safely even if user is not logged in or has admin
+**/
+if($_GET['operation']=="assign")
+{
+	$feedback=new feedback($_GET['id']);
+	if(!$feedback->assign_role($_GET['role'], $_GET['user_id']))
+		preprint($feedback->db->error);
+	feedback_assigned_show($_GET['id']);
+}
+/**
+ * Operations that can ONLY be run safely if user IS logged in AND has admin
+**/
+else if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && $_SESSION[PREFIX."inloggad"]>=3)
 {
 	if(isset($_GET['operation']) && isset($_GET['id']))
 	{
@@ -67,13 +80,6 @@ if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]) && 
 		{
 			feedback_set_resolved($_GET['id']);
 			f_op_display_new_feedback($_GET['id'],$_GET['div_id']);
-		}
-		else if($_GET['operation']=="assign")
-		{
-			$feedback=new feedback($_GET['id']);
-			if(!$feedback->assign_role($_GET['role'], $_GET['user_id']))
-				preprint($feedback->db->error);
-			feedback_assigned_show($_GET['id']);
 		}
 		else if($_GET['operation']=="feedback_unaccept")
 		{
