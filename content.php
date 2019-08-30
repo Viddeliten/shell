@@ -87,8 +87,6 @@ else if(isset($_REQUEST['p']))
 	{
 		if(!$show_feedback)
 			message_print_error(_("Nothing to see here..."));
-		else if(isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['s']),"all"))
-			feedback_show_all();
 		else
 			feedback_show();
 	}

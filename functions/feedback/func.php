@@ -535,11 +535,8 @@ function feedback_html_my()
 	// return feedback_html_main(login_get_user());
 }
 
-function feedback_show()
+function feedback_navtabs($active="main")
 {
-	feedback_count_children();
-	feedback_count_comments();
-
 	$users_feedbacks=0;
 	if(login_check_logged_in_mini()>0)
 	{
@@ -547,14 +544,6 @@ function feedback_show()
 		$users_feedbacks=mysql_affected_rows();
 	}
 	
-		/*	Populating tabs array:
-	$tabs["important"]=array(	"id"	=>	"important",
-						"link"	=>	Url to page this is on. Only needed on the first item,
-						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
-						"text"	=>	_("Tab text"),
-						"content"	=>	All html visible when the tab is active);
-*
-***/
 	$tabs["main"]=array(	"id"	=>	"main",
 						"link"	=>	SITE_URL."/feedback",
 						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
@@ -571,7 +560,15 @@ function feedback_show()
 						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
 						"text"	=>	_("All"),
 						"content"	=>	feedback_html("all"));
-	echo html_nav_tabs($tabs, $_GET['s']);
+	return html_nav_tabs($tabs, $active);
+}
+
+function feedback_show()
+{
+	feedback_count_children();
+	feedback_count_comments();
+
+	echo feedback_navtabs((isset($_GET['s'])? $_GET['s'] : "main"));
 }
 
 function feedback_search_show()
