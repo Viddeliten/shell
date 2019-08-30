@@ -1501,7 +1501,6 @@ function feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merg
 //Visa några nya SOM länkar! Bara rubriker!
 function feedback_display_list($size, $nr, $headline, $headlinesize, $offset=0, $user_id=NULL)
 {
-	preprint($user_id, "user_id");
 	$sql=feedback_get_sql($size, $nr, $offset, TRUE, ($size==SIZE_UNSET?FALSE:TRUE), $user_id);
 	feedback_display_headline_list($sql, $headline, $headlinesize);
 }
