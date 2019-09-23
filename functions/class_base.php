@@ -86,6 +86,11 @@ class base_class
 		$this->criteria=$criteria;
 		$this->reload();
 	}
+	public function set_id($id=NULL)
+	{
+		$this->id=$id;
+		$this->reload();
+	}
 
 	protected function reload()
 	{
