@@ -221,6 +221,8 @@ function feedback_operation(operation, id, target_div_id, extra_element_id)
 		else
 			adress+='&extra=' + document.getElementById(extra_element_id).value;
 	}
+	
+	console.log(adress);
 
     replace_html_div_inner(target_div_id, adress);
     
@@ -303,4 +305,14 @@ function dump(obj) {
 $(document).ready(function() {
 	// console.log( "ready!" );
     carouselNormalization();
+
+// For filter droplist (searchable droplist)
+  $(".droplistSearch").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+	var droplist_id = $(this).attr('id') + "_droplist";
+    $("#" + droplist_id + " a").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
 });

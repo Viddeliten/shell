@@ -36,6 +36,10 @@ function message_success_message($message)
 {
     return "<div class=\"message_box success well\">".$message."</div>";
 }
+function message_print_success($message)
+{
+	message_print_success_message($message);
+}
 function message_print_success_message($message)
 {
 	echo message_success_message($message);
@@ -44,6 +48,10 @@ function message_print_success_message($message)
 function message_error_message($message)
 {
     return "<div class=\"message_box error well\">".$message."</div>";
+}
+function message_warning_message($message)
+{
+    return "<div class=\"message_box warning well\">".$message."</div>";
 }
 function message_message_box($type, $message)
 {
