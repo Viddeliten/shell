@@ -33,8 +33,8 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 `comment_related_to_users`.`new_comment_id` AS `new_comment_id`,
 `comment_related_to_users`.`type_commented_on` AS `type_commented_on`,
 `comment_related_to_users`.`id_commented_on` AS `id_commented_on`,
-`comment_related_to_users`.`affected_user_id` AS `affected_user_id` from `comment_related_to_users` where (`comment_related_to_users`.`time` > (now() - interval 24 hour)) order by `comment_related_to_users`.`time`";s:20:"character_set_client";s:7:"utf8mb4";s:20:"collation_connection";s:18:"utf8mb4_general_ci";}i:3;a:4:{s:4:"View";s:24:"comment_related_to_users";s:11:"Create View";s:1904:"
-CREATE ALGORITHM=UNDEFINED DEFINER=`shell_dev`@`localhost` SQL SECURITY DEFINER VIEW `comment_related_to_users` AS (select `comment`.`added` AS `time`,
+`comment_related_to_users`.`affected_user_id` AS `affected_user_id` from `comment_related_to_users` where (`comment_related_to_users`.`time` > (now() - interval 24 hour)) order by `comment_related_to_users`.`time`";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:3;a:4:{s:4:"View";s:24:"comment_related_to_users";s:11:"Create View";s:1899:"
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_related_to_users` AS (select `comment`.`added` AS `time`,
 `comment`.`id` AS `new_comment_id`,
 `comment`.`comment_type` AS `type_commented_on`,
 `user_thing`.`id` AS `id_commented_on`,
@@ -54,12 +54,12 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`shell_dev`@`localhost` SQL SECURITY DEFINER 
 `comment_related_to_users_custom`.`new_comment_id` AS `new_comment_id`,
 `comment_related_to_users_custom`.`type_commented_on` AS `type_commented_on`,
 `comment_related_to_users_custom`.`id_commented_on` AS `id_commented_on`,
-`comment_related_to_users_custom`.`affected_user_id` AS `affected_user_id` from `comment_related_to_users_custom`)";s:20:"character_set_client";s:7:"utf8mb4";s:20:"collation_connection";s:18:"utf8mb4_general_ci";}i:4;a:4:{s:4:"View";s:31:"comment_related_to_users_custom";s:11:"Create View";s:465:"
+`comment_related_to_users_custom`.`affected_user_id` AS `affected_user_id` from `comment_related_to_users_custom`)";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:4;a:4:{s:4:"View";s:31:"comment_related_to_users_custom";s:11:"Create View";s:465:"
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_related_to_users_custom` AS (select `comment`.`added` AS `time`,
 `comment`.`id` AS `new_comment_id`,
 `comment`.`comment_type` AS `type_commented_on`,
 `user_thing`.`id` AS `id_commented_on`,
-`user_thing`.`user` AS `affected_user_id` from (`comment` join `comment` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where (`comment`.`comment_type` = 'custom_type'))";s:20:"character_set_client";s:7:"utf8mb4";s:20:"collation_connection";s:18:"utf8mb4_general_ci";}i:5;a:2:{s:5:"Table";s:8:"criteria";s:12:"Create Table";s:511:"
+`user_thing`.`user` AS `affected_user_id` from (`comment` join `comment` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where (`comment`.`comment_type` = 'custom_type'))";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:5;a:2:{s:5:"Table";s:8:"criteria";s:12:"Create Table";s:511:"
 CREATE TABLE IF NOT EXISTS `criteria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -69,9 +69,10 @@ CREATE TABLE IF NOT EXISTS `criteria` (
   `table_where` text COLLATE utf8_bin,
   `count_required` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:6;a:2:{s:5:"Table";s:8:"feedback";s:12:"Create Table";s:1517:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:6;a:2:{s:5:"Table";s:8:"feedback";s:12:"Create Table";s:1575:"
 CREATE TABLE IF NOT EXISTS `feedback` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `on_keyword` varchar(16) COLLATE utf8_bin DEFAULT NULL,
   `subject` varchar(64) CHARACTER SET utf8 COLLATE utf8_swedish_ci DEFAULT NULL,
   `text` text CHARACTER SET latin1,
   `user` int(11) DEFAULT NULL,
@@ -94,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `feedback` (
   `size` smallint(6) NOT NULL DEFAULT '0' COMMENT '1=bugfix, 2=required, 3=small improvement, 4=big thing, 0=unset',
   `merged_with` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:7;a:2:{s:5:"Table";s:13:"feedback_role";s:12:"Create Table";s:590:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:7;a:2:{s:5:"Table";s:13:"feedback_role";s:12:"Create Table";s:629:"
 CREATE TABLE IF NOT EXISTS `feedback_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `feedback_id` int(11) NOT NULL,
@@ -103,8 +104,9 @@ CREATE TABLE IF NOT EXISTS `feedback_role` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `feedback_id` (`feedback_id`,`role`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `feedback_role_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `feedback_role_ibfk_1` FOREIGN KEY (`feedback_id`) REFERENCES `feedback` (`id`) ON DELETE CASCADE
+  KEY `feedback_id_2` (`feedback_id`),
+  CONSTRAINT `feedback_role_ibfk_1` FOREIGN KEY (`feedback_id`) REFERENCES `feedback` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `feedback_role_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:8;a:2:{s:5:"Table";s:6:"flattr";s:12:"Create Table";s:314:"
 CREATE TABLE IF NOT EXISTS `flattr` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
