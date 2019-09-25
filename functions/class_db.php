@@ -92,8 +92,8 @@ class db_class
 				$extra.=", ".sql_safe($val)." as '".sql_safe($name)."'";
 			}
 		}
-		$sql="SELECT *".$extra." FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
-		
+		$sql="SELECT *".$extra." FROM ".PREFIX.sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+			
 		if($just_first)
 			return $this->select_first($sql);
 		
@@ -112,8 +112,8 @@ class db_class
 		{
 			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
-		$sql="DELETE FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
-
+		$sql="DELETE FROM ".PREFIX.sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+		
 		return $this->query($sql);
 	}
 
@@ -206,7 +206,14 @@ class db_class
 	
 	public function upsert_from_array($table, $values)
 	{
+		//If there exists a row exactly like the user wants, return id for that
+		$existing=$this->get_from_array($table, $values, TRUE);
+		if(isset($existing['id']))
+			return $existing['id'];
+
 		$updates=array();
+		$keys=array();
+		$vals=array();
 
 		foreach($values as $key => $val)
 		{
@@ -214,8 +221,8 @@ class db_class
 			$keys[]=$key;
 			$vals[]=$val;
 		}
-        $values=$this->prepare_array_for_query($values);
-		foreach($values as $key => $val)
+        $values_prepared=$this->prepare_array_for_query($values);
+		foreach($values_prepared as $key => $val)
 		{
             $updates[]='`'.sql_safe($key)."`".$val;
 		}
@@ -223,8 +230,17 @@ class db_class
 		$sql="INSERT INTO ".PREFIX.sql_safe($table)." (`".implode("`,`",$keys)."`) VALUES ('".implode("','",$vals)."')
 		ON DUPLICATE KEY UPDATE
 		".implode(", ",$updates).";";
-        
-		return $this->query($sql);
+		
+		$result=$this->query($sql);
+		if(!$result)
+			return $result;
+		if($this->insert_id)
+			return $this->insert_id;
+
+		$existing=$this->get_from_array($table, $values, TRUE);
+		if(isset($existing['id']))
+			return $existing['id'];
+		return $existing;
 	}
     
     public function close()

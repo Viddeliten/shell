@@ -510,8 +510,11 @@ function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE)
  *			$inline=FALSE,
  *			
  ***/
-function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL, $just_inputs=FALSE, $field_type_override=NULL, $custom_labels=NULL, $nr_id=NULL, $only_members=NULL)
+function html_form_from_db_table($table_name, $id=NULL, $skip_members=NULL, $db_name=NULL, $just_inputs=FALSE, $field_type_override=NULL, $custom_labels=NULL, $nr_id=NULL, $only_members=NULL)
 {
+	if($skip_members==NULL)
+		$skip_members=array();
+	
 	// Get table columns
 	$table=sql_get("SHOW COLUMNS FROM ".($db_name!=NULL ? $db_name.".":"").sql_safe($table_name).";");
 
