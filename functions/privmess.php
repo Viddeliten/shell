@@ -369,7 +369,7 @@ function privmess_display_inbox($receiver_id, $return_html=FALSE)
 		return $contents;
 }
 
-function privmess_display_outbox($sender_id, $return_html)
+function privmess_display_outbox($sender_id, $return_html=FALSE)
 {
     ob_start();
     
