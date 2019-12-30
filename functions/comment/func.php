@@ -468,6 +468,8 @@ function comment_get_link($id, $link_id=NULL)
 }
 function comment_get_link_url($id, $link_id=NULL, &$linktitle)
 {
+	require_once(ABS_PATH."/functions/feedback/func.php");
+	
 	if($link_id===NULL)
 		$link_id=$id;
 	$sql="SELECT id, comment_type, comment_on FROM ".PREFIX."comment WHERE id=".sql_safe($id).";";

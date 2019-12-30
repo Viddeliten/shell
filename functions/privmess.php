@@ -143,7 +143,7 @@ function privmess_display($return_html=FALSE)
   </div>';
 }
 
-function privmess_display_single_message($message_id, $return_html)
+function privmess_display_single_message($message_id, $return_html=FALSE)
 {
 	ob_start();
 	if(login_check_logged_in_mini()>0)

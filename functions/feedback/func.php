@@ -63,6 +63,8 @@ define('ORDER_STR', "	IF(not_implemented,1,0) ASC,
 						IF(checked_in,checked_in,30000101000000) DESC, 
 						IF(accepted,1,0) DESC, 
 						rel DESC");
+
+require_once(ABS_PATH."/functions/class_base.php");
 						
 						
 class feedback extends base_class

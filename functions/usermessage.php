@@ -665,7 +665,7 @@ FUNCTION:comment_html_list_users_latest(USER_ID, TRUE, 20, 0)"; // List commente
 	foreach($default_messages as $message)
 	{
 		// If there is no event with the name, insert it.
-		if(sql_get_single("id", PREFIX."messages_to_users", "event='".$message['event']."'")==NULL)
+		if(sql_get_single("id", "messages_to_users", "event='".$message['event']."'")==NULL)
 		{
 			sql_insert("messages_to_users", $message['message_values'], NULL, "insert_".$message['event'], FALSE, TRUE);
 			foreach($message['criteria_values'] as $key => $criteria_values)
