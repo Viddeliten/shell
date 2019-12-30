@@ -177,7 +177,7 @@ function comment_html_list_users_latest($user_id, $only_last_24_hours=TRUE, $lim
 	else
 		$table="comment_related_to_users";
 	
-	$sql="SELECT new_comment_id, type_commented_on, id_commented_on FROM ".$table." WHERE affected_user_id=".sql_safe($user_id)." 
+	$sql="SELECT new_comment_id, type_commented_on, id_commented_on FROM ".PREFIX.$table." WHERE affected_user_id=".sql_safe($user_id)." 
     ORDER BY `time`ASC LIMIT ".sql_safe($offset).", ".sql_safe($limit).";";
 	// $comments=sql_get($sql, $array=false, $index_column=NULL, $warning_on_fail=FALSE);
 	$comments=sql_get($sql, true, "id_commented_on", TRUE);
