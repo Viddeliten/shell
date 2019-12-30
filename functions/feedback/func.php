@@ -407,7 +407,7 @@ function feedback_html_main($user_id=NULL, $return_html=TRUE)
 	{
 		echo '
 				<p>'._("Suggestions for improvements, bufixes and ideas!").'</p>';
-		echo html_action_button(SITE_URL."/feedback/all", _("List all feedbacks"));
+		// echo html_action_button(SITE_URL."/feedback/all", _("List all feedbacks"));
 		
 		//Show progress bar for reported bugs and required feedback since last version
 		if(login_check_logged_in_mini()>1) //Only show to admins
@@ -1473,7 +1473,7 @@ function feedback_get_nr_ongoing()
 
 function feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merged=TRUE, $user_id=NULL)
 {
-	$sql="SELECT ".PREFIX."feedback.*, ".REL_STR." as rel
+	$sql="SELECT feedback.*, ".REL_STR." as rel
 	FROM ".PREFIX."feedback feedback";
 	if($user_id!=NULL)
 		$sql.=" INNER JOIN ".PREFIX."feedback_role role ON feedback.id=role.feedback_id AND user_id=".sql_safe($user_id);
