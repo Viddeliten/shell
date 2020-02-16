@@ -25,7 +25,7 @@ class comment extends base_class
 			AND access_log.table_id=".PREFIX."comment.comment_on
 			AND access_log.time>".PREFIX."comment.added
         WHERE comment_related_to_users.affected_user_id=".sql_safe($user_id)."
-		AND ".PREFIX."comment.is_spam<2
+		AND ".PREFIX."comment.is_spam<0
 		GROUP BY ".PREFIX."comment.id
 		HAVING access_log_id IS NULL
         ORDER BY ".PREFIX."comment.added DESC

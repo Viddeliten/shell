@@ -1189,9 +1189,9 @@ function html_glyph($icon_name, $height=NULL, $greyed_out=FALSE)
 	return html_img(SITE_URL.'/open-iconic/svg/'.$icon_name.'.svg', str_replace("-", " ", $icon_name), $height, NULL, ($greyed_out ? " disabled" : ""));
 }
 
-function html_comment_user_box($user)
+function html_comment_user_box($user_id)
 {
-	$comments=new comment(NULL, array("comment_related_to_user" => $user));
+	$comments=new comment(NULL, array("comment_related_to_user" => $user_id));
 	if(empty($comments->data))
 		return NULL;
 	
