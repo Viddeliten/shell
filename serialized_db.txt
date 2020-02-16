@@ -62,17 +62,16 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 `user_thing`.`user` AS `affected_user_id` from (`comment` join `comment` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where (`comment`.`comment_type` = 'custom_type'))";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:5;a:2:{s:5:"Table";s:8:"criteria";s:12:"Create Table";s:511:"
 CREATE TABLE IF NOT EXISTS `criteria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `name` varchar(32) COLLATE utf8_bin NOT NULL,
   `table_name` varchar(128) COLLATE utf8_bin DEFAULT NULL,
   `user_column` varchar(62) COLLATE utf8_bin NOT NULL COMMENT 'Name of the column wich identifies user',
   `table_where` text COLLATE utf8_bin,
   `count_required` int(11) NOT NULL DEFAULT '1',
+  `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:6;a:2:{s:5:"Table";s:8:"feedback";s:12:"Create Table";s:1575:"
 CREATE TABLE IF NOT EXISTS `feedback` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `on_keyword` varchar(16) COLLATE utf8_bin DEFAULT NULL,
   `subject` varchar(64) CHARACTER SET utf8 COLLATE utf8_swedish_ci DEFAULT NULL,
   `text` text CHARACTER SET latin1,
   `user` int(11) DEFAULT NULL,
@@ -85,15 +84,16 @@ CREATE TABLE IF NOT EXISTS `feedback` (
   `plusones` int(11) NOT NULL DEFAULT '0',
   `comments` int(11) NOT NULL DEFAULT '0',
   `children` int(11) NOT NULL DEFAULT '0' COMMENT 'Number of feedbacks merged with this one',
-  `children_rel` float NOT NULL DEFAULT '0',
   `spam_score` int(11) DEFAULT NULL,
   `is_spam` int(11) NOT NULL DEFAULT '0',
   `accepted` datetime DEFAULT NULL COMMENT 'Admin har tänkt att detta ska ske',
-  `checked_in` datetime DEFAULT NULL COMMENT 'If solution is checked into git, but not live yet',
   `resolved` datetime DEFAULT NULL COMMENT 'solution is live',
   `not_implemented` datetime DEFAULT NULL COMMENT 'admin tycker inte detta ska göras',
   `size` smallint(6) NOT NULL DEFAULT '0' COMMENT '1=bugfix, 2=required, 3=small improvement, 4=big thing, 0=unset',
   `merged_with` int(11) DEFAULT NULL,
+  `checked_in` datetime DEFAULT NULL COMMENT 'If solution is checked into git, but not live yet',
+  `children_rel` float NOT NULL DEFAULT '0',
+  `on_keyword` varchar(16) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:7;a:2:{s:5:"Table";s:13:"feedback_role";s:12:"Create Table";s:629:"
 CREATE TABLE IF NOT EXISTS `feedback_role` (
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS `flattr` (
   `showFlattr` text COLLATE utf8_bin,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:9;a:2:{s:5:"Table";s:17:"messages_to_users";s:12:"Create Table";s:1160:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:9;a:2:{s:5:"Table";s:17:"messages_to_users";s:12:"Create Table";s:1219:"
 CREATE TABLE IF NOT EXISTS `messages_to_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `event` varchar(64) CHARACTER SET latin1 DEFAULT NULL,
@@ -125,12 +125,13 @@ CREATE TABLE IF NOT EXISTS `messages_to_users` (
   `criteria_name` text COLLATE utf8_bin,
   `reward` int(11) DEFAULT NULL,
   `once` enum('multiple','one_instance','once') COLLATE utf8_bin NOT NULL DEFAULT 'once' COMMENT 'once=each user will only receive this once,  one_instance=only one instance at once',
-  `every_hours` int(11) DEFAULT '0' COMMENT 'how many hours it must be since last message to user of this kind',
   `sendby` varchar(256) COLLATE utf8_bin NOT NULL DEFAULT 'insite_privmess' COMMENT '''email'',''insite_privmess'',''insite_notice''',
-  `active_for` enum('NOONE','SPECIFIC','ALL') COLLATE utf8_bin NOT NULL DEFAULT 'NOONE',
-  `active_for_users` text COLLATE utf8_bin,
   `activated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `every_hours` int(11) DEFAULT '0' COMMENT 'how many hours it must be since last message to user of this kind',
+  `active_for_users` text COLLATE utf8_bin,
+  `active_for` enum('NOONE','SPECIFIC','ALL') COLLATE utf8_bin NOT NULL DEFAULT 'NOONE',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `DH_mess_event_active` (`event`,`activated`),
   UNIQUE KEY `mess_event_active` (`event`,`activated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:10;a:2:{s:5:"Table";s:22:"messages_to_users_sent";s:12:"Create Table";s:493:"
 CREATE TABLE IF NOT EXISTS `messages_to_users_sent` (
@@ -154,13 +155,13 @@ CREATE TABLE IF NOT EXISTS `news` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:12;a:2:{s:5:"Table";s:6:"notice";s:12:"Create Table";s:499:"
 CREATE TABLE IF NOT EXISTS `notice` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user` int(11) NOT NULL,
   `event` varchar(32) COLLATE utf8_bin DEFAULT NULL,
   `type` enum('information','success','warning','error') COLLATE utf8_bin NOT NULL DEFAULT 'information',
   `subject` text COLLATE utf8_bin,
   `message` text COLLATE utf8_bin,
   `closed` datetime DEFAULT NULL,
+  `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:13;a:2:{s:5:"Table";s:7:"plusone";s:12:"Create Table";s:391:"
 CREATE TABLE IF NOT EXISTS `plusone` (
@@ -257,7 +258,7 @@ CREATE TABLE IF NOT EXISTS `version` (
   `version` float DEFAULT NULL COMMENT 'version',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'när det blev denna version',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:23;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:521:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:23;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:561:"
 CREATE TABLE IF NOT EXISTS `version_done` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` int(11) DEFAULT NULL COMMENT 'om null så är saken färdig, men version har inte ökat sen dess',
@@ -265,6 +266,7 @@ CREATE TABLE IF NOT EXISTS `version_done` (
   `done_type` varchar(64) CHARACTER SET latin1 NOT NULL DEFAULT 'feedback',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  KEY `DH_version_done_id` (`done_id`),
   KEY `version_done_id` (`done_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Vad som färdigställts till varje version'";}i:24;a:6:{s:7:"Trigger";s:26:"user_friend_update_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:403:"
 CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_update_history` AFTER UPDATE ON `user_friend` FOR EACH ROW BEGIN
