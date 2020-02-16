@@ -372,6 +372,48 @@ function html_form_textarea($input_id, $label, $name, $value="", $placeholder=NU
 			'</div>';
 }
 
+/**
+/*	NOTE: this is not a droplist, but it kind of looks like one!
+**/
+function html_form_droplist_searchable($input_id, $label, $name, $options, $selected="", $onchange=NULL, $class=NULL)
+{
+	if($label!==NULL && $label!="")
+		$return='<label for="'.$input_id.'">'.$label.'</label>';
+	else
+		$return="";
+	
+	$selected_label="";
+	
+	$option_list="";
+	foreach($options as $value => $content)
+	{
+		$extra_class="";
+		if(!strcmp($selected, $value))
+		{
+			$selected_label=$content['label'];
+			$extra_class="active";
+		}
+		$option_list.='<a class="dropdown-item '.$extra_class.'" href="#" id="'.$input_id.'_option_'.$value.'" value="'.$value.'" onclick="'.$content['onclick'].'">'.$content['label'].'</a>';
+	}
+	
+	// $return.=html_form_input($input_id, $label, "text", $name."_searchfield", "", NULL, "droplistSearch");
+	
+	// $return.= $return.html_form_droplist($input_id."_droplist", NULL, $name, $options, $selected, $onchange, $class);
+	
+	$return.='
+	<div class="dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    '.$selected_label.'
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="'.$input_id.'_droplist">
+	'.html_form_input($input_id, NULL, "text", $name."_searchfield", "", _("Search"), "droplistSearch").'
+	'.$option_list.'
+  </div>
+</div>';
+	
+	return $return;
+}
+
 function html_form_droplist($input_id, $label, $name, $options, $selected="", $onchange=NULL, $class=NULL)
 {
 	if($label!==NULL && $label!="")
@@ -448,20 +490,42 @@ function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE)
     $r.='</form>';
     return $r;
 }
-
-function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=NULL, $just_inputs=FALSE, $field_type_override=NULL, $custom_labels=NULL, $nr_id=NULL, $only_members=NULL)
+/***
+ * 		function: html_form_from_db_table
+ *		members:
+ *			$table_name		- name of the table to be used
+ *			$id				- id value of specific row in db		- default: NULL;
+ *			$skip_members	- columns to skip
+ *			$db_name		- db name if other than default			- default: NULL;
+ *			$just_inputs	- set true to return an array of inputs 
+							  instead of a form						- default: FALSE
+ *			$field_type_override	- array of types with column 
+									  names as index that overrides 
+									  type in db					- default: NULL
+ *			$custom_labels	- array to override labels				- default: NULL
+ *			$nr_id			- integer to be used if input arrays 
+							  are needed 							- default: NULL
+ *			$only_members	- array of columns. If set, only these 
+							  columns will be used for the form 	- default: NULL
+ *			$inline=FALSE,
+ *			
+ ***/
+function html_form_from_db_table($table_name, $id=NULL, $skip_members=NULL, $db_name=NULL, $just_inputs=FALSE, $field_type_override=NULL, $custom_labels=NULL, $nr_id=NULL, $only_members=NULL)
 {
+	if($skip_members==NULL)
+		$skip_members=array();
+	
 	// Get table columns
 	$table=sql_get("SHOW COLUMNS FROM ".($db_name!=NULL ? $db_name.".":"").sql_safe($table_name).";");
 
 	// Recieve
 	if(isset($_POST[$table_name."_update_".$id]))
 	{
-		require_once(FUNC_PATH."db.php");
-		require_once(FUNC_PATH."base_class.php");
+		// require_once(FUNC_PATH."db.php");
+		// require_once(FUNC_PATH."base_class.php");
 		$values=array();
-		$db=new C_db(db_host, ($db_name!=NULL ? $db_name : db_name), db_user, db_pass);
-		$class=new base_class($db, $table_name, $_POST['id']);
+		$db=new db_class(db_host, ($db_name!=NULL ? $db_name : db_name), db_user, db_pass);
+		$class=new base_class($table_name, $_POST['id'], $db);
 		foreach($table as $column)
 		{
 			if(!strcmp($column['Field'],"id") || !strcmp($column['Field'],"last_updated") || in_array($column['Field'],$skip_members))
@@ -487,6 +551,15 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 			continue;
 		if(!empty($only_members) && !in_array($column['Field'],$only_members))
 			continue;
+		
+		//Fetch column comment if any
+		$sql="SELECT COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS 
+		WHERE TABLE_SCHEMA='".($db_name!=NULL ? $db_name : db_name)."' 
+		AND TABLE_NAME='".$table_name."'
+		AND COLUMN_NAME='".$column['Field']."';";
+		$comment=sql_get_first($sql);
+		if($comment['COLUMN_COMMENT']!=NULL)
+			$column['comment']=$comment['COLUMN_COMMENT'];
         
 		//Decide input type based on field type or override
 		if(isset($field_type_override[$column['Field']]))
@@ -574,7 +647,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 			$name=$table_name."[".$nr_id."][".$column['Field']."]";
 		else
 			$name=$column['Field'];
-				
+		
 		if(!strcmp($type,"textarea"))
 			$inputs[]=html_form_textarea($column['Field']."_text_".$id, $label, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL));
 		else if(!strcmp($type,"droplist"))
@@ -582,7 +655,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members, $db_name=
 		else if(!strcmp($type,"checkbox"))
 			$inputs[]=html_form_checkbox($label, $column['Field']."_checkbox_".$id, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : ($column['Default'] ? TRUE : NULL)), FALSE, NULL);
 		else
-			$inputs[]=html_form_input($column['Field']."_text_".$id, $label, $type, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), $column['Default'], NULL, $column['Type']);		
+			$inputs[]=html_form_input($column['Field']."_text_".$id, $label, $type, $name, (isset($values[$column['Field']]) ? $values[$column['Field']] : NULL), $column['Default'], NULL, (isset($column['comment']) ? $column['comment']: $column['Type']));		
 	}
 	if($id!=NULL)
 	{
@@ -690,10 +763,12 @@ function html_table_from_single_array($array, $headlines=NULL, $silent_columns=a
 	return $r;
 }
 
-function html_table_from_array($array, $headlines=NULL, $silent_columns=array(), $size_table=array(), $class=NULL)
+function html_table_from_array($array, $headlines=NULL, $silent_columns=array(), $size_table=array(), $class=NULL, $linked_columns=array())
 {
     if(empty($array))
         return _("Empty array");
+	if(!isset($array[0]))
+		$array=array($array);
     
 	$r='<table class="table table-striped table-condensed'.($class?" ".$class:"").'">';
 	if($headlines!==-1)
@@ -764,11 +839,18 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array(),
 					$style="";
 
 				if(is_array($a))
-					$r.="<td $style>".(isset($a[$k]) ? $a[$k] : "")."</td>";
+					$string=(isset($a[$k]) ? $a[$k] : "");
 				else if(is_object($a) && (is_object($a->$k) || is_array($a->$k)))
-					$r.="<td $style>".(isset($a->$k) ? json_encode($a->$k) : "")."</td>";
+					$string=(isset($a->$k) ? json_encode($a->$k) : "");
 				else if(is_object($a))
-					$r.="<td $style>".(isset($a->$k) ? $a->$k : "")."</td>";
+					$string=(isset($a->$k) ? $a->$k : "");
+				
+				if(isset($linked_columns[$k]))
+				{
+					$string=html_link(sprintf($linked_columns[$k]['url_form'], $a[$linked_columns[$k]['url_insert']]), $string);
+				}
+				
+				$r.=sprintf("<td %s>%s</td>", $style, $string);
 			}
 		}
 		$r.="</tr>";
@@ -777,8 +859,9 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array(),
 	return $r;
 }
 
-function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1)
+function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1, $return_html=FALSE, $base_link=NULL)
 {
+	ob_start();
 	
 	if(isset($_REQUEST[$page_nr_name]))
 		$pnr=$_REQUEST[$page_nr_name];
@@ -786,46 +869,59 @@ function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1)
 		$pnr=$first_page_number;
 
 	echo '<div class="row center">
-		<nav>
+		<nav aria-label="'._("Page navigation").'">
 		  <ul class="pagination">';
 	
 	// if we are further along than 5 pages in, put a link to first page
 	if($pnr-5>$first_page_number)
-		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $first_page_number).'" aria-label="First"><span aria-hidden="true">|&laquo;</span></a></li>';
+		echo '<li class="page-item"> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $first_page_number).'" aria-label="First"><span aria-hidden="true">|&laquo;</span></a></li>';
 	
 	if($pnr<$first_page_number)
-		echo '<li class="disabled"> <a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
+		echo '<li class="disabled page-item"> <a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
 	else if($pnr>$first_page_number)
-		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $_REQUEST[$page_nr_name]-1).'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
+		echo '<li class="page-item"> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $_REQUEST[$page_nr_name]-1).'" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
 
 	for($i=($pnr-5);$i<=$total_pages && $i<($pnr+5); $i++)
 	{
 		if($i>=$first_page_number)
 		{
+            if($base_link==NULL)
+                $link=add_get_to_current_URL($page_nr_name, $i);
+            else
+                $link=$base_link."?".$page_nr_name."=".$i;
+            
 			if($i==$pnr)
 			{
-				echo '<li class="active">
-					<a href="'.add_get_to_current_URL($page_nr_name, $i).'"><span class="sr-only">('._("current").')</span>'.($i).'</a>
+				echo '<li class="active page-item">
+					<a class="page-link" href="'.$link.'"><span class="sr-only">('._("current").')</span>'.($i).'</a>
 				</li>';
 			}
 			else
-				echo '<li><a href="'.add_get_to_current_URL($page_nr_name, $i).'">'.($i).'</a></li>';
+				echo '<li class="page-item"><a class="page-link" href="'.$link.'">'.($i).'</a></li>';
 		}
 	}
 
 	if($pnr<$total_pages)
-		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
+		echo '<li> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
 	else 
-		echo '<li class="disabled"> <a href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
+		echo '<li class="disabled"> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
 	
 	
 	if($i<$total_pages)
-		echo '<li> <a href="'.add_get_to_current_URL($page_nr_name, $total_pages).'" aria-label="Next"><span aria-hidden="true">&raquo;|</span></a></li>';	
+		echo '<li> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $total_pages).'" aria-label="Next"><span aria-hidden="true">&raquo;|</span></a></li>';	
 	
 	echo '
 		  </ul>
 		</nav>
 	</div>';
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
 }
 
 //Wrapper since this was apparently already done in message.php
@@ -950,7 +1046,7 @@ function html_nav_tabs($tabs=array(), $active=NULL)
             // if($tab['has_tab'])
                 $r.='<a class="nav-item nav-link '
 						.(($active!==NULL && !strcmp($active, $id) ) || (!strcmp($first_key, $id) && $active==NULL ) ? "active " :	"") // Active set or first id
-						.(!$tab['has_tab'] && ($active==NULL || strcmp($active, $id)) ? 'd-none' : '').'" id="'.$id.'-tab" data-toggle="tab" href="#'.$id.'" role="tab" aria-controls="'.$id.'" aria-selected="true">'.string_unslugify($id).'</a>';
+						.(!$tab['has_tab'] && ($active==NULL || strcmp($active, $id)) ? 'd-none' : '').'" id="'.$id.'-tab" data-toggle="tab" href="#'.$id.'" role="tab" aria-controls="'.$id.'" aria-selected="true">'.$tab['text'].'</a>';
         }
         $r.='</div>
         </nav>

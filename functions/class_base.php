@@ -40,7 +40,7 @@ class base_class
 		return $result;
 	}
 
-	public function insert_from_arr($values)
+	public function insert_from_arr($values, $success_message=NULL, $fail_message=NULL)
 	{
 		$vals=array();
 		foreach($values as $key => $val)
@@ -52,7 +52,14 @@ class base_class
 		$result = $this->db->insert($sql);
 		// echo str_replace("\n","<br />",prestr($result,"base_class->insert_from_arr result"));
 		if(!$result)
-			return array("status" => FALSE, "error" => $this->db->error);
+		{
+			if($fail_message!=NULL)
+				message_print_error($fail_message."<br />".$this->db->error."<br />".$sql);
+			return array("status" => FALSE, "error" => $this->db->error, "query" => $sql);
+		}
+		if($success_message!=NULL)
+			message_print_success($success_message);
+		$this->id=$this->db->insert_id;
 		$this->reload();
 		return array("status" => TRUE, "insert_id" => $this->db->insert_id);
 	}
@@ -65,9 +72,9 @@ class base_class
 		}
 		$sql="UPDATE ".sql_safe($this->db_table)." SET ".implode(", ",$vals)."
 			WHERE id=".sql_safe($this->id).";";
-		echo str_replace("\n","<br />",prestr($sql,"base_class->update_from_arr"));
+		// echo str_replace("\n","<br />",prestr($sql,"base_class->update_from_arr"));
 		$result = $this->db->query($sql);
-		echo str_replace("\n","<br />",prestr($result,"base_class->update_from_arr result"));
+		// echo str_replace("\n","<br />",prestr($result,"base_class->update_from_arr result"));
 		$this->reload();
 		return $result;
 	}
@@ -84,6 +91,11 @@ class base_class
 	public function set_criteria($criteria=NULL)
 	{
 		$this->criteria=$criteria;
+		$this->reload();
+	}
+	public function set_id($id=NULL)
+	{
+		$this->id=$id;
 		$this->reload();
 	}
 

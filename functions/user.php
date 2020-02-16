@@ -104,13 +104,14 @@ function user_display_dropdown()
     echo (defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0") ? '</ul>' : "");
 }
 
-function user_get_all($type, $limit=NULL)
+function user_get_all($type, $limit=NULL, $order_by="RAND()")
 {
 	$sql="SELECT id FROM ".PREFIX."user";
 	if(!strcmp($type,"active"))
 		$sql.=" WHERE lastlogin IS NOT NULL AND inactive IS NULL";
+	$sql.=" ORDER BY ".$order_by;
 	if($limit!==NULL)
-		$sql.=" ORDER BY RAND() LIMIT 0,".sql_safe($limit);
+		$sql.=" LIMIT 0,".sql_safe($limit);
 	$r=array();
 	if($uu=mysql_query($sql))
 	{

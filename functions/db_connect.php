@@ -104,6 +104,7 @@ function sql_get_tables()
 /************************************************/
 /*		Function:sql_get_columns				*/
 /*		Gets columns in a table					*/
+/*		PREFIX must be included in table name!	*/
 /************************************************/
 function sql_get_columns($selected_table)
 {
@@ -134,7 +135,7 @@ function sql_insert($table, $values, $success_message=NULL, $error_code=1132203,
 /********************************************************/
 function sql_update($table, $column, $new_data, $id, $print_now=FALSE, $generate_warning_on_fail=FALSE, $success_message=NULL)
 {
-	$sql="UPDATE ".sql_safe($table)."
+	$sql="UPDATE ".PREFIX.sql_safe($table)."
 	SET ".sql_safe($column)."='".sql_safe($new_data)."' 
 	WHERE id=".sql_safe($id).";";
 
@@ -143,7 +144,7 @@ function sql_update($table, $column, $new_data, $id, $print_now=FALSE, $generate
 
 function sql_get_single($column, $table, $where)
 {
-	$sql="SELECT ".sql_safe($column)." FROM ".sql_safe($table)." WHERE ".$where.";";
+	$sql="SELECT ".sql_safe($column)." FROM ".sql_safe(PREFIX.$table)." WHERE ".$where.";";
 	// preprint($sql,"DEBUG1059");
 	$r=sql_get($sql);
 	if(isset($r[0][$column]))

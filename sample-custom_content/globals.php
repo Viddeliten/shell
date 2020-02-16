@@ -89,6 +89,16 @@ define('NUMBER_OF_EMAIL_NOTIFY',100); //How many emails usermessage system is al
 //uncomment to remove "This site is presented by" (but not the ViddeWebb logo)
 // define('NotPresented',"yes");
 
+/**
+ *			Roles for feedback
+ *			
+ **/
+ 
+ define('FEEDBACK_ROLES', serialize(array(
+	"implementer"	=>	array("admin" => 1),
+	"tester"		=>	array("admin" => 0)
+)));
+
 /****************************************************/
 /*		Optional properties to add to body tag		*/	
 /****************************************************/

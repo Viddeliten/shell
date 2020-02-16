@@ -576,6 +576,16 @@ function in_array_r($needle, $haystack, $strict = false) {
     return false;
 }
 
+function array_merge_indexed($original_array, $added)
+{
+	foreach($added as $key => $add)
+	{
+		if(!isset($original_array[$key]))
+			$original_array[$key]=$add;
+	}
+	return $original_array;
+}
+
 function string_remove_tags($string)
 {
 	$string=preg_replace('/<(.?)*>/', "", $string);

@@ -5,15 +5,15 @@ $logged_in_level=login_check_logged_in_mini();
 
 $custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
 $show_feedback=true;
-if(isset($custom_pages["Feedback"]))
+if(isset($custom_pages[_("Feedback")]))
 {
-	if($custom_pages["Feedback"]['req_user_level']>0 && $custom_pages["Feedback"]['req_user_level']>$logged_in_level)
+	if($custom_pages[_("Feedback")]['req_user_level']>0 && $custom_pages[_("Feedback")]['req_user_level']>$logged_in_level)
 		$show_feedback=false;
 }
 $show_users=true;
-if(isset($custom_pages["Users"]))
+if(isset($custom_pages[_("Users")]))
 {
-	if($custom_pages["Users"]['req_user_level']>0 && $custom_pages["Users"]['req_user_level']>$logged_in_level)
+	if($custom_pages[_("Users")]['req_user_level']>0 && $custom_pages[_("Users")]['req_user_level']>$logged_in_level)
 		$show_users=false;
 }
 
@@ -87,8 +87,6 @@ else if(isset($_REQUEST['p']))
 	{
 		if(!$show_feedback)
 			message_print_error(_("Nothing to see here..."));
-		else if(isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['s']),"all"))
-			feedback_show_all();
 		else
 			feedback_show();
 	}

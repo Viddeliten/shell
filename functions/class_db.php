@@ -76,7 +76,7 @@ class db_class
         return $array;
     }
     
-	public function get_from_array($table, $values, $just_first=FALSE)
+	public function get_from_array($table, $values, $just_first=FALSE, $extra_columns=array())
 	{
 		$requirements=array();
         $values=$this->prepare_array_for_query($values);
@@ -84,8 +84,17 @@ class db_class
 		{
 			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
-		$sql="SELECT * FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 		
+		$extra="";
+		if(!empty($extra_columns))
+		{
+			foreach($extra_columns as $name	=> $val)
+			{
+				$extra.=", ".sql_safe($val)." as '".sql_safe($name)."'";
+			}
+		}
+		$sql="SELECT *".$extra." FROM ".PREFIX.sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+			
 		if($just_first)
 			return $this->select_first($sql);
 		
@@ -104,8 +113,8 @@ class db_class
 		{
 			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
-		$sql="DELETE FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
-
+		$sql="DELETE FROM ".PREFIX.sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+		
 		return $this->query($sql);
 	}
 
@@ -164,8 +173,8 @@ class db_class
             $sql="SELECT * FROM `".$table."` WHERE id=".$id;
             return $this->select_first($sql);
         }
-        
-		$result = $this->select("SELECT ".$column." FROM `".$table."` WHERE id=".$id);
+        $sql="SELECT ".sql_safe($column)." FROM `".sql_safe($table)."` WHERE id=".sql_safe($id);
+		$result = $this->select($sql);
 		if(!empty($result) && isset($result[0][$column]))
 		{
 			$this->$column=$result[0][$column];
@@ -194,6 +203,45 @@ class db_class
 		$sql="UPDATE ".sql_safe($table)." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
         
 		return $this->query($sql);
+	}
+	
+	public function upsert_from_array($table, $values)
+	{
+		//If there exists a row exactly like the user wants, return id for that
+		$existing=$this->get_from_array($table, $values, TRUE);
+		if(isset($existing['id']))
+			return $existing['id'];
+
+		$updates=array();
+		$keys=array();
+		$vals=array();
+
+		foreach($values as $key => $val)
+		{
+            // $updates[]='`'.sql_safe($key)."`".$val;
+			$keys[]=$key;
+			$vals[]=$val;
+		}
+        $values_prepared=$this->prepare_array_for_query($values);
+		foreach($values_prepared as $key => $val)
+		{
+            $updates[]='`'.sql_safe($key)."`".$val;
+		}
+
+		$sql="INSERT INTO ".PREFIX.sql_safe($table)." (`".implode("`,`",$keys)."`) VALUES ('".implode("','",$vals)."')
+		ON DUPLICATE KEY UPDATE
+		".implode(", ",$updates).";";
+		
+		$result=$this->query($sql);
+		if(!$result)
+			return $result;
+		if($this->insert_id)
+			return $this->insert_id;
+
+		$existing=$this->get_from_array($table, $values, TRUE);
+		if(isset($existing['id']))
+			return $existing['id'];
+		return $existing;
 	}
     
     public function close()

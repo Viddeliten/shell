@@ -209,7 +209,7 @@ function comment_html_list_users_latest($user_id, $only_last_24_hours=TRUE, $lim
 	else
 		$table="comment_related_to_users";
 	
-	$sql="SELECT new_comment_id, type_commented_on, id_commented_on FROM ".$table." WHERE affected_user_id=".sql_safe($user_id)." 
+	$sql="SELECT new_comment_id, type_commented_on, id_commented_on FROM ".PREFIX.$table." WHERE affected_user_id=".sql_safe($user_id)." 
     ORDER BY `time`ASC LIMIT ".sql_safe($offset).", ".sql_safe($limit).";";
 	// $comments=sql_get($sql, $array=false, $index_column=NULL, $warning_on_fail=FALSE);
 	$comments=sql_get($sql, true, "id_commented_on", TRUE);
@@ -459,7 +459,7 @@ function comment_display_single($comment_id, $max_length=NULL, $print=TRUE)
 					if($flattrID)
 					{
 						echo "<br />";
-						flattr_button_show($flattrID, $comment_link , "Comment ".$c['id']." - a ".$c['comment_type']." comment on ".SITE_URL, $c['comment'], 'compact', 'en_GB');
+						flattr_button_show($flattrID, $comment_link , "Comment ".$c['id']." - a ".$c['comment_type']." comment on ".SITE_NAME, $c['comment'], 'compact', 'en_GB');
 					}
 					echo "</div>";
 				echo '<div class="clearfix"></div></div>';
@@ -500,6 +500,8 @@ function comment_get_link($id, $link_id=NULL)
 }
 function comment_get_link_url($id, $link_id=NULL, &$linktitle)
 {
+	require_once(ABS_PATH."/functions/feedback/func.php");
+	
 	if($link_id===NULL)
 		$link_id=$id;
 	$sql="SELECT id, comment_type, comment_on FROM ".PREFIX."comment WHERE id=".sql_safe($id).";";

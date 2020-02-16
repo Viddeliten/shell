@@ -5,7 +5,7 @@ function display_topline_menu($navbar_type="navbar-inverse", $show_home_link=tru
     
 	$custom_pages=unserialize(CUSTOM_PAGES_ARRAY);
 	$show_feedback=true;
-	if(isset($custom_pages["Feedback"]))
+	if(isset($custom_pages[_("Feedback")]))
 	{
 		$show_feedback=false;
 	}

@@ -165,6 +165,7 @@ if(defined('PINGDOM_SCRIPT'))
 	echo PINGDOM_SCRIPT; ?>
 	
 	<script src="//code.jquery.com/jquery-2.1.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 
 	<script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>functions/functions.js?v=<?php echo date("YmdHis"); ?>"></script>
 	<script src="//viddewebb.se/_commons/js/basic.js"></script>
@@ -179,9 +180,10 @@ if(defined('PINGDOM_SCRIPT'))
     <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <?php if(!strcmp("3.3.4", $bootstrap_version)) { ?>
-    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/ie10-viewport-bug-workaround.js"></script> <?php } else { ?>
-
-    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.js"></script>
+    <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/ie10-viewport-bug-workaround.js"></script>
+	
+	<?php } else { ?>
+	<script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.js"></script>
     <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/bootstrap.bundle.min.js"></script>
     <script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>bootstrap-<?php echo $bootstrap_version; ?>-dist/js/bootstrap.js"></script> <?php } ?>
 

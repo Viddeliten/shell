@@ -188,6 +188,11 @@ function login_get_level()
 	return FALSE;
 }
 
+function login_check_login_mini()
+{
+	return login_check_logged_in_mini();
+}
+
 function login_check_logged_in_mini()
 {
 	// echo "<br />Inloggad: ".$_SESSION["".PREFIX."inloggad"];

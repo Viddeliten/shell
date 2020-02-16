@@ -64,6 +64,99 @@ define('ORDER_STR', "	IF(not_implemented,1,0) ASC,
 						IF(accepted,1,0) DESC, 
 						rel DESC");
 
+require_once(ABS_PATH."/functions/class_base.php");
+						
+						
+class feedback extends base_class
+{
+	function __construct($id=NULL, $criteria=NULL)
+	{
+		parent::__construct("feedback", $id, NULL, $criteria);
+	}
+	
+	protected function reload()
+	{
+		parent::reload();
+		$roles=$this->get_roles();
+		$this->data['roles']=$roles;
+	}
+	
+	private function get_roles()
+	{
+		$roles=$this->db->get_from_array("feedback_role", array("feedback_id" => $this->id));
+		if(empty($roles))
+			return array();
+		$r=array();
+		foreach($roles as $role)
+			$r[$role['role']]=$role['user_id'];
+		return $r;
+	}
+	
+	public function user_role_access($role)
+	{
+		if(login_check_logged_in_mini()<1)
+			return 0;
+		
+		$logged_in_level=login_get_level();
+		
+		if($logged_in_level>=5)
+			return 5;
+		else
+		{		
+			$logged_in_user_id=login_get_user();
+			$global_roles=feedback_get_roles_global();
+			foreach($this->data['roles'] as $r => $u_id)
+			{
+				if(!strcmp($r,$role) || $u_id!=$logged_in_user_id)
+					continue;
+				if($global_roles[$r]['admin'])
+				{
+					return 5; // If you have admin role on another, you can do whatever you want with this one
+				}
+			}
+		}
+		
+		if($logged_in_level>=3)
+			return 3;
+		
+		return 0;
+	}
+
+	public function assign_role($role="implementer", $user_id=NULL)
+	{
+		if(login_check_logged_in_mini()<1)
+			return NULL;
+		
+		// Logged in user is allowed to do this if they have ANOTHER admin role for feedback, has level 5 or has level 3 and is assigning themselves
+		$allowed=FALSE;
+		
+		$logged_in_user_id=login_get_user();
+		$logged_in_level=login_get_level();
+		if(($logged_in_level>=5) || ($logged_in_level>=3 && $user_id==$logged_in_user_id))
+		{
+			$allowed=TRUE;
+		}
+		else
+		{		
+			$global_roles=feedback_get_roles_global();
+			foreach($this->data['roles'] as $r => $u_id)
+			{
+				if(!strcmp($r,$role) || $u_id!=$logged_in_user_id)
+					continue;
+				if($global_roles[$r]['admin'])
+				{
+					$allowed=TRUE;
+					break;
+				}
+			}
+		}
+		
+		if($allowed)
+			return $this->db->upsert_from_array("feedback_role", array("feedback_id" => $this->id, "user_id" => $user_id, "role" => $role));
+		return FALSE;
+	}
+}
+
 function feedback_recieve()
 {
 	if(isset($_POST['postfeedback']) && $_POST['text']!="")
@@ -265,8 +358,9 @@ function feedback_recieve()
 	}
 }
 
-function feedback_show_all()
+function feedback_show_all($return_html=FALSE, $user_id=NULL)
 {
+	ob_start();
 	feedback_count_children();
 	feedback_count_comments();
 	
@@ -274,8 +368,7 @@ function feedback_show_all()
 		$page=(int)($_REQUEST['page']);
 	else
 		$page=1;
-
-	//what to show
+	
 	$nr_per_page=20;
 	$from=($page-1)*$nr_per_page;
 	$to=($page)*$nr_per_page;
@@ -284,26 +377,37 @@ function feedback_show_all()
 	$total_pages=ceil($total_feedbacks/$nr_per_page);
 	
 	//Get and display suggested
-	$sql=feedback_get_sql(SIZE_SUGGESTED, $nr_per_page, $from, FALSE, FALSE);
+	$sql=feedback_get_sql(SIZE_SUGGESTED, $nr_per_page, $from, FALSE, FALSE, $user_id);
 	feedback_display_headline_list($sql, sprintf(_("Feedbacks page %s"),$page), 1);
 
-	html_pagination_row("page", $total_pages, 1);
+	html_pagination_row("page", $total_pages, 1, FALSE, SITE_URL."/feedback/all");
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
 }
-function feedback_show()
+
+function feedback_html_main($user_id=NULL, $return_html=TRUE)
 {
-	feedback_count_children();
-	feedback_count_comments();
+	ob_start();
 	
 	echo '<div class="row">
 		<div class="col-lg-8">';
-	echo '<h1>'._("Feedback").'</h1>';
+	if($user_id==NULL)
+		echo '<h1>'._("Feedback").'</h1>';
+	else
+		echo html_tag("h1",sprintf(_("Feedbacks assigned to %s"), user_get_name($user_id)));
 	
 	// If we are NOT showing a specific feedback, show a little text, button for listing all feedbacks and progress bars
 	if(!isset($_GET['id']))
 	{
 		echo '
 				<p>'._("Suggestions for improvements, bufixes and ideas!").'</p>';
-		echo html_action_button(SITE_URL."/feedback/all", _("List all feedbacks"));
+		// echo html_action_button(SITE_URL."/feedback/all", _("List all feedbacks"));
 		
 		//Show progress bar for reported bugs and required feedback since last version
 		if(login_check_logged_in_mini()>1) //Only show to admins
@@ -332,7 +436,7 @@ function feedback_show()
 		else
 		{
 			//Visa några okategoriserade SOM länkar! Bara rubriker!
-			feedback_display_list(SIZE_UNSET, 5, _("Uncategorized"), 2);
+			feedback_display_list(SIZE_UNSET, 5, _("Uncategorized"), 2, 0, $user_id);
 			
 			$ongoing=feedback_get_nr_ongoing();
 			if($ongoing>0)
@@ -397,6 +501,77 @@ function feedback_show()
 			echo '</div>';
 		}
 	echo '</div></div>';
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
+}
+
+function feedback_html($page="main")
+{
+	switch($page)
+	{
+		case "main":
+			return feedback_html_main();
+			break;
+		case "my":
+			return feedback_html_my();
+			break;
+		case "all":
+			return feedback_show_all(TRUE);
+			break;
+		default:
+			return sprintf(_("Unknown feedback page '%s'"), $page);
+	}
+}
+
+function feedback_html_my()
+{
+	if(login_check_logged_in_mini()<1)
+		return message_warning_message(_("Missing user id"));
+    return feedback_show_all(TRUE, login_get_user());
+    //TODO: snyggare sida med grejs för egna feedbacks:
+	// return feedback_html_main(login_get_user());
+}
+
+function feedback_navtabs($active="main")
+{
+	$users_feedbacks=0;
+	if(login_check_logged_in_mini()>0)
+	{
+		$ff=mysql_query(feedback_get_sql(SIZE_SUGGESTED, 100, 0, TRUE, FALSE, login_get_user()));
+		$users_feedbacks=mysql_affected_rows();
+	}
+	
+	$tabs["main"]=array(	"id"	=>	"main",
+						"link"	=>	SITE_URL."/feedback",
+						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
+						"text"	=>	_("Main"),
+						"content"	=>	feedback_html());
+	if($users_feedbacks>0)
+		$tabs["my"]=array(	"id"	=>	"feedback-my",
+						"link"	=>	SITE_URL."/feedback/my",
+						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
+						"text"	=>	_("Assigned to me"),
+						"content"	=>	feedback_html("my"));
+	$tabs["all"]=array(	"id"	=>	"feedback-all",
+						"link"	=>	SITE_URL."/feedback/all",
+						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
+						"text"	=>	_("All"),
+						"content"	=>	feedback_html("all"));
+	return html_nav_tabs($tabs, $active);
+}
+
+function feedback_show()
+{
+	feedback_count_children();
+	feedback_count_comments();
+
+	echo feedback_navtabs((isset($_GET['s'])? $_GET['s'] : "main"));
 }
 
 function feedback_search_show()
@@ -716,7 +891,7 @@ function feedback_list_print($data, $id_expanded=NULL)
         feedback_list_print_bs4($data, $id_expanded);
         return true;
     }
-    // preprint(array($data, $id_expanded), "feedback_list_print");
+
 	$inloggad=login_check_logged_in_mini();
 	
 	while($d=@mysql_fetch_array($data)) 
@@ -1297,10 +1472,13 @@ function feedback_get_nr_ongoing()
 	return mysql_affected_rows();
 }
 
-function feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merged=TRUE)
+function feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merged=TRUE, $user_id=NULL)
 {
-	$sql="SELECT ".PREFIX."feedback.*, ".REL_STR." as rel
-	FROM ".PREFIX."feedback 
+	$sql="SELECT feedback.*, ".REL_STR." as rel
+	FROM ".PREFIX."feedback feedback";
+	if($user_id!=NULL)
+		$sql.=" INNER JOIN ".PREFIX."feedback_role role ON feedback.id=role.feedback_id AND user_id=".sql_safe($user_id);
+	$sql.="
 	WHERE is_spam<1 ";
 	if($no_merged)
 		$sql.=" AND merged_with IS NULL ";
@@ -1312,22 +1490,21 @@ function feedback_get_sql($size, $nr, $offset=0, $only_unresolved=TRUE, $no_merg
 		AND checked_in IS NULL
 		AND not_implemented IS NULL";
 	$sql.="
-	ORDER BY ".ORDER_STR." ";
+	ORDER BY ";
+	if($size==SIZE_SUGGESTED) //If size does not matter, we are suggesting. We should list feedbacks with size<SMALL_CHANGE (bugs and required) first
+		$sql.="IF(size < ".SIZE_SMALL_CHANGE.",1,0) DESC, ";
 		// IFNULL(accepted IS NULL, 0) DESC,
 		// IF(not_implemented IS NULL, 0) ASC,
 		// IF(resolved IS NULL, 0) ASC,
 		// IF(checked_in IS NULL, 0) DESC,";
-	if($size==SIZE_SUGGESTED) //If size does not matter, we are suggesting. We should list feedbacks with size<SMALL_CHANGE (bugs and required) first
-		$sql.=", IF(size < ".SIZE_SMALL_CHANGE.",1,0) DESC ";
-	$sql.="LIMIT ".sql_safe($offset).", ".sql_safe($nr).";";
-	
+	$sql.=ORDER_STR." LIMIT ".sql_safe($offset).", ".sql_safe($nr).";";
 	return $sql;
 }
 
 //Visa några nya SOM länkar! Bara rubriker!
-function feedback_display_list($size, $nr, $headline, $headlinesize, $offset=0)
+function feedback_display_list($size, $nr, $headline, $headlinesize, $offset=0, $user_id=NULL)
 {
-	$sql=feedback_get_sql($size, $nr, $offset);
+	$sql=feedback_get_sql($size, $nr, $offset, TRUE, ($size==SIZE_UNSET?FALSE:TRUE), $user_id);
 	feedback_display_headline_list($sql, $headline, $headlinesize);
 }
 
@@ -1380,8 +1557,9 @@ function feedback_display_headline_list_from_array($feedback_array, $headline, $
 	}
 }
 
-function feedback_display_headline_list($sql, $headline, $headlinesize, $display_user=TRUE)
+function feedback_display_headline_list($sql, $headline, $headlinesize, $display_user=TRUE, $return_html=FALSE)
 {
+	ob_start();
 	$feedback_array=array();
 	if($ff=mysql_query($sql))
 	{
@@ -1389,6 +1567,14 @@ function feedback_display_headline_list($sql, $headline, $headlinesize, $display
 			$feedback_array[]=$f;
 	}
 	feedback_display_headline_list_from_array($feedback_array, $headline, $headlinesize, $display_user);
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
 }
 
 function feedback_display_list_not_implemented($nr, $headline, $headlinesize)
@@ -1738,7 +1924,10 @@ function feedback_set_unresolved($id)
 function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL, $return_html=FALSE)
 {
     ob_start();
-	echo '<ul class="list-group">';
+	echo '<ul class="list-group">
+			<li class="list-group-item">';
+				feedback_assigned_show($feedback_id);
+	echo '  </li>';
 				feedback_status_show($feedback_id, NULL, NULL, NULL, NULL, "feedback_status_".$feedback_id, $parent_div_id, '<li class="list-group-item">','</li>');
 				feedback_display_size_buttons($feedback_id, "", '<li class="list-group-item">','</li>');
 				feedback_display_merge_form($feedback_id, "", '<li class="list-group-item">','</li>');
@@ -1773,6 +1962,84 @@ function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL
 		return $contents;
 	else
 		echo $contents;
+}
+
+function feedback_assigned_show($feedback_id, $return_html=FALSE)
+{
+	ob_start();
+
+	$roles=feedback_get_roles_global();
+
+	$div_id='feedback_'.$feedback_id.'_assigned';
+	echo '<div id="'.$div_id.'">';
+
+	$feedback=new feedback($feedback_id);
+
+	foreach($roles as $role => $role_content)
+	{
+		$role_access=$feedback->user_role_access($role);
+		
+		//If the feedback is assigned to a user, show that, and if logged in user has access, show button to remove assignment
+		$selected="";
+		if(isset($feedback->data['roles'][$role]))
+			$selected=$feedback->data['roles'][$role];
+		
+		if(!$role_access)
+		{
+			if($selected!="")
+				echo html_tag("div", html_tag("p", html_tag("strong", ucfirst($role).": ").link_user($selected)));
+		}
+		else
+		{		
+			// If logged in user has access show searchable droplist to assign to user
+			// $onchange="replace_html_div_inner('feedback_".$feedback_id."_assigned.', path)";
+			$onchange="";
+			$options=array();
+			if($role_access>=5)
+				$user_ids=user_get_all("active", NULL, "level DESC");
+			else
+			{
+				// If user has level 3 they can select themselves
+				$user_ids=array();
+				$user_ids[]=login_get_user();
+				if($selected!="")
+					$user_ids[]=$selected;
+			}
+
+			foreach($user_ids as $user_id)
+			{
+				$options[$user_id]['label']=user_get_name($user_id);
+				$options[$user_id]['onclick']="feedback_operation('assign&role=".$role."&user_id=".$user_id."', ".$feedback_id.", '".$div_id."')";
+			}
+			// $options[0]="";
+			// $options[1]="Vidde";
+			// $options[2]="Not Vidde";
+			$inputs=array(html_form_droplist_searchable("assigned_to_feedback_".$feedback_id, sprintf(_("%s"), ucfirst($role)), "feedback_assignee", $options, $selected, $onchange));
+			
+			echo html_form("post", $inputs);
+		}
+	}
+	echo '</div>';
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($return_html)
+		return $contents;
+	else
+		echo $contents;
+}
+
+function feedback_get_roles_global()
+{
+	// Get roles from global
+	if(defined('FEEDBACK_ROLES'))
+	{
+		$roles=unserialize(FEEDBACK_ROLES);
+	}
+	else
+		$roles=array("implementer" => array("admin" => 1));
+	return $roles;
 }
 
 function feedback_get_class($id)
@@ -1964,7 +2231,7 @@ function feedback_get_array($from, $to)
 }
 
 //Show progress bar for reported bugs and required feedback since last version
-function feedback_display_progressbar($size)
+function feedback_display_progressbar($size, $user_id=NULL)
 {
 	//Number of completed feedbacks since last version
 	$sql="SELECT COUNT(f.id) as nr
