@@ -316,6 +316,7 @@ function feedback_show()
 	if(isset($_GET['id']))
 	{
 		//Om vi ska visa en specifik feedback, så gör vi det här.
+		accesslog_log("feedback", $_GET['id']);
 		$ff=feedback_get_list_specific($_GET['id']);
 		feedback_list_print($ff);
 	}

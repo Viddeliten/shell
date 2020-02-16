@@ -6,10 +6,11 @@
 /********************************************/
 class db_class
 {
-    private $connection;
 	public $insert_id;
 	public $error;
     public $affected_rows;
+
+    private $connection;
     
     function __construct($db_server=NULL, $db_database=NULL, $db_username=NULL, $db_password=NULL)
     {

@@ -1093,4 +1093,42 @@ function html_glyph($icon_name, $height=NULL, $greyed_out=FALSE)
 	return html_img(SITE_URL.'/open-iconic/svg/'.$icon_name.'.svg', str_replace("-", " ", $icon_name), $height, NULL, ($greyed_out ? " disabled" : ""));
 }
 
+function html_comment_user_box($user)
+{
+	$comments=new comment(NULL, array("comment_related_to_user" => $user));
+	if(empty($comments->data))
+		return NULL;
+	
+	return html_comments_short_list($comments->data); //, $length=150, $ul_class="commentlist");
+}
+
+function html_comments_short_list($comments, $max_nr=5, $length=150, $ul_class="commentlist")
+{
+	// $html = "<ul class=\"".$ul_class."\">";
+	$html = "";
+	
+	$first=1;
+	foreach($comments as $key => $c)
+	{
+		if($key>=$max_nr)
+			break;
+		
+		$comment_html=comment_display_single($c['id'], $length, FALSE);
+
+		if($first)
+		{
+			$html=html_tag("li", $comment_html, "first");
+			// echo "<li class=\"first\">";
+			$first=0;
+		}
+		else
+		{
+			$html.=html_tag("li", $comment_html);
+		}
+
+	}
+	return 	html_tag("ul", $html, $ul_class);
+}
+
+
 ?>
