@@ -28,12 +28,24 @@ CREATE TABLE IF NOT EXISTS `comment` (
   PRIMARY KEY (`id`),
   KEY `comment_user` (`user`),
   KEY `comment_on_type` (`comment_on`,`comment_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:2;a:4:{s:4:"View";s:17:"comment_for_alert";s:11:"Create View";s:572:"
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_for_alert` AS select `comment_related_to_users`.`time` AS `time`,
-`comment_related_to_users`.`new_comment_id` AS `new_comment_id`,
-`comment_related_to_users`.`type_commented_on` AS `type_commented_on`,
-`comment_related_to_users`.`id_commented_on` AS `id_commented_on`,
-`comment_related_to_users`.`affected_user_id` AS `affected_user_id` from `comment_related_to_users` where (`comment_related_to_users`.`time` > (now() - interval 24 hour)) order by `comment_related_to_users`.`time`";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:3;a:4:{s:4:"View";s:24:"comment_related_to_users";s:11:"Create View";s:1899:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:2;a:4:{s:4:"View";s:17:"comment_for_alert";s:11:"Create View";s:1707:"
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_for_alert` AS (select `comment`.`added` AS `time`,
+`comment`.`id` AS `new_comment_id`,
+`comment`.`comment_type` AS `type_commented_on`,
+`user_thing`.`id` AS `id_commented_on`,
+`user_thing`.`user` AS `affected_user_id` from (`comment` join `comment` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where ((`comment`.`comment_type` = 'comment') and (`comment`.`added` > (now() - interval 24 hour)))) union (select `comment`.`added` AS `time`,
+`comment`.`id` AS `new_comment_id`,
+`comment`.`comment_type` AS `type_commented_on`,
+`user_thing`.`id` AS `id_commented_on`,
+`user_thing`.`user` AS `affected_user_id` from (`comment` join `feedback` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where ((`comment`.`comment_type` = 'feedback') and (`comment`.`added` > (now() - interval 24 hour)))) union (select `comment`.`added` AS `time`,
+`comment`.`id` AS `new_comment_id`,
+`comment`.`comment_type` AS `type_commented_on`,
+`user_thing`.`id` AS `id_commented_on`,
+`user_thing`.`author` AS `affected_user_id` from (`comment` join `news` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where ((`comment`.`comment_type` = 'news') and (`comment`.`added` > (now() - interval 24 hour)))) union (select `comment`.`added` AS `time`,
+`comment`.`id` AS `new_comment_id`,
+`comment`.`comment_type` AS `type_commented_on`,
+`user_thing`.`id` AS `id_commented_on`,
+`user_thing`.`id` AS `affected_user_id` from (`comment` join `user` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where ((`comment`.`comment_type` = 'user') and (`comment`.`added` > (now() - interval 24 hour))))";s:20:"character_set_client";s:7:"utf8mb4";s:20:"collation_connection";s:18:"utf8mb4_general_ci";}i:3;a:4:{s:4:"View";s:24:"comment_related_to_users";s:11:"Create View";s:1899:"
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_related_to_users` AS (select `comment`.`added` AS `time`,
 `comment`.`id` AS `new_comment_id`,
 `comment`.`comment_type` AS `type_commented_on`,
