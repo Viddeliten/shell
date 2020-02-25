@@ -351,7 +351,7 @@ function login_password_recovery_receive()
 				add_error(sprintf(_("Message delivery failed. Please send an email to %s for further assistance! errorcode %d"),CONTACT_EMAIL, 1726));
 				// password=$password</p>");
 			}
-		}		
+		}        
 	}
 }
 function login_password_recovery_display()
@@ -479,7 +479,11 @@ function login_form_password_recovery_set($code)
 function login_create_reset_code($email)
 {
 	//Skaffa sig id.
-	$sql="SELECT id, email FROM ".PREFIX."user WHERE email='".sql_safe($email)."';";
+	$sql="SELECT 
+        id, email 
+    FROM ".PREFIX."user 
+    WHERE email='".sql_safe($email)."'
+    AND `blocked` IS NULL;";
 
 	if($ee=mysql_query($sql))
 	{
