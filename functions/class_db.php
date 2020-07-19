@@ -105,6 +105,7 @@ class db_class
 	{
 		return sql_get_columns($table);
 	}
+
 	public function delete_from_array($table, $values)
 	{
 		$requirements=array();
@@ -114,6 +115,18 @@ class db_class
 			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
 		$sql="DELETE FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+		
+		return $this->query($sql);
+	}
+	public function select_from_array($table, $values)
+	{
+		$requirements=array();
+        $values=$this->prepare_array_for_query($values);
+		foreach($values as $key => $val)
+		{
+			$requirements[]='`'.sql_safe($key)."`".$val."";
+		}
+		$sql="SELECT * FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 		
 		return $this->query($sql);
 	}
@@ -195,13 +208,13 @@ class db_class
 	public function update_from_array($table, $values, $id)
 	{
 		$updates=array();
-        $values=$this->prepare_array_for_query($values);
+        $values=$this->prepare_array_for_query($values, false);
 		foreach($values as $key => $val)
 		{
             $updates[]='`'.sql_safe($key)."`".$val;
 		}
 		$sql="UPDATE ".sql_safe($table)." SET ".implode(", ",$updates)." WHERE id=".sql_safe($id).";";
-        
+
 		return $this->query($sql);
 	}
 	
