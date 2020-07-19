@@ -118,10 +118,13 @@ function html_card_from_array_parts($array)
                  $content.=html_tag("h5",$part['content'],"card-title ".$part['class'], FALSE, NULL, FALSE);
                 break;
             case "img":
-				$image='<img src="'.$part['content']['src'].'" alt="'.$part['content']['alt'].'" />';
-				if(isset($part['content']['link']) && $part['content']['link']!=NULL)
-					$image=html_link($part['content']['link'], $image);
-                 $content.=html_tag("span",$image,"card-img-top ".$part['class'], FALSE, NULL, FALSE);
+                if($part['content']['src']!=NULL) //Only add an image if there is an image source
+                {
+                    $image='<img src="'.$part['content']['src'].'" alt="'.$part['content']['alt'].'" />';
+                    if(isset($part['content']['link']) && $part['content']['link']!=NULL)
+                        $image=html_link($part['content']['link'], $image);
+                     $content.=html_tag("span",$image,"card-img-top ".$part['class'], FALSE, NULL, FALSE);
+                }
                 break;
             case "text":
                  $content.=html_tag("p",$part['content'],"card-text ".$part['class'], FALSE, NULL, TRUE);
