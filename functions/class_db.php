@@ -93,7 +93,7 @@ class db_class
 				$extra.=", ".sql_safe($val)." as '".sql_safe($name)."'";
 			}
 		}
-		$sql="SELECT *".$extra." FROM ".PREFIX.sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+		$sql="SELECT *".$extra." FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 			
 		if($just_first)
 			return $this->select_first($sql);
@@ -113,7 +113,7 @@ class db_class
 		{
 			$requirements[]='`'.sql_safe($key)."`".$val."";
 		}
-		$sql="DELETE FROM ".PREFIX.sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+		$sql="DELETE FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
 		
 		return $this->query($sql);
 	}
@@ -228,7 +228,7 @@ class db_class
             $updates[]='`'.sql_safe($key)."`".$val;
 		}
 
-		$sql="INSERT INTO ".PREFIX.sql_safe($table)." (`".implode("`,`",$keys)."`) VALUES ('".implode("','",$vals)."')
+		$sql="INSERT INTO ".sql_safe($table)." (`".implode("`,`",$keys)."`) VALUES ('".implode("','",$vals)."')
 		ON DUPLICATE KEY UPDATE
 		".implode(", ",$updates).";";
 		
