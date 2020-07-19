@@ -1,6 +1,8 @@
 <?php
 
 define('SPAM_POINTS',5);
+define('SPAM_NR_TO_CALC',1500);
+define('SPAM_NR_TO_ADMIN',20);
 
 function spam_receive()
 {
@@ -133,11 +135,11 @@ function spam_show_clicker($id, $type)
 	echo "</form>";
 }
 
-function spam_admin_list($nr=20)
+function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 {
-	spam_calculate(20,"comment");
-	spam_calculate(20,"feedback");
-	spam_calculate(20,"FAQ");
+	spam_calculate(SPAM_NR_TO_CALC,"comment");
+	spam_calculate(SPAM_NR_TO_CALC,"feedback");
+	spam_calculate(SPAM_NR_TO_CALC,"FAQ");
 	
 	spam_remove_old("comment", "1 year");
 	spam_remove_old("feedback", "1 year");
@@ -216,12 +218,14 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 	else if($specific_id!=NULL)
 		$sql="SELECT id, spam_score, is_spam, text, user, IP FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if(!strcmp($type, "comment"))
-		$sql="SELECT id, user, IP, ".sql_safe($type)." as text FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 OR is_spam=1 OR is_spam=-1 ORDER BY spam_score, RAND() ASC LIMIT 0,".sql_safe($nr).";";
+		$sql="SELECT id, user, IP, ".sql_safe($type)." as text FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 OR is_spam=1 OR is_spam=-1 ORDER BY spam_score ASC LIMIT 0,".sql_safe($nr).";";
 	else
-		$sql="SELECT id, user, IP, text FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 OR is_spam=1 OR is_spam=-1 ORDER BY spam_score, RAND() ASC LIMIT 0,".sql_safe($nr).";";
+		$sql="SELECT id, user, IP, text FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 OR is_spam=1 OR is_spam=-1 ORDER BY spam_score ASC LIMIT 0,".sql_safe($nr).";";
 	// echo "<br />DEBUG0904: $sql";
 	if($cc=mysql_query($sql))
 	{
+        message_print_message(sprintf("Checking %s %s items for spam...", mysql_affected_rows(), $type));
+        
 		while($c=mysql_fetch_array($cc))
 		{
 			if($output)
