@@ -45,6 +45,15 @@ function html_link($url, $text, $class=NULL, $target="_self")
 	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class.'"').' target="'.$target.'">'.$the_text.'</a>';
 }
 
+/**
+ * Creates a html card
+ * @param string $card_link where you should end up if card is clicked
+ * @param string $card_link_text
+ * @param string $card_title
+ * @param string $card_text
+ * @param string $img_source
+ * @param string $image_alt 
+ **/
 function html_card($card_link="", $card_link_text="Go somewhere", $card_title="", $card_text="", $img_source=NULL, $image_alt="Image")
 {
 	if($card_link!="" && $card_link_text!="")
@@ -72,6 +81,10 @@ function html_card($card_link="", $card_link_text="Go somewhere", $card_title=""
 	return html_card_from_array($card_parts);
 }
 
+/**
+ * Creates html cards from array. See html_card for expected array structure, but much rather, just use that function for all your cards.
+ * @param array $array
+ **/
 function html_card_from_array_parts($array)
 {
     $content="";
@@ -105,10 +118,13 @@ function html_card_from_array_parts($array)
                  $content.=html_tag("h5",$part['content'],"card-title ".$part['class'], FALSE, NULL, FALSE);
                 break;
             case "img":
-				$image='<img src="'.$part['content']['src'].'" alt="'.$part['content']['alt'].'" />';
-				if(isset($part['content']['link']) && $part['content']['link']!=NULL)
-					$image=html_link($part['content']['link'], $image);
-                 $content.=html_tag("span",$image,"card-img-top ".$part['class'], FALSE, NULL, FALSE);
+                if($part['content']['src']!=NULL) //Only add an image if there is an image source
+                {
+                    $image='<img src="'.$part['content']['src'].'" alt="'.$part['content']['alt'].'" />';
+                    if(isset($part['content']['link']) && $part['content']['link']!=NULL)
+                        $image=html_link($part['content']['link'], $image);
+                     $content.=html_tag("span",$image,"card-img-top ".$part['class'], FALSE, NULL, FALSE);
+                }
                 break;
             case "text":
                  $content.=html_tag("p",$part['content'],"card-text ".$part['class'], FALSE, NULL, TRUE);
@@ -1027,7 +1043,7 @@ function html_form_search()
 /***
 /*	Populating tabs array:
 	$tabs["important"]=array(	"id"	=>	"important",
-						"link"	=>	Url to page this is on. Only needed on the first item,
+						"link"	=>	url, // Url to page this is on. Only needed on the first item,
 						"has_tab"	=>	TRUE, //If this is false, tab will only be visible if active
 						"text"	=>	_("Tab text"),
 						"content"	=>	All html visible when the tab is active);
@@ -1035,10 +1051,11 @@ function html_form_search()
 ***/
 function html_nav_tabs($tabs=array(), $active=NULL)
 {
+    $first_key=key($tabs);
+
 	if(defined('BOOTSTRAP_VERSION') && !strcmp(BOOTSTRAP_VERSION,"4.1.0"))
     {
         //https://getbootstrap.com/docs/4.1/components/navs/#tabs
-        $first_key=key($tabs);
         $r='<nav>
   <div class="nav nav-tabs" id="nav-tab" role="tablist">';
         foreach($tabs as $id => $tab)
@@ -1060,18 +1077,21 @@ function html_nav_tabs($tabs=array(), $active=NULL)
         $r.='</div>';
         return $r;
     }
-	
+    
+    // http://getbootstrap.com/javascript/#tabs (works with v3.3.4)
 	$r='<div class="row">
 		<div class="col-lg-12">';
 /*			<!-- Nav tabs -->		*/
 	$r.='<ul class="nav nav-tabs" role="tablist">';
-	foreach($tabs as $key => $tab)
+	foreach($tabs as $id => $tab)
 	{
-		if($key==0)
+		if(($active!==NULL && !strcmp($active, $id) ) || (!strcmp($first_key, $id) && $active==NULL )) // Active set or first id
 			$r.='<li role="presentation"'.' class="active">'.
-					'<a href="'.$tab['link'].'" >'.$tab['text'].'</a>'.
+					'<a href="'.(isset($tab['link']) ? $tab['link']: '#'.$tab['id']).'"  aria-controls="'.$tab['id'].'" role="tab" data-toggle="tab">'.
+                        $tab['text'].
+                    '</a>'.
 				'</li>';
-		else if(!isset($tab['invisible']))
+		else if(!isset($tab['has_tab']) || $tab['has_tab'] == true)
 			$r.='<li role="presentation">'.
 					'<a href="#'.$tab['id'].'" aria-controls="'.$tab['id'].'" role="tab" data-toggle="tab">'.$tab['text'].'</a>'.
 				'</li>';
@@ -1086,9 +1106,9 @@ function html_nav_tabs($tabs=array(), $active=NULL)
 
 /*			<!-- Tab panes -->		*/
 	$r.='<div class="tab-content">';
-	foreach($tabs as $key => $tab)
+	foreach($tabs as $id => $tab)
 	{
-		$r.='<div role="tabpanel" class="tab-pane fade in '.($key==0?'active':'').'" id="'.$tab['id'].'">'.
+		$r.='<div role="tabpanel" class="tab-pane fade in '.(($active!==NULL && !strcmp($active, $id) ) || (!strcmp($first_key, $id) && $active==NULL )?'active':'').'" id="'.$tab['id'].'">'.
 				$tab['content'].
 			'</div>';
 	}
@@ -1188,5 +1208,43 @@ function html_glyph($icon_name, $height=NULL, $greyed_out=FALSE)
 	// return '<img src="'.SITE_URL.'/open-iconic/svg/'.$icon_name.'.svg" alt="'.str_replace("-", " ", $icon_name).'">';
 	return html_img(SITE_URL.'/open-iconic/svg/'.$icon_name.'.svg', str_replace("-", " ", $icon_name), $height, NULL, ($greyed_out ? " disabled" : ""));
 }
+
+function html_comment_user_box($user_id)
+{
+	$comments=new comment(NULL, array("comment_related_to_user" => $user_id));
+	if(empty($comments->data))
+		return NULL;
+	
+	return html_comments_short_list($comments->data); //, $length=150, $ul_class="commentlist");
+}
+
+function html_comments_short_list($comments, $max_nr=5, $length=150, $ul_class="commentlist")
+{
+	// $html = "<ul class=\"".$ul_class."\">";
+	$html = "";
+	
+	$first=1;
+	foreach($comments as $key => $c)
+	{
+		if($key>=$max_nr)
+			break;
+		
+		$comment_html=comment_display_single($c['id'], $length, FALSE);
+
+		if($first)
+		{
+			$html=html_tag("li", $comment_html, "first");
+			// echo "<li class=\"first\">";
+			$first=0;
+		}
+		else
+		{
+			$html.=html_tag("li", $comment_html);
+		}
+
+	}
+	return 	html_tag("ul", $html, $ul_class);
+}
+
 
 ?>

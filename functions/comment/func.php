@@ -2,6 +2,38 @@
 
 require_once(ABS_PATH."/functions/news.php");
 
+class comment extends base_class
+{
+	function __construct($id=NULL, $criteria=NULL)
+	{
+		parent::__construct(PREFIX."comment", $id, NULL, $criteria);
+		
+		if(isset($criteria['comment_related_to_user']))
+			$this->get_comment_related_to_user($criteria['comment_related_to_user']);
+	}
+	
+	private function get_comment_related_to_user($user_id, $only_unseen=TRUE)
+	{
+		$query="SELECT
+		".PREFIX."comment.*,
+		access_log.id as access_log_id
+		FROM comment_related_to_users
+		INNER JOIN ".PREFIX."comment ON ".PREFIX."comment.id=comment_related_to_users.new_comment_id
+		LEFT JOIN ".PREFIX."access_log access_log 
+			ON access_log.user_id=".sql_safe($user_id)." 
+			AND ".PREFIX."comment.comment_type = access_log.table 
+			AND access_log.table_id=".PREFIX."comment.comment_on
+			AND access_log.time>".PREFIX."comment.added
+        WHERE comment_related_to_users.affected_user_id=".sql_safe($user_id)."
+		AND ".PREFIX."comment.is_spam<0
+		GROUP BY ".PREFIX."comment.id
+		HAVING access_log_id IS NULL
+        ORDER BY ".PREFIX."comment.added DESC
+		";
+		$this->data=$this->db->select($query);
+	}
+}
+
 function comment_receive()
 {
 	$inloggad=login_check_logged_in_mini();

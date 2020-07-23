@@ -1,4 +1,4 @@
-a:26:{i:0;a:2:{s:5:"Table";s:10:"access_log";s:12:"Create Table";s:667:"
+a:27:{i:0;a:2:{s:5:"Table";s:10:"access_log";s:12:"Create Table";s:667:"
 CREATE TABLE IF NOT EXISTS `access_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -28,12 +28,24 @@ CREATE TABLE IF NOT EXISTS `comment` (
   PRIMARY KEY (`id`),
   KEY `comment_user` (`user`),
   KEY `comment_on_type` (`comment_on`,`comment_type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:2;a:4:{s:4:"View";s:17:"comment_for_alert";s:11:"Create View";s:572:"
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_for_alert` AS select `comment_related_to_users`.`time` AS `time`,
-`comment_related_to_users`.`new_comment_id` AS `new_comment_id`,
-`comment_related_to_users`.`type_commented_on` AS `type_commented_on`,
-`comment_related_to_users`.`id_commented_on` AS `id_commented_on`,
-`comment_related_to_users`.`affected_user_id` AS `affected_user_id` from `comment_related_to_users` where (`comment_related_to_users`.`time` > (now() - interval 24 hour)) order by `comment_related_to_users`.`time`";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:3;a:4:{s:4:"View";s:24:"comment_related_to_users";s:11:"Create View";s:1899:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:2;a:4:{s:4:"View";s:17:"comment_for_alert";s:11:"Create View";s:1707:"
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_for_alert` AS (select `comment`.`added` AS `time`,
+`comment`.`id` AS `new_comment_id`,
+`comment`.`comment_type` AS `type_commented_on`,
+`user_thing`.`id` AS `id_commented_on`,
+`user_thing`.`user` AS `affected_user_id` from (`comment` join `comment` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where ((`comment`.`comment_type` = 'comment') and (`comment`.`added` > (now() - interval 24 hour)))) union (select `comment`.`added` AS `time`,
+`comment`.`id` AS `new_comment_id`,
+`comment`.`comment_type` AS `type_commented_on`,
+`user_thing`.`id` AS `id_commented_on`,
+`user_thing`.`user` AS `affected_user_id` from (`comment` join `feedback` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where ((`comment`.`comment_type` = 'feedback') and (`comment`.`added` > (now() - interval 24 hour)))) union (select `comment`.`added` AS `time`,
+`comment`.`id` AS `new_comment_id`,
+`comment`.`comment_type` AS `type_commented_on`,
+`user_thing`.`id` AS `id_commented_on`,
+`user_thing`.`author` AS `affected_user_id` from (`comment` join `news` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where ((`comment`.`comment_type` = 'news') and (`comment`.`added` > (now() - interval 24 hour)))) union (select `comment`.`added` AS `time`,
+`comment`.`id` AS `new_comment_id`,
+`comment`.`comment_type` AS `type_commented_on`,
+`user_thing`.`id` AS `id_commented_on`,
+`user_thing`.`id` AS `affected_user_id` from (`comment` join `user` `user_thing` on((`user_thing`.`id` = `comment`.`comment_on`))) where ((`comment`.`comment_type` = 'user') and (`comment`.`added` > (now() - interval 24 hour))))";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:3;a:4:{s:4:"View";s:24:"comment_related_to_users";s:11:"Create View";s:1899:"
 CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_related_to_users` AS (select `comment`.`added` AS `time`,
 `comment`.`id` AS `new_comment_id`,
 `comment`.`comment_type` AS `type_commented_on`,
@@ -115,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `flattr` (
   `showFlattr` text COLLATE utf8_bin,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:9;a:2:{s:5:"Table";s:17:"messages_to_users";s:12:"Create Table";s:1160:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:9;a:2:{s:5:"Table";s:17:"messages_to_users";s:12:"Create Table";s:1219:"
 CREATE TABLE IF NOT EXISTS `messages_to_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `event` varchar(64) CHARACTER SET latin1 DEFAULT NULL,
@@ -131,7 +143,8 @@ CREATE TABLE IF NOT EXISTS `messages_to_users` (
   `active_for_users` text COLLATE utf8_bin,
   `activated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `mess_event_active` (`event`,`activated`)
+  UNIQUE KEY `mess_event_active` (`event`,`activated`),
+  UNIQUE KEY `DH_mess_event_active` (`event`,`activated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:10;a:2:{s:5:"Table";s:22:"messages_to_users_sent";s:12:"Create Table";s:493:"
 CREATE TABLE IF NOT EXISTS `messages_to_users_sent` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -245,19 +258,29 @@ CREATE TABLE IF NOT EXISTS `user_reset_code` (
   `used` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `reset_code_customer` (`user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:21;a:2:{s:5:"Table";s:12:"user_setting";s:12:"Create Table";s:225:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:21;a:2:{s:5:"Table";s:14:"user_save_data";s:12:"Create Table";s:446:"
+CREATE TABLE IF NOT EXISTS `user_save_data` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `type` varchar(32) COLLATE utf8_bin NOT NULL COMMENT 'handle to group data by',
+  `local_type` varchar(64) COLLATE utf8_bin NOT NULL,
+  `data` text COLLATE utf8_bin,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id_2` (`user_id`,`type`,`local_type`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:22;a:2:{s:5:"Table";s:12:"user_setting";s:12:"Create Table";s:225:"
 CREATE TABLE IF NOT EXISTS `user_setting` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `settings` text COLLATE utf8_bin,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:22;a:2:{s:5:"Table";s:7:"version";s:12:"Create Table";s:297:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:23;a:2:{s:5:"Table";s:7:"version";s:12:"Create Table";s:297:"
 CREATE TABLE IF NOT EXISTS `version` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` float DEFAULT NULL COMMENT 'version',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'när det blev denna version',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:23;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:521:"
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";}i:24;a:2:{s:5:"Table";s:12:"version_done";s:12:"Create Table";s:561:"
 CREATE TABLE IF NOT EXISTS `version_done` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` int(11) DEFAULT NULL COMMENT 'om null så är saken färdig, men version har inte ökat sen dess',
@@ -265,8 +288,9 @@ CREATE TABLE IF NOT EXISTS `version_done` (
   `done_type` varchar(64) CHARACTER SET latin1 NOT NULL DEFAULT 'feedback',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `version_done_id` (`done_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Vad som färdigställts till varje version'";}i:24;a:6:{s:7:"Trigger";s:26:"user_friend_update_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:403:"
+  KEY `version_done_id` (`done_id`),
+  KEY `DH_version_done_id` (`done_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Vad som färdigställts till varje version'";}i:25;a:6:{s:7:"Trigger";s:26:"user_friend_update_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:403:"
 CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_update_history` AFTER UPDATE ON `user_friend` FOR EACH ROW BEGIN
 
    INSERT INTO user_friend_history
@@ -286,7 +310,7 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_update_history` AFTER UPD
     OLD.status
 );
    
-END";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";s:18:"Database Collation";s:8:"utf8_bin";}i:25;a:6:{s:7:"Trigger";s:26:"user_friend_delete_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:406:"
+END";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";s:18:"Database Collation";s:8:"utf8_bin";}i:26;a:6:{s:7:"Trigger";s:26:"user_friend_delete_history";s:8:"sql_mode";s:0:"";s:22:"SQL Original Statement";s:406:"
 CREATE DEFINER=`root`@`localhost` TRIGGER `user_friend_delete_history` AFTER DELETE ON `user_friend` FOR EACH ROW BEGIN
 
    INSERT INTO user_friend_history
