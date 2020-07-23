@@ -153,7 +153,9 @@ function spam_admin_list($nr=20)
 		echo "<input type=\"hidden\" name=\"type\" value=\"comment\">";
 		while($c=mysql_fetch_array($cc))
 		{
-			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".spam_get_link($c['id'], "comment")."\">[".$c['spam_score']."]</a>:  ".$c['comment']." <a href=\"".comment_get_link_url($c['id'])."\">[...]</a></p>";
+			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".spam_get_link($c['id'], "comment")."\">[".$c['spam_score']."]</a>:  ".
+						$c['comment'].
+						" <a href=\"".comment_get_link_url($c['id'], NULL, $notext)."\">[...]</a></p>";
 		}
 		echo "<input type=\"button\" value=\"Markera alla\" onclick=\"CheckAll(this.form);\"><br />";
 
