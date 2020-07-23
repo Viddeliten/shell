@@ -7,6 +7,8 @@ define('SPAM_NR_TO_ADMIN',20);
 function spam_receive()
 {
 	login_check_logged_in_mini();
+    
+    spam_custom_receive();
 	
 	//`spam_id``user``IP``type`
 	
@@ -140,6 +142,8 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 	spam_calculate(SPAM_NR_TO_CALC,"comment");
 	spam_calculate(SPAM_NR_TO_CALC,"feedback");
 	spam_calculate(SPAM_NR_TO_CALC,"FAQ");
+    
+    spam_custom_calculate(SPAM_NR_TO_CALC);
 	
 	spam_remove_old("comment", "1 year");
 	spam_remove_old("feedback", "1 year");

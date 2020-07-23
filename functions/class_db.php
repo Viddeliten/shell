@@ -64,7 +64,9 @@ class db_class
             if($val===FALSE)
                 $val="FALSE";
 
-			if(!in_array($val, array("NOW()", "NOT NULL", "NULL", "TRUE", "FALSE")))
+			if(in_array(substr($val,0,1),array("<",">","="," ")))
+				$val=$val;
+			else if(!in_array($val, array("NOW()", "NOT NULL", "NULL", "TRUE", "FALSE")))
 				$val="='".sql_safe($val)."'";
             else if(in_array($val, array("NOT NULL", "NULL")) && $change_to_is)
 				$val=" IS ".$val;
