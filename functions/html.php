@@ -12,9 +12,8 @@ function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id
 function html_img($source, $alt="image", $height=NULL, $width=NULL, $class="", $onerror=NULL)
 {
     
-	return '<img 
-                src="'.$source.'" 
-                alt="'.$alt.'" '.
+	return '<img  src="'.$source.'"'.
+                ' alt="'.$alt.'" '.
                 ($height!=NULL ? ' height="'.$height.'"': "").
                 ($width!=NULL ? ' width="'.$width.'"': "").
                 ($onerror!=NULL ? ' onerror="'.$onerror.'"': "").
