@@ -20,7 +20,7 @@ function login_captcha_check()
 	if(isset($_POST['g-recaptcha-response']))
 		$response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
 	
-	if(!isset($response))
+	if(!isset($response) || !isset($response['success']) || !$response['success'])
 	{
 		add_error(_("You do not appear to be human. Feeling ok?"));
 		return FALSE;
