@@ -9,9 +9,16 @@ function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id
 	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles, $div_id, $html_format_text);
 }
 
-function html_img($source, $alt="image", $height=NULL, $width=NULL, $class="")
+function html_img($source, $alt="image", $height=NULL, $width=NULL, $class="", $onerror=NULL)
 {
-	return '<img src="'.$source.'" alt="'.$alt.'" '.($height!=NULL ? ' height="'.$height.'"': "").($width!=NULL ? ' width="'.$width.'"': "").' class="'.$class.'"/>';
+    
+	return '<img 
+                src="'.$source.'" 
+                alt="'.$alt.'" '.
+                ($height!=NULL ? ' height="'.$height.'"': "").
+                ($width!=NULL ? ' width="'.$width.'"': "").
+                ($onerror!=NULL ? ' onerror="'.$onerror.'"': "").
+                ' class="'.$class.'"/>';
 }
 
 function html_safe($string, $get_link_titles=FALSE)
