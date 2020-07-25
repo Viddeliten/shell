@@ -270,7 +270,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 			//Kolla om det finns länkar eller dumma ord
 			$words = 0;  
 			$text = strtolower($c['text']); // lowercase it to speed up the loop
-			$myDict = array("http","<",">","://","penis","pill","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription"); 
+			$myDict = array("http","<",">","://","penis","pill","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription", "hydroxy", "chloroquin", "corona", "virus", "pandemic"); 
 			foreach($myDict as $word)
 			{
 				$count = substr_count($text, $word);
