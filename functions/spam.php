@@ -1,6 +1,6 @@
 <?php
 
-define('SPAM_POINTS',5);
+define('SPAM_POINTS',0);
 define('SPAM_NR_TO_CALC',1500);
 define('SPAM_NR_TO_ADMIN',20);
 
@@ -223,12 +223,12 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 		$sql="SELECT id, spam_score, is_spam, text, user, IP FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if(!strcmp($type, "comment"))
 		$sql="SELECT id, user, IP, ".sql_safe($type)." as text FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 
-            -- OR is_spam=1 OR is_spam=-1 
+            OR is_spam=1 OR is_spam=-1 
             ORDER BY IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
 	else
 		$sql="SELECT id, user, IP, text FROM ".PREFIX.sql_safe($type)." WHERE 
             is_spam=0 
-            -- OR is_spam=1 OR is_spam=-1 
+            OR is_spam=1 OR is_spam=-1 
             ORDER BY  IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
 	// echo "<br />DEBUG0904: $sql";
 	if($cc=mysql_query($sql))
