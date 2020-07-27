@@ -10,7 +10,8 @@ function spam_receive()
 {
 	login_check_logged_in_mini();
     
-    spam_custom_receive();
+    if(function_exists("spam_custom_receive"))
+        spam_custom_receive();
 	
 	//`spam_id``user``IP``type`
 	
@@ -145,7 +146,8 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 	spam_calculate(SPAM_NR_TO_CALC,"feedback");
 	spam_calculate(SPAM_NR_TO_CALC,"FAQ");
     
-    spam_custom_calculate(SPAM_NR_TO_CALC);
+    if(function_exists("spam_custom_calculate"))
+        spam_custom_calculate(SPAM_NR_TO_CALC);
 	
 	spam_remove_old("comment", SPAM_REMOVE_TIME_SHORT, 2);
 	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORT, 2);
