@@ -6,27 +6,31 @@ define('SPAM_NR_TO_ADMIN',20);
 
 function spam_receive()
 {
-	login_check_logged_in_mini();
+	$db = new db_class();
+
+	if(login_check_logged_in_mini()<1)
+		return 0;
     
     spam_custom_receive();
-	
-	//`spam_id``user``IP``type`
 	
 	if(isset($_POST['this_is_spam']))
 	{
 		//KOlla om det är admin som säger
-		if(isset($_SESSION[PREFIX.'user_id']) && user_get_admin($_SESSION[PREFIX.'user_id'])>1)
+		if(user_get_admin(login_get_user())>1)
 		{
 			foreach($_POST['id'] as $s_id)
 			{
-				$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])." 
-					SET is_spam=2 
-					WHERE id=".sql_safe($s_id).";";
-				
-				message_try_mysql($sql,
-					"085123", //Error code
-					sprintf(_("%s %s marked as spam"), $_POST['type'], $s_id)// success_message
-				);
+				if($db->upsert_from_array(	PREFIX."spam_score", 
+										array(	"type"			=>	$_POST['type'],
+												"type_id"		=>	$s_id,
+												"spam_score"	=>	2,
+												"source"		=>	'ADMIN'
+											))) {
+					message_add_success_message(sprintf(_("%s %s marked as spam."), sql_safe($_POST['type']), $s_id));
+				}
+				else {
+					message_add_error(sprintf(_("Error code %s<br />ERROR: %s"),"124632", $db->error));
+				}
 			}
 		}
 		else
@@ -57,13 +61,17 @@ function spam_receive()
 			foreach($_POST['id'] as $s_id)
 			{
 			
-				$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])."
-					SET is_spam=-2
-					WHERE id=".sql_safe($s_id).";";
-				message_try_mysql($sql,
-					"084258", //Error code
-					sprintf(_("%s %s marked as not spam."), sql_safe($_POST['type']), $s_id) // success_message
-				);
+				if($db->upsert_from_array(	PREFIX."spam_score", 
+										array(	"type"			=>	$_POST['type'],
+												"type_id"		=>	$s_id,
+												"spam_score"	=>	-2,
+												"source"		=>	'ADMIN'
+											))) {
+					message_add_success_message(sprintf(_("%s %s marked as not spam."), sql_safe($_POST['type']), $s_id));
+				}
+				else {
+					message_add_error(sprintf(_("Error code %s<br />ERROR: %s"),"084258", $db->error));
+				}
 			}
 		}
 		else
@@ -151,13 +159,13 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 	
 	//Visa en lista på kommentarer med lägst poäng
 	echo "<h2>Comments</h2>";
-	$sql="SELECT id, spam_score, is_spam, comment FROM ".PREFIX."comment WHERE is_spam>-02 AND is_spam<2 ORDER BY spam_score ASC, added ASC LIMIT 0,".sql_safe($nr).";";
-	// echo "<br />DEBUG1018: $sql";
-	if($cc=mysql_query($sql))
+	$comment = new comment();
+	$cc = $comment->get_unchecked($nr);
+	if(!empty($cc))
 	{
 		echo "<form method=\"post\">";
 		echo "<input type=\"hidden\" name=\"type\" value=\"comment\">";
-		while($c=mysql_fetch_array($cc))
+		foreach($cc as $c)
 		{
 			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".spam_get_link($c['id'], "comment")."\">[".$c['spam_score']."]</a>:  ".$c['comment']." <a href=\"".comment_get_link_url($c['id'])."\">[...]</a></p>";
 		}

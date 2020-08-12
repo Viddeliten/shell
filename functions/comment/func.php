@@ -32,6 +32,63 @@ class comment extends base_class
 		";
 		$this->data=$this->db->select($query);
 	}
+	
+	public function get_unchecked($limit = NULL)
+	{
+		return get_all($limit, NULL, NULL, NULL, "", true);
+	}
+	
+	/**
+	 * gets all comments with restrictions based on type, type id and spam level
+	 **/
+	private function get_all($limit = NULL, $type=NULL, $type_id = NULL, $spam_score_limit = 0, $spam_score_operator ="<=", $needs_admin_check = false)
+	{
+		$having=array();
+		
+		if(!is_numeric($limit))
+			$limit = NULL;
+
+		if(!is_numeric($spam_score_limit))
+			$spam_score_limit = NULL;
+		
+		if($spam_score_limit!==NULL)
+			$having[]="spam_score ".$spam_score_operator." ".$spam_score_limit;
+		
+		if($needs_admin_check)
+		{
+			$having[]="(spam_score_source IS NULL OR spam_score_source != 'ADMIN')";
+		}
+		
+		$where=array();
+		
+		if($type!==NULL)
+		{
+			$where[]="comment.comment_type = '".sql_safe($type)."'";
+		}
+		if($type_id!==NULL)
+		{
+			$where[]="comment.comment_on = '".sql_safe($type_id)."'";
+		}
+				
+		$query="SELECT 
+			IFNULL(spam_score.spam_score, 0) as spam_score,
+			spam_score.calculated as spam_calculated,
+			spam_score.source as spam_score_source,
+			comment.*
+		FROM ".PREFIX."comment comment 
+        LEFT JOIN ".PREFIX."spam_score spam_score
+        	ON spam_score.type='comment'
+            AND spam_score.type_id=comment.id
+		".(!empty($where) ? "WHERE ".implode(" AND ", $where) : "")." 
+		GROUP BY comment.id
+		".(!empty($having) ? "HAVING ".implode(" AND ", $having) : "")." 
+        ORDER BY IFNULL(spam_score.spam_score,0) ASC, comment.added ASC 
+		".($limit!=NULL ? "LIMIT 0, ".$limit : "")."
+		";
+
+		$this->data=$this->db->select($query);
+		return $this->data;
+	}
 }
 
 function comment_receive()

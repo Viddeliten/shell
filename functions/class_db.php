@@ -9,6 +9,7 @@ class db_class
 	public $insert_id;
 	public $error;
     public $affected_rows;
+	public $query;
 
     private $connection;
     
@@ -135,6 +136,7 @@ class db_class
 
     public function query($query)
     { 
+		$this->query = $query;
 		$result=$this->connection->query($query);
 		if($result)
         {
@@ -250,6 +252,7 @@ class db_class
 		$result=$this->query($sql);
 		if(!$result)
 			return $result;
+		
 		if($this->insert_id)
 			return $this->insert_id;
 
