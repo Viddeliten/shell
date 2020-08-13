@@ -367,8 +367,10 @@ function comments_show_comments_and_replies($id, $type, $print=TRUE)
 		return $contents;
 }
 
-function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlist")
+function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlist", $print=TRUE)
 {
+	ob_start();
+
 	$sql="SELECT id, comment_type, user, nick, email, url, flattrID, added, SUBSTRING(`comment`, 1, ".sql_safe( $length).") AS comment FROM ".PREFIX."comment WHERE is_spam<1 ORDER BY added DESC LIMIT 0,".sql_safe($antal).";";
 	//echo "<br />DEBUG1323: $sql";
 	if($cc=mysql_query($sql)) //Hämta bara de senaste
@@ -396,6 +398,15 @@ function comments_show_latest_short($antal=3, $length=150, $ul_class="commentlis
 		}
 		echo "</ul>";
 	}
+	
+	$contents = ob_get_contents();
+	ob_end_clean();
+	
+	if($print)
+		echo $contents;
+	else
+		return $contents;
+
 }
 
 function comment_display_single($comment_id, $max_length=NULL, $print=TRUE)

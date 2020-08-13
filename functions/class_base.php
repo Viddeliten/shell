@@ -63,6 +63,7 @@ class base_class
 		$this->reload();
 		return array("status" => TRUE, "insert_id" => $this->db->insert_id);
 	}
+	
 	public function update_from_arr($values)
 	{
 		$vals=array();
