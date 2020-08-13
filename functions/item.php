@@ -101,6 +101,34 @@ class item extends base_class
 		$this->set_criteria($criteria);
 	}
 	
+	protected function reload()
+	{
+		parent::reload();
+		
+		if(isset($this->id) && $this->id!=NULL)
+		{
+			if($this->data['public']==true)
+				return 0;
+			if($this->data['user_id'] != login_get_user())
+			{
+				$this->set_id(NULL);
+				return 1;
+			}
+			return 0;
+		}
+		
+		if(!empty($this->data))
+		{
+			foreach($this->data as $key => $val)
+			{
+				if($val['public']!=true && $val['user_id'] != login_get_user())
+				{
+					unset($this->data[$key]);
+				}
+			}
+		}
+	}
+	
 	public function html_form_add($type)
 	{
 		$input=array();
