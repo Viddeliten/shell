@@ -48,6 +48,12 @@ class item extends base_class
 		$this->insert_from_arr($vals, $success_message, $fail_message);
 	}
 	
+	public function set_criteria($criteria)
+	{
+		$criteria['type']=$this->type;
+		parent::set_criteria($criteria);
+	}
+	
 	public function set_name($name=NULL)
 	{
 		if($this->id==NULL)
@@ -60,6 +66,18 @@ class item extends base_class
 			return FALSE;
 		$this->update_from_arr(array("description" => $description));
 	}
+	public function set_public()
+	{
+		if($this->id==NULL)
+			return FALSE;
+		$this->update_from_arr(array("public" => true));
+	}
+	public function set_private()
+	{
+		if($this->id==NULL)
+			return FALSE;
+		$this->update_from_arr(array("public" => false));
+	}
 	
 	public function del($id=NULL)
 	{
@@ -70,6 +88,17 @@ class item extends base_class
 			return FALSE;
 		
 		$this->db->del($this->id, $this->table);
+	}
+	
+	public function load_users($user_id)
+	{
+		$criteria=array("user_id" => $user_id);
+		$this->set_criteria($criteria);
+	}
+	public function load_public()
+	{
+		$criteria=array("public" => true);
+		$this->set_criteria($criteria);
 	}
 	
 	public function html_form_add($type)

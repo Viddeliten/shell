@@ -63,7 +63,7 @@ function html_link($url, $text, $class=NULL, $target="_self")
 function html_card($card_link="", $card_link_text="Go somewhere", $card_title="", $card_text="", $img_source=NULL, $image_alt="Image")
 {
 	if($card_link!="" && $card_link_text!="")
-		$card_text.='<a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a>';
+		$card_text.='<div><a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a></div>';
 	if($card_link!="" && $card_link_text=="")
 	{
 		$card_title=html_link($card_link, $card_title);
