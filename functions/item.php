@@ -48,8 +48,11 @@ class item extends base_class
 		$this->insert_from_arr($vals, $success_message, $fail_message);
 	}
 	
-	public function set_criteria($criteria)
+	public function set_criteria($criteria = NULL)
 	{
+		if($criteria == NULL)
+			$criteria = array();
+		
 		$criteria['type']=$this->type;
 		parent::set_criteria($criteria);
 	}
@@ -129,21 +132,35 @@ class item extends base_class
 		}
 	}
 	
+	public function html_input_fields()
+	{
+		$input=array();
+		
+		if($this->id)
+			$input[]=html_form_input("type_hidden", "", "hidden", "id", $this->id);
+		
+		$input_id="name_text";
+		$label=_("Name");
+		$type="text";
+		$name="name"; 
+		$value=(isset($this->data['name']) ? $this->data['name'] : "");
+		$placeholder=_("Name");
+		$input[]=html_form_input($input_id, $label, $type, $name, $value, $placeholder); //, $input_class=NULL, $helptext=NULL, $group_class=NULL, $onchange=NULL, $required=FALSE);
+		
+		$input[]=html_form_textarea("description_textarea", _("Description"), "description", (isset($this->data['description']) ? $this->data['description'] :""), _("Description"));
+		
+		return $input;
+	}
+	
 	public function html_form_add($type)
 	{
 		$input=array();
 		
 		$input[]=html_form_input("type_hidden", "", "hidden", "type", $type);
 		
-		$input_id="name_text";
-		$label=_("Name");
-		$type="text";
-		$name="name"; 
-		$value="";
-		$placeholder=_("Name");
-		$input[]=html_form_input($input_id, $label, $type, $name, $value, $placeholder); //, $input_class=NULL, $helptext=NULL, $group_class=NULL, $onchange=NULL, $required=FALSE);
+		$item = new item($type);
 		
-		$input[]=html_form_textarea("description_textarea", _("Description"), "description", "", _("Description"));
+		$input = array_merge($input, $item->html_input_fields());
 		
 		$input[]=html_form_button("item_create", _("Create"), "success");
 		return html_form("post", $input); //, $multipart=FALSE, $all_inline=FALSE);

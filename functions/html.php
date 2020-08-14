@@ -492,9 +492,9 @@ function html_button($button_text, $class="btn btn-default", $onclick=NULL, $but
 			.'</button>';
 }
 
-function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE)
+function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE, $action=NULL)
 {
-    $r='<form method="'.$method.'">';
+    $r='<form method="'.$method.'" '.($action!=NULL ? 'action="'.$action.'"' : '').'>';
     if(!empty($inputs))
     {
 		if($all_inline)
