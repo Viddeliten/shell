@@ -68,7 +68,7 @@ class item extends base_class
 		if($this->id==NULL)
 			return FALSE;
 		$this->update_from_arr(array("description" => $description));
-	}
+	}	
 	public function set_public()
 	{
 		if($this->id==NULL)
@@ -80,6 +80,24 @@ class item extends base_class
 		if($this->id==NULL)
 			return FALSE;
 		$this->update_from_arr(array("public" => false));
+	}
+	
+	public function set_value($name, $data_type, $value)
+	{
+		$values=array(	"item_id"			=>	$this->id,
+				"name"				=>	$name,
+				$data_type	=>	$value
+			);
+		$this->db->upsert_from_array(PREFIX."item_value", $values);
+	}
+	
+	public function load_value($name, $data_type)
+	{
+		$values=array(	"item_id"			=>	$this->id,
+				"name"				=>	$name
+			);
+		$result=$this->db->get_from_array(PREFIX."item_value", $values, true);
+		return $result[$data_type];
 	}
 	
 	public function del($id=NULL)
