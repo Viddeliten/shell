@@ -243,7 +243,10 @@ function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=N
 }
 function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $row_class=NULL)
 {
-	$nr=count($elements);
+    if(is_array($elements) && !empty($elements))
+        $nr=count($elements);
+    else
+        $nr=0;
 	
 	if($nr>=$max_columns)
 		$columns=$max_columns;
