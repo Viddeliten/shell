@@ -9,9 +9,15 @@ function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id
 	return html_tag_text_ref($tag_type, $the_text, $class, $get_link_titles, $div_id, $html_format_text);
 }
 
-function html_img($source, $alt="image", $height=NULL, $width=NULL, $class="")
+function html_img($source, $alt="image", $height=NULL, $width=NULL, $class="", $onerror=NULL)
 {
-	return '<img src="'.$source.'" alt="'.$alt.'" '.($height!=NULL ? ' height="'.$height.'"': "").($width!=NULL ? ' width="'.$width.'"': "").' class="'.$class.'"/>';
+    
+	return '<img  src="'.$source.'"'.
+                ' alt="'.$alt.'" '.
+                ($height!=NULL ? ' height="'.$height.'"': "").
+                ($width!=NULL ? ' width="'.$width.'"': "").
+                ($onerror!=NULL ? ' onerror="'.$onerror.'"': "").
+                ' class="'.$class.'"/>';
 }
 
 function html_safe($string, $get_link_titles=FALSE)
@@ -57,7 +63,7 @@ function html_link($url, $text, $class=NULL, $target="_self")
 function html_card($card_link="", $card_link_text="Go somewhere", $card_title="", $card_text="", $img_source=NULL, $image_alt="Image")
 {
 	if($card_link!="" && $card_link_text!="")
-		$card_text.='<a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a>';
+		$card_text.='<div><a href="'.$card_link.'" class="btn btn-primary">'.$card_link_text.'</a></div>';
 	if($card_link!="" && $card_link_text=="")
 	{
 		$card_title=html_link($card_link, $card_title);
@@ -237,7 +243,10 @@ function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=N
 }
 function html_row($min_columns, $max_columns, $elements, $element_class=NULL, $row_class=NULL)
 {
-	$nr=count($elements);
+    if(is_array($elements) && !empty($elements))
+        $nr=count($elements);
+    else
+        $nr=0;
 	
 	if($nr>=$max_columns)
 		$columns=$max_columns;
@@ -486,9 +495,9 @@ function html_button($button_text, $class="btn btn-default", $onclick=NULL, $but
 			.'</button>';
 }
 
-function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE)
+function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE, $action=NULL)
 {
-    $r='<form method="'.$method.'">';
+    $r='<form method="'.$method.'" '.($action!=NULL ? 'action="'.$action.'"' : '').'>';
     if(!empty($inputs))
     {
 		if($all_inline)

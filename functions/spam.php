@@ -1,12 +1,17 @@
 <?php
 
-define('SPAM_POINTS',5);
+define('SPAM_POINTS',0);
 define('SPAM_NR_TO_CALC',1500);
 define('SPAM_NR_TO_ADMIN',20);
+define('SPAM_REMOVE_TIME_SHORT',"1 month");
+define('SPAM_REMOVE_TIME_LONG',"3 month");
 
 function spam_receive()
 {
 	login_check_logged_in_mini();
+    
+    if(function_exists("spam_custom_receive"))
+        spam_custom_receive();
 	
 	//`spam_id``user``IP``type`
 	
@@ -140,14 +145,20 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 	spam_calculate(SPAM_NR_TO_CALC,"comment");
 	spam_calculate(SPAM_NR_TO_CALC,"feedback");
 	spam_calculate(SPAM_NR_TO_CALC,"FAQ");
+    
+    if(function_exists("spam_custom_calculate"))
+        spam_custom_calculate(SPAM_NR_TO_CALC);
 	
-	spam_remove_old("comment", "1 year");
-	spam_remove_old("feedback", "1 year");
-	spam_remove_old("FAQ", "1 year");
+	spam_remove_old("comment", SPAM_REMOVE_TIME_SHORT, 2);
+	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORT, 2);
+	spam_remove_old("FAQ", SPAM_REMOVE_TIME_SHORT, 2);
+	spam_remove_old("comment", SPAM_REMOVE_TIME_LONG, 1);
+	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONG, 1);
+	spam_remove_old("FAQ", SPAM_REMOVE_TIME_LONG, 1);
 	
 	//Visa en lista på kommentarer med lägst poäng
 	echo "<h2>Comments</h2>";
-	$sql="SELECT id, spam_score, is_spam, comment FROM ".PREFIX."comment WHERE is_spam>-02 AND is_spam<2 ORDER BY spam_score ASC, added ASC LIMIT 0,".sql_safe($nr).";";
+	$sql="SELECT id, spam_score, is_spam, comment FROM ".PREFIX."comment WHERE is_spam>-02 AND is_spam<2 ORDER BY IFNULL(spam_score,0) ASC, added ASC LIMIT 0,".sql_safe($nr).";";
 	// echo "<br />DEBUG1018: $sql";
 	if($cc=mysql_query($sql))
 	{
@@ -155,6 +166,7 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 		echo "<input type=\"hidden\" name=\"type\" value=\"comment\">";
 		while($c=mysql_fetch_array($cc))
 		{
+
 			echo "<p><input type=\"checkbox\" name=\"id[]\" value=\"".$c['id']."\"> <a href=\"".spam_get_link($c['id'], "comment")."\">[".$c['spam_score']."]</a>:  ".
 						$c['comment'].
 						" <a href=\"".comment_get_link_url($c['id'], NULL, $notext)."\">[...]</a></p>";
@@ -168,7 +180,7 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 	
 	//Visa en lista på feedback med lägst poäng
 	echo "<h2>feedback</h2>";
-	$sql="SELECT id, spam_score, is_spam, subject, text FROM ".PREFIX."feedback WHERE is_spam>-02 AND is_spam<2 ORDER BY spam_score ASC, created ASC LIMIT 0,".sql_safe($nr).";";
+	$sql="SELECT id, spam_score, is_spam, subject, text FROM ".PREFIX."feedback WHERE is_spam>-02 AND is_spam<2 ORDER BY IFNULL(spam_score,0) ASC, created ASC LIMIT 0,".sql_safe($nr).";";
 	// echo "<br />DEBUG1018: $sql";
 	if($cc=mysql_query($sql))
 	{
@@ -188,7 +200,7 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 	}
 	//Visa en lista på FAQ med lägst poäng
 	echo "<h2>Help!</h2>";
-	$sql="SELECT id, spam_score, is_spam, subject, text FROM ".PREFIX."FAQ WHERE is_spam>-02 AND is_spam<2 ORDER BY spam_score ASC, created ASC LIMIT 0,".sql_safe($nr).";";
+	$sql="SELECT id, spam_score, is_spam, subject, text FROM ".PREFIX."FAQ WHERE is_spam>-02 AND is_spam<2 ORDER BY IFNULL(spam_score,0) ASC, created ASC LIMIT 0,".sql_safe($nr).";";
 	// echo "<br />DEBUG1018: $sql";
 	if($cc=mysql_query($sql))
 	{
@@ -220,9 +232,14 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 	else if($specific_id!=NULL)
 		$sql="SELECT id, spam_score, is_spam, text, user, IP FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if(!strcmp($type, "comment"))
-		$sql="SELECT id, user, IP, ".sql_safe($type)." as text FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 OR is_spam=1 OR is_spam=-1 ORDER BY spam_score ASC LIMIT 0,".sql_safe($nr).";";
+		$sql="SELECT id, user, IP, ".sql_safe($type)." as text FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 
+            OR is_spam=1 OR is_spam=-1 
+            ORDER BY IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
 	else
-		$sql="SELECT id, user, IP, text FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 OR is_spam=1 OR is_spam=-1 ORDER BY spam_score ASC LIMIT 0,".sql_safe($nr).";";
+		$sql="SELECT id, user, IP, text FROM ".PREFIX.sql_safe($type)." WHERE 
+            is_spam=0 
+            OR is_spam=1 OR is_spam=-1 
+            ORDER BY  IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
 	// echo "<br />DEBUG0904: $sql";
 	if($cc=mysql_query($sql))
 	{
@@ -263,7 +280,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 			//Kolla om det finns länkar eller dumma ord
 			$words = 0;  
 			$text = strtolower($c['text']); // lowercase it to speed up the loop
-			$myDict = array("http","<",">","://","penis","pill","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription"); 
+			$myDict = array("http","<",">","://","penis","pill","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription", "hydroxy", "chloroquin", "corona", "virus", "pandemic"); 
 			foreach($myDict as $word)
 			{
 				$count = substr_count($text, $word);
@@ -309,13 +326,11 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 					echo "<input type=\"submit\" name=\"this_is_not_spam\" value=\"Mark as not spam\">";
 				echo "</form>";
 			}
-			else
-			{			
-				//mata in i databas
-				$sql="UPDATE ".PREFIX.sql_safe($type)." SET spam_score=$points, is_spam=$is_spam WHERE id=".$c['id'].";";
-				mysql_query($sql);
-				// echo "<br />DEBUG1850: $sql";
-			}
+
+            //mata in i databas
+            $sql="UPDATE ".PREFIX.sql_safe($type)." SET spam_score=".ceil($points).", is_spam=$is_spam WHERE id=".$c['id'].";";
+            mysql_query($sql);
+            // echo "<br />DEBUG1850: $sql";
 		}
 	}	
 }
@@ -327,7 +342,7 @@ function spam_show_individual_calculation()
 	spam_calculate(0, sql_safe($_GET['type']), sql_safe($_GET['id']), 1);
 }
 
-function spam_remove_old($type, $time_str)
+function spam_remove_old($type, $time_str, $is_spam)
 {
 	if($type=="comment")
 		$created="added";
@@ -337,10 +352,13 @@ function spam_remove_old($type, $time_str)
 		$created="created";
 
 	$sql="DELETE FROM ".PREFIX.sql_safe($type)." 
-	WHERE is_spam>0 
+	WHERE is_spam>=".sql_safe($is_spam)." 
 	AND $created<'".date("YmdHis", strtotime("- ".$time_str))."';";
 	// echo "<br />DEBUG2258 ".$sql;
 	mysql_query($sql);
+    $nr=mysql_affected_rows();
+    if($nr>0)
+        message_print_message(sprintf(_("Removed %s %s messages marked as spam (%s)."), $nr, $type, $is_spam));
 }
 
 function spam_get_link($id, $type)

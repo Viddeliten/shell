@@ -107,6 +107,7 @@ else
   notice_receive();
   privmess_receive();
   spam_receive();
+  item::receive();
 
   if(isset($_SESSION[PREFIX.'user_id']))
 	usermessage_check_messages($_SESSION[PREFIX.'user_id']);
