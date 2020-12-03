@@ -295,14 +295,14 @@ if(!function_exists("mysql_query"))
           parent::__construct($db_server, $db_database, $db_username, $db_password);
         }
 
-        public static function getInstance(){
+        public static function getInstance($db_server=NULL, $db_database=NULL, $db_username=NULL, $db_password=NULL){
           if (!self::$instance){
-            self::$instance = new static_db();
+            self::$instance = new static_db($db_server, $db_database, $db_username, $db_password);
           }
           return self::$instance ;
         }
     }
-
+	
 	function mysql_query($query)
 	{
         $connection = static_db::getInstance();
