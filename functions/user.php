@@ -213,6 +213,9 @@ function user_exists($id)
 
 function user_get_admin($id)
 {
+	if($id===NULL)
+		return -1;
+	
 	if($id==0)
 		return 5;
 		
