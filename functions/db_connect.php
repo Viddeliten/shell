@@ -22,9 +22,11 @@ function db_close($conn)
 	@mysql_close($conn);
 }
 
+/**
+ * Prints sql results in a table
+ **/
 function sql_print_results($alldata)
 {
-	//Prints sql results in a table
 
 	echo "<table class=\"small table table-striped\"><tr>";
 	for($i=0;$i<mysql_num_fields($alldata);$i++)

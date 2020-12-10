@@ -309,6 +309,12 @@ if(!function_exists("mysql_query"))
 		return $connection->query($query);
 	}
     
+    function mysql_insert($query)
+	{
+        $connection = static_db::getInstance();
+		return $connection->insert($query);
+	}
+    
     function mysql_error()
     {
         $connection = static_db::getInstance();
@@ -354,6 +360,26 @@ if(!function_exists("mysql_query"))
     {
         // ignore
     }
+	
+	function mysql_num_fields($result)
+	{
+		return $result->field_count;
+	}
+    
+    function mysql_num_rows($result)
+    {
+        return mysql_num_fields($result);
+    }
+	
+	function mysql_field_name($result, $position)
+	{
+		return mysqli_fetch_field_direct($result, $position)->name;
+	}
+	
+	function mysql_fetch_row($result)
+	{
+		return $result->fetch_row();
+	}
 }
 
 ?>

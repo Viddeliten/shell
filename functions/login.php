@@ -63,14 +63,17 @@ function login_check($oauth_success_user_id=NULL, $identifying_id=NULL, $oauth_n
 		// echo "<br />DEBUG0922: $sql";
 		if($post=mysql_query($sql))
 		{
-			//Det finns en användare med det användarnamnet!
 			$user=mysql_fetch_assoc($post);
-			$login=true;
+			if(!empty($user)) //Det finns en användare med det användarnamnet!
+				$login=true;
 		}
 		else echo "No user";
 		
 		//Om det inte fanns, eller lösenordet inte stämmer, eller om e-posten inte stämde (hur fabian nu det ska kunna hända)
-		if(!$login && strcmp($user['password'],crypt($_POST['password'], $user['id'].$user['email'])) || strcmp($user['username'],$username)) //Om det var inkorrekt
+		if(	!$login 
+			&& !empty($user)
+			&& (strcmp($user['password'],crypt($_POST['password'], $user['id'].$user['email']))
+			|| strcmp($user['username'],$username))) //Om det var inkorrekt
 		{
 			//<-- Felaktig inloggning -->
 			login_logout();
@@ -79,7 +82,8 @@ function login_check($oauth_success_user_id=NULL, $identifying_id=NULL, $oauth_n
 		
 		//Om det var korrekt
 		// if($login && !strcmp($user['password'],md5($_POST['password'])) && !strcmp($user['email'],$_POST['email']))
-		if(($login && $oauth_success_user_id!=NULL) || (!strcmp($user['password'],crypt($_POST['password'], $user['id'].$user['email'])) && !strcmp($user['username'],$username)))
+		if(($login && $oauth_success_user_id!=NULL) 
+			|| (!empty($user) && !strcmp($user['password'],crypt($_POST['password'], $user['id'].$user['email'])) && !strcmp($user['username'],$username)))
 		{
 			//<-- Korrekt inloggning. Hälsa användaren välkommen -->
 			//<-- skapa en session med användarid't, så att användaren kan smurfa runt -->

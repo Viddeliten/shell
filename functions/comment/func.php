@@ -1,6 +1,8 @@
 <?php
 
 require_once(ABS_PATH."/functions/news.php");
+require_once(ABS_PATH."/functions/class_base.php");
+require_once(ABS_PATH."/functions/class_db.php");
 
 class comment extends base_class
 {
