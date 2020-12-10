@@ -149,12 +149,12 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
     if(function_exists("spam_custom_calculate"))
         spam_custom_calculate(SPAM_NR_TO_CALC);
 	
-	spam_remove_old("comment", SPAM_REMOVE_TIME_SHORT, 2);
-	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORT, 2);
-	spam_remove_old("FAQ", SPAM_REMOVE_TIME_SHORT, 2);
-	spam_remove_old("comment", SPAM_REMOVE_TIME_LONG, 1);
-	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONG, 1);
-	spam_remove_old("FAQ", SPAM_REMOVE_TIME_LONG, 1);
+	spam_remove_old("comment", SPAM_REMOVE_TIME_SHORT, 2, 200);
+	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORT, 2, 200);
+	spam_remove_old("FAQ", SPAM_REMOVE_TIME_SHORT, 2, 200);
+	spam_remove_old("comment", SPAM_REMOVE_TIME_LONG, 1, 50);
+	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONG, 1, 50);
+	spam_remove_old("FAQ", SPAM_REMOVE_TIME_LONG, 1, 50);
 	
 	//Visa en lista på kommentarer med lägst poäng
 	echo "<h2>Comments</h2>";
@@ -342,7 +342,7 @@ function spam_show_individual_calculation()
 	spam_calculate(0, sql_safe($_GET['type']), sql_safe($_GET['id']), 1);
 }
 
-function spam_remove_old($type, $time_str, $is_spam)
+function spam_remove_old($type, $time_str, $is_spam, $spam_score=NULL)
 {
 	if($type=="comment")
 		$created="added";
@@ -359,6 +359,18 @@ function spam_remove_old($type, $time_str, $is_spam)
     $nr=mysql_affected_rows();
     if($nr>0)
         message_print_message(sprintf(_("Removed %s %s messages marked as spam (%s)."), $nr, $type, $is_spam));
+
+	if($spam_score!==NULL)
+	{
+		$sql="DELETE FROM ".PREFIX.sql_safe($type)." 
+		WHERE spam_score>=".sql_safe($spam_score)." 
+		AND $created<'".date("YmdHis", strtotime("- ".$time_str))."';";
+		// echo "<br />DEBUG2258 ".$sql;
+		mysql_query($sql);
+		$nr=mysql_affected_rows();
+		if($nr>0)
+			message_print_message(sprintf(_("Removed %s %s messages with spam score >= %s."), $nr, $type, $spam_score));
+	}
 }
 
 function spam_get_link($id, $type)
