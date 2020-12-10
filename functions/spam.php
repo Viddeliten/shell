@@ -363,7 +363,8 @@ function spam_remove_old($type, $time_str, $is_spam, $spam_score=NULL)
 	if($spam_score!==NULL)
 	{
 		$sql="DELETE FROM ".PREFIX.sql_safe($type)." 
-		WHERE spam_score>=".sql_safe($spam_score)." 
+		WHERE spam_score>=".sql_safe($spam_score)."
+		AND is_spam>=1		
 		AND $created<'".date("YmdHis", strtotime("- ".$time_str))."';";
 		// echo "<br />DEBUG2258 ".$sql;
 		mysql_query($sql);
