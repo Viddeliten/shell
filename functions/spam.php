@@ -3,7 +3,7 @@
 define('SPAM_POINTS',0);
 define('SPAM_NR_TO_CALC',1500);
 define('SPAM_NR_TO_ADMIN',20);
-define('SPAM_REMOVE_TIME_SHORT',"1 month");
+define('SPAM_REMOVE_TIME_SHORT',"1 week");
 define('SPAM_REMOVE_TIME_LONG',"3 month");
 
 function spam_receive()

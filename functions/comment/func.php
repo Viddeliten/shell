@@ -42,28 +42,33 @@ function comment_receive()
 	
 	if(isset($_POST['addcomment']))
 	{
-		/********************************************/
-		/*				Captcha check				*/
-		/********************************************/
-		if(login_check_logged_in_mini()<1 && isset($_POST['g-recaptcha-response']))
-			$response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
-
-		if(login_check_logged_in_mini()<1 && (!isset($response) || $response['success'] != true))
-		{
-			if(isset($response) && !strcmp($response['error-codes'][0],'missing-input-response'))
-			{
-				//Human was a robot or forgot to check captcha
-				add_error(_("Comment could not be posted.<br />Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
-			}
-			else
-				add_error(_("Feedback could not be posted.<br />You do not appear to be human. Feeling ok?"));
-		}
-		else if(!is_numeric($_POST['id']))
+		
+		if(!is_numeric($_POST['id']))
 		{
 			message_add_error(sprintf(_("Unable to find instance to comment on. Invalid id '%s'"), $_POST['id']));
 		}
-		else
+		else if(login_check_logged_in_mini()>0 || login_captcha_check())
 		{
+	
+	// isset($_POST['g-recaptcha-response']))
+			// $response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+
+		// if(login_check_logged_in_mini()<1 && (!isset($response) || $response['success'] != true))
+		// {
+			// if(isset($response) && !strcmp($response['error-codes'][0],'missing-input-response'))
+			// {
+				// Human was a robot or forgot to check captcha
+				// add_error(_("Comment could not be posted.<br />Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
+			// }
+			// else
+				// add_error(_("Feedback could not be posted.<br />You do not appear to be human. Feeling ok?"));
+		// }
+		// else if(!is_numeric($_POST['id']))
+		// {
+			// message_add_error(sprintf(_("Unable to find instance to comment on. Invalid id '%s'"), $_POST['id']));
+		// }
+		// else
+		// {
 			// Captcha or login passed
 
 			//Check login
@@ -81,7 +86,7 @@ function comment_receive()
 			$sql="INSERT INTO ".PREFIX."comment SET
 			comment_type='".sql_safe($_POST['type'])."',
 			comment_on=".sql_safe($_POST['id']).",
-			user=".$user.",
+			user=".sql_safe($user).",
 			comment='".sql_safe($_POST['comment'])."',
 			added='".date("YmdHis")."',
 			IP='".sql_safe($IP)."';";
@@ -116,8 +121,6 @@ function comment_receive()
 			}
 		}
 	}
-	else
-		// echo "<br />DEBUG1832: !isset(\$_POST['addcomment']))";
 	
 	if($inloggad>1)
 	{

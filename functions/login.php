@@ -17,8 +17,17 @@ function login_receive()
 
 function login_captcha_check()
 {
-	if(isset($_POST['g-recaptcha-response']))
+	if(isset($_POST['g-recaptcha-response']) && $_POST['g-recaptcha-response']!="")
+	{
 		$response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+	}
+	else
+	{
+		add_error(_("Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
+		return FALSE;
+	}
+	
+	trigger_error("postdata, recaptcha present: ".print_r($_POST, 1), E_USER_WARNING);
 	
 	if(!isset($response) || !isset($response['success']) || !$response['success'])
 	{
@@ -31,8 +40,16 @@ function login_captcha_check()
 		add_error(_("Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
 		return FALSE;
 	}
+	else if(!empty($response['error-codes']))
+	{
+		add_error(print_r($response['error-codes'],1));
+		return FALSE;
+	}
 	else
+	{
+		trigger_error("response ok: ".print_r($response, 1), E_USER_WARNING);
 		return TRUE;
+	}
 }
 
 /************************************************************************/
