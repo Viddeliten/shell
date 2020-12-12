@@ -226,7 +226,6 @@ function news_search_get($search_string)
 function news_get($nr=4, $offset=0)
 {
 	$db=new db_class();
-	$search_string=strtolower($search_string); // To make search case insensitive
 	
 	$sql="SELECT DISTINCT news.id, news.author, news.published, news.headline, news.text
 	FROM news
