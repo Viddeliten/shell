@@ -42,6 +42,12 @@ function comment_receive()
 	
 	if(isset($_POST['addcomment']))
 	{
+		// If the comment itself is empty, there was no comment. Tell the user everything is fine and skip inserting it. Because it will be a spammer that entered it, I think you'll find.
+		if(!isset($_POST['comment']) || $_POST['comment'] == NULL || $_POST['comment']=="")
+		{
+			message_add_success_message(_("Thanks! Everything is fine."));
+			return TRUE;
+		}
 		
 		if(!is_numeric($_POST['id']))
 		{
@@ -49,28 +55,6 @@ function comment_receive()
 		}
 		else if(login_check_logged_in_mini()>0 || login_captcha_check())
 		{
-	
-	// isset($_POST['g-recaptcha-response']))
-			// $response=json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".ReCaptcha_privatekey."&response=".$_POST['g-recaptcha-response']."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
-
-		// if(login_check_logged_in_mini()<1 && (!isset($response) || $response['success'] != true))
-		// {
-			// if(isset($response) && !strcmp($response['error-codes'][0],'missing-input-response'))
-			// {
-				// Human was a robot or forgot to check captcha
-				// add_error(_("Comment could not be posted.<br />Seems you forgot to check captcha. Hit 'back' in your browser and try again!"));
-			// }
-			// else
-				// add_error(_("Feedback could not be posted.<br />You do not appear to be human. Feeling ok?"));
-		// }
-		// else if(!is_numeric($_POST['id']))
-		// {
-			// message_add_error(sprintf(_("Unable to find instance to comment on. Invalid id '%s'"), $_POST['id']));
-		// }
-		// else
-		// {
-			// Captcha or login passed
-
 			//Check login
 			if(login_check_logged_in_mini()>0)
 			{
@@ -80,6 +64,7 @@ function comment_receive()
 			{
 				$user='NULL';
 			}
+
 			$IP=$_SERVER['REMOTE_ADDR'];
 				
 			//Lägg till en kommentar
