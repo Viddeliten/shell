@@ -1139,7 +1139,12 @@ function feedback_count_comments()
 	//Man får ju börja med att sätta allt till noll...
 	mysql_query("UPDATE ".PREFIX."feedback SET comments=0;");
 	
-	$sql="SELECT id FROM ".PREFIX."feedback WHERE resolved IS NULL checked_in IS NULL AND not_implemented IS NULL;";
+	$sql="SELECT 
+		id 
+	FROM ".PREFIX."feedback 
+	WHERE resolved IS NULL 
+	AND checked_in IS NULL 
+	AND not_implemented IS NULL;";
 	 // echo "<br />DEBUG2309: $sql";
 	if($cc=mysql_query($sql))
 	{
@@ -1526,7 +1531,8 @@ function feedback_display_list_checked_in($nr, $headline, $headlinesize, $displa
 
 function feedback_display_list_resolved($nr, $headline, $headlinesize)
 {
-	$sql="SELECT id
+	$sql="SELECT id,
+	".REL_STR." as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND resolved IS NOT NULL
@@ -1579,7 +1585,8 @@ function feedback_display_headline_list($sql, $headline, $headlinesize, $display
 
 function feedback_display_list_not_implemented($nr, $headline, $headlinesize)
 {
-	$sql="SELECT id
+	$sql="SELECT id,
+	".REL_STR." as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND not_implemented IS NOT NULL

@@ -134,12 +134,13 @@ class db_class
 	}
 
     public function query($query)
-    { 
+    {
 		$result=$this->connection->query($query);
-		if($result)
+		
+		if($result && $this->connection->error == NULL)
         {
 			$this->error=NULL;
-            $this->affected_rows=$this->connection->affected_rows;
+            $this->affected_rows = ($this->connection->affected_rows == NULL ? 0 : $this->connection->affected_rows);
             if($this->connection->insert_id)
                 $this->insert_id=$this->connection->insert_id;
         }
@@ -306,13 +307,26 @@ if(!function_exists("mysql_query"))
 	function mysql_query($query)
 	{
         $connection = static_db::getInstance();
-		return $connection->query($query);
+		$result = $connection->query($query);
+		if($connection->error!=NULL)
+		{
+			// Trigger a warning, because we expect to know about it if it does not go well
+			trigger_error("
+SQL Error! ".$connection->error, E_USER_WARNING);
+		}
+		return $result;
 	}
     
     function mysql_insert($query)
 	{
         $connection = static_db::getInstance();
 		return $connection->insert($query);
+	}
+
+    function mysql_upsert_from_array($table, $values)
+	{
+        $connection = static_db::getInstance();
+		return $connection->upsert_from_array($table, $values);
 	}
     
     function mysql_error()
@@ -334,6 +348,9 @@ if(!function_exists("mysql_query"))
                 $i++;
             }
         }
+		else
+			return FALSE;
+			
         return $assoc;
     }
     
@@ -347,7 +364,7 @@ if(!function_exists("mysql_query"))
     function mysql_affected_rows()
     {
         $connection = static_db::getInstance();
-		return $connection->affected_rows;
+		return ($connection->affected_rows == NULL ? 0 : $connection->affected_rows);
     }
     
     function mysql_insert_id()

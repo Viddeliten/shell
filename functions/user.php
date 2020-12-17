@@ -125,6 +125,9 @@ function user_get_all($type, $limit=NULL, $order_by="RAND()")
 
 function user_get_name($id)
 {
+	if($id == NULL)
+		return NULL;
+		
 	$sql="SELECT username FROM ".PREFIX."user WHERE id=".sql_safe($id).";";
 //	echo "<br />$sql";
 	if($hh=mysql_query($sql))
@@ -820,10 +823,15 @@ function user_friend_get_accepted($user_id, $sortby, $order)
 		fh.timestamp as accepted,
 		user.username as name,
 		user.lastlogin
-	FROM user_friend
-	INNER JOIN user ON user.id=IF(user_friend.requested_by=".sql_safe($user_id).",user_friend.user,user_friend.requested_by)
-	LEFT JOIN (SELECT MAX(id) as id, user_friend_id FROM user_friend_history GROUP BY user_friend_id) fh2 ON fh2.user_friend_id=user_friend.id
-	LEFT JOIN user_friend_history fh ON fh.user_friend_id=user_friend.id AND fh.id=fh2.id
+	FROM ".PREFIX."user_friend user_friend
+	INNER JOIN ".PREFIX."user user ON user.id=IF(user_friend.requested_by=".sql_safe($user_id).",user_friend.user,user_friend.requested_by)
+	LEFT JOIN (SELECT MAX(id) as id, user_friend_id 
+				FROM ".PREFIX."user_friend_history user_friend_history 
+				GROUP BY user_friend_id) fh2 
+		ON fh2.user_friend_id=user_friend.id
+	LEFT JOIN ".PREFIX."user_friend_history fh 
+		ON fh.user_friend_id=user_friend.id 
+		AND fh.id=fh2.id
 	WHERE (user_friend.requested_by=".sql_safe($user_id)." OR user_friend.user=".sql_safe($user_id).")
 	AND user_friend.status='ACCEPTED'
 	".($sortby!="" ? "ORDER BY ".sql_safe($sortby)." ".sql_safe($order) : "").";";
@@ -932,7 +940,7 @@ function user_friend_get_request_button($user_id)
 
 function user_friend_get_requests($user_id)
 {
-	$sql="SELECT * FROM user_friend WHERE user=".sql_safe($user_id)." AND status='NEW';";
+	$sql="SELECT * FROM ".PREFIX."user_friend WHERE user=".sql_safe($user_id)." AND status='NEW';";
 	$return=array();
 	if($rr=mysql_query($sql))
 	{

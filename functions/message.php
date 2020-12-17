@@ -79,7 +79,7 @@ function add_error($error_mess)
 }
 function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=FALSE, $generate_warning_on_fail=FALSE, $return_message_text=FALSE)
 {
-	if(mysql_query($sql))
+	if(@mysql_query($sql))
 	{
 		if($success_message!=NULL)
 		{
@@ -116,7 +116,7 @@ function message_try_mysql($sql,$error_code, $success_message=NULL, $print_now=F
 }
 function message_trigger_warning($error_code, $sql, $mysql_error)
 {
-	trigger_error (sprintf(_("Error code %s	SQL: %s	ERROR: %s"),$error_code, $sql, $mysql_error));
+	trigger_error (sprintf(_("Error code %s	SQL: %s	ERROR: %s"),$error_code, $sql, $mysql_error), E_USER_WARNING);
 }
 function add_error_mysql($error_code,$sql, $mysql_error)
 {
