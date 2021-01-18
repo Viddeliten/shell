@@ -1148,7 +1148,7 @@ function feedback_count_comments()
 	//Man får ju börja med att sätta allt till noll...
 	mysql_query("UPDATE ".PREFIX."feedback SET comments=0;");
 	
-	$sql="SELECT id FROM ".PREFIX."feedback WHERE resolved IS NULL checked_in IS NULL AND not_implemented IS NULL AND is_spam < 1 AND (spam_score IS NULL OR spam_score < 1);";
+	$sql="SELECT id FROM ".PREFIX."feedback WHERE resolved IS NULL AND checked_in IS NULL AND not_implemented IS NULL AND is_spam < 1 AND (spam_score IS NULL OR spam_score < 1);";
 	 // echo "<br />DEBUG2309: $sql";
 	if($cc=mysql_query($sql))
 	{
