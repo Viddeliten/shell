@@ -4,6 +4,8 @@
 #RewriteCond favicon.ico 
 #RewriteRule .* custom_content/favicon.ico [L]
 
+Header set X-FRAME-OPTIONS "deny"
+
 RewriteEngine On 
 Options +FollowSymLinks
 RewriteRule ^favicon.ico custom_content/favicon.ico [L]

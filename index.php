@@ -1,5 +1,7 @@
 <?php
 
+header( 'X-FRAME-OPTIONS: deny' );
+
 //Check for api call first
 require_once("functions/api.php");
 if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUEST['p']),"api"))
