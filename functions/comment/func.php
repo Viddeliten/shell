@@ -104,6 +104,9 @@ function comment_receive()
 				WHERE id=$id;";
 				mysql_query($sql);
 			}
+			
+			// calculate spam score for this new comment!
+			spam_calculate(0, "comment", $id);
 		}
 	}
 	
@@ -608,7 +611,7 @@ function comment_display_author_text($comment_id)
 
 function comment_count($type, $id)
 {
-	$sql="SELECT id FROM ".PREFIX."comment WHERE comment_type='".$type."' AND comment_on='".$id."' AND is_spam < 1;";
+	$sql="SELECT id FROM ".PREFIX."comment WHERE comment_type='".$type."' AND comment_on='".$id."' AND is_spam < 1 AND (spam_score IS NULL OR spam_score < 1);";
 	$return=0;
 	if($cc=mysql_query($sql))
 	{

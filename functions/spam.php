@@ -61,7 +61,7 @@ function spam_receive()
 			{
 			
 				$sql="UPDATE ".PREFIX.sql_safe($_POST['type'])."
-					SET is_spam=-2
+					SET is_spam=-2, spam_score=0
 					WHERE id=".sql_safe($s_id).";";
 				message_try_mysql($sql,
 					"084258", //Error code
