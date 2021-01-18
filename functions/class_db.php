@@ -348,6 +348,9 @@ if(!function_exists("mysql_query"))
     
     function mysql_fetch_array($result)
     {
+		if($result===NULL)
+			return NULL;
+		
         $assoc=$result->fetch_assoc();
         $return=array();
         $i=0;

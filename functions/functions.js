@@ -1,3 +1,133 @@
+function showhide(id)
+{
+   if(document.getElementById)
+   {
+      var obj = document.getElementById(id);
+   }
+   else if(document.all)
+   {
+      var obj = document.all(id);
+   }
+   
+   if(obj.style.display == 'none')
+   {
+      obj.style.display = '';
+   } else
+   {
+      obj.style.display = 'none';
+   }
+}
+
+function toggleshow(id)
+{
+   if(document.getElementById)
+   {
+      var obj = document.getElementById(id);
+   }
+   else if(document.all)
+   {
+      var obj = document.all(id);
+   }
+
+   obj.style.display = '';
+}
+
+function togglehide(id)
+{
+   if(document.getElementById)
+   {
+      var obj = document.getElementById(id);
+   }
+   else if(document.all)
+   {
+      var obj = document.all(id);
+   }
+   
+  obj.style.display = 'none';
+}
+
+function condShow(boxName,id)
+{
+	if( document.getElementById(boxName).checked==true)
+	{
+		toggleshow(id)
+	}
+	else
+	{
+		togglehide(id);
+	}
+} 
+
+function getCheckedBoxes(chkboxName) {
+  var checkboxes = document.getElementsByName(chkboxName);
+  var checkboxesChecked = [];
+  // loop over them all
+  for (var i=0; i<checkboxes.length; i++) {
+     // And stick the checked ones onto an array...
+     if (checkboxes[i].checked) {
+        checkboxesChecked.push(checkboxes[i].value);
+     }
+  }
+  // Return the array if it is non-empty, or null
+  return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+}
+
+function getCheckBoxes(chkboxName) {
+  var checkboxes = document.getElementsByName(chkboxName);
+  var checkboxesChecked = [];
+  // loop over them all
+  for (var i=0; i<checkboxes.length; i++) {
+     // And stick the checked ones onto an array...
+        checkboxesChecked.push(checkboxes[i].value);
+  }
+  // Return the array if it is non-empty, or null
+  return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+}
+
+function submit_delete_invoice_post(thisform, id)
+{
+	document.getElementById('delete_invoice_post_id').value=id;
+	// alert(form.delete_invoice_post_id.value + id);
+	thisform.submit();
+}
+
+function confirmation_delete(form_id, asking_text)
+{
+	if(asking_text === undefined) {
+        asking_text = 'Do you really want to delete? This cannot be undone.';
+    }
+	var answer = confirm(asking_text)
+	if (answer){
+		document.forms[form_id].submit();
+	}
+	else
+	{
+		void(0);
+	}
+}
+
+function confirmation_form(form_id, c_string)
+{
+	var answer = confirm(c_string)
+	if (answer){
+		document.forms[form_id].submit();
+	}
+	else
+	{
+		void(0);
+	}
+}
+
+function CheckAll(oFrm)
+{
+	els=oFrm.elements;
+	for (i=0;i<els.length;i++)
+	{
+		if(els[i].type=='checkbox')
+			els[i].checked=!els[i].checked;
+	}
+}
+
 function replace_html_div(div_id_to, path, async)
 {
 	if(path !== undefined)

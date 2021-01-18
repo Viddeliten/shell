@@ -161,6 +161,13 @@ function feedback_recieve()
 {
 	if(isset($_POST['postfeedback']) && $_POST['text']!="")
 	{
+		$forbidden_start=SITE_NAME." |";
+		if(!strcmp(substr( $_POST['subject'], 0, strlen($forbidden_start) ), $forbidden_start))
+		{
+			message_print_success(_("Thank you."));
+			return TRUE;
+		}
+		
 		/********************************************/
 		/*				Captcha check				*/
 		/********************************************/
@@ -219,6 +226,10 @@ function feedback_recieve()
 				WHERE id=$id;";
 				mysql_query($sql);
 			}
+			
+			// calculate spam score for this new feedback!
+			spam_calculate(0, "feedback", $id);
+
 		}
 	}
 		
@@ -361,7 +372,8 @@ function feedback_recieve()
 function feedback_show_all($return_html=FALSE, $user_id=NULL)
 {
 	ob_start();
-	feedback_count_children();
+	
+	// I could not find a better place for this
 	feedback_count_comments();
 	
 	if(isset($_REQUEST['page']))
@@ -568,9 +580,6 @@ function feedback_navtabs($active="main")
 
 function feedback_show()
 {
-	feedback_count_children();
-	feedback_count_comments();
-
 	echo feedback_navtabs((isset($_GET['s'])? $_GET['s'] : "main"));
 }
 
@@ -1139,12 +1148,7 @@ function feedback_count_comments()
 	//Man får ju börja med att sätta allt till noll...
 	mysql_query("UPDATE ".PREFIX."feedback SET comments=0;");
 	
-	$sql="SELECT 
-		id 
-	FROM ".PREFIX."feedback 
-	WHERE resolved IS NULL 
-	AND checked_in IS NULL 
-	AND not_implemented IS NULL;";
+	$sql="SELECT id FROM ".PREFIX."feedback WHERE resolved IS NULL AND checked_in IS NULL AND not_implemented IS NULL AND is_spam < 1 AND (spam_score IS NULL OR spam_score < 1);";
 	 // echo "<br />DEBUG2309: $sql";
 	if($cc=mysql_query($sql))
 	{
@@ -1531,8 +1535,7 @@ function feedback_display_list_checked_in($nr, $headline, $headlinesize, $displa
 
 function feedback_display_list_resolved($nr, $headline, $headlinesize)
 {
-	$sql="SELECT id,
-	".REL_STR." as rel
+	$sql="SELECT id
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND resolved IS NOT NULL
@@ -1585,8 +1588,7 @@ function feedback_display_headline_list($sql, $headline, $headlinesize, $display
 
 function feedback_display_list_not_implemented($nr, $headline, $headlinesize)
 {
-	$sql="SELECT id,
-	".REL_STR." as rel
+	$sql="SELECT id
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND not_implemented IS NOT NULL
@@ -2223,9 +2225,6 @@ function feedback_update($feedback_id,$column, $new_data)
 
 function feedback_get_array($from, $to)
 {
-	feedback_count_children();
-	feedback_count_plusone();
-	feedback_count_children();
 	$r=array();
 	if($ff=feedback_get_list_relevant($from, $to))
 	{
