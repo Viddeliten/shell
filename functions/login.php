@@ -165,7 +165,7 @@ function login_check($oauth_success_user_id=NULL, $identifying_id=NULL, $oauth_n
 							{
 								$_SESSION[PREFIX.'inloggad']=$u['level'];
 								setcookie("login",md5($_SESSION[PREFIX.'user_id']),time()+(60*15));
-								mysql_query("UPDATE ".PREFIX."user set lastlogin='".date("YmdHis")."', active=1 WHERE id='".$u['id']."'");
+								mysql_query("UPDATE ".PREFIX."user set lastlogin='".date("YmdHis")."', inactive=NULL WHERE id='".$u['id']."'");
 								return $_SESSION[PREFIX.'inloggad'];
 							}
 							else
@@ -251,7 +251,7 @@ function login_logout($reason_code=NULL)
 	//Uppdatera senast inloggning
 	if(isset($_SESSION[PREFIX.'user_id']))
 	{
-		mysql_query("UPDATE ".PREFIX."user set lastlogin='".date("YmdHis")."', active=1 WHERE id='".$_SESSION[PREFIX.'user_id']."'");
+		mysql_query("UPDATE ".PREFIX."user set lastlogin='".date("YmdHis")."', inactive=NULL WHERE id='".$_SESSION[PREFIX.'user_id']."'");
 
 		//Do not destroy session
 		unset($_SESSION[PREFIX.'user_id']);
