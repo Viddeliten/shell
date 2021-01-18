@@ -161,6 +161,13 @@ function feedback_recieve()
 {
 	if(isset($_POST['postfeedback']) && $_POST['text']!="")
 	{
+		$forbidden_start=SITE_NAME." |";
+		if(!strcmp(substr( $_POST['subject'], 0, strlen($forbidden_start) ), $forbidden_start))
+		{
+			message_print_success(_("Thank you."));
+			return TRUE;
+		}
+		
 		/********************************************/
 		/*				Captcha check				*/
 		/********************************************/
