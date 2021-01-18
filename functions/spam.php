@@ -233,11 +233,11 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 	
 	//Kommentarer
 	if($specific_id!=NULL && !strcmp($type, "comment"))
-		$sql="SELECT id, spam_score, is_spam, ".sql_safe($type)." as text, user, nick, url, IP, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
+		$sql="SELECT id, spam_score, is_spam, ".sql_safe($type)." as text, user, nick, url, IP, ".$subject.", comment_type, comment_on FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if($specific_id!=NULL)
 		$sql="SELECT id, spam_score, is_spam, text, user, nick, url, IP, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if(!strcmp($type, "comment"))
-		$sql="SELECT id, user, nick, url, is_spam,  IP, ".sql_safe($type)." as text, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 
+		$sql="SELECT id, user, nick, url, is_spam,  IP, ".sql_safe($type)." as text, ".$subject.", comment_type, comment_on FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 
             OR is_spam=1 OR is_spam=-1 
             ORDER BY IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
 	else
@@ -289,7 +289,35 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 			//Kolla om det finns länkar eller dumma ord
 			$words = 0;  
 			$text = strtolower($c['text']).strtolower($c['subject']).strtolower($c['nick']); // lowercase it to speed up the loop, also check both text and subject
-			$myDict = array("http","<",">","://","penis","pill","drug","abuse","cymbalta","xevil","blog","order","casino","impotence","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription", "hydroxy", "chloroquin", "corona", "virus", "pandemic","levitra"); 
+			$myDict = array("http","<",">","://","penis","pill","drug","abuse","cymbalta","xevil","blog","topic","adult","! bookmarked. ","hottest information","order","casino","impotence","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription", "hydroxy", "chloroquin", "corona", "virus", "pandemic","levitra",
+				"free",
+				"dating",
+				"online",
+				"shop",
+				"came here by searching",
+				"share your blog",
+				"knowledgeable people",
+				"erectile","breast","vacuum",
+				"article",
+				"your articles",
+				"very cool website",
+				"your rss",
+				".com",
+				"aol",
+				"카","지","노",
+				"i just wrote an extremely long comment but",
+				"we're a group of volunteers and",
+				"great site, stick with it!",
+				"this is really interesting",
+				"this was an exceptionally nice post",
+				"it's nearly impossible to find educated people on this subject",
+				"very nice write-up. i certainly love this site. keep writing!",
+				"which is valuable in support of my knowledge",
+				"on the internet for additional information about the issue and found",
+				"after i initially commented",
+				"seek advice from my site",
+				"impressive piece of writing"
+				); 
 			$bad_words_found=array();
 			foreach($myDict as $word)
 			{
