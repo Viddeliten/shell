@@ -27,7 +27,7 @@ function login_captcha_check()
 		return FALSE;
 	}
 	
-	trigger_error("postdata, recaptcha present: ".print_r($_POST, 1), E_USER_WARNING);
+	// trigger_error("postdata, recaptcha present: ".print_r($_POST, 1), E_USER_WARNING);
 	
 	if(!isset($response) || !isset($response['success']) || !$response['success'])
 	{

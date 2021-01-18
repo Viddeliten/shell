@@ -233,15 +233,15 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 	
 	//Kommentarer
 	if($specific_id!=NULL && !strcmp($type, "comment"))
-		$sql="SELECT id, spam_score, is_spam, ".sql_safe($type)." as text, user, IP, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
+		$sql="SELECT id, spam_score, is_spam, ".sql_safe($type)." as text, user, nick, url, IP, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if($specific_id!=NULL)
-		$sql="SELECT id, spam_score, is_spam, text, user, IP, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
+		$sql="SELECT id, spam_score, is_spam, text, user, nick, url, IP, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if(!strcmp($type, "comment"))
-		$sql="SELECT id, user, IP, ".sql_safe($type)." as text, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 
+		$sql="SELECT id, user, nick, url, is_spam,  IP, ".sql_safe($type)." as text, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 
             OR is_spam=1 OR is_spam=-1 
             ORDER BY IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
 	else
-		$sql="SELECT id, user, IP, text, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE 
+		$sql="SELECT id, user, nick, url, IP, is_spam, text, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE 
             is_spam=0 
             OR is_spam=1 OR is_spam=-1 
             ORDER BY  IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
@@ -250,10 +250,10 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 	{
         message_print_message(sprintf("Checking %s %s items for spam...", mysql_affected_rows(), $type));
         
-		while($c=mysql_fetch_array($cc))
+		while($c=mysql_fetch_assoc($cc))
 		{
 			if($output)
-				echo "<p><strong>\"".$c['text']."\"</strong></p>";
+				echo html_tag("div", prestr($c),"well");
 			//räkna ut ny score
 			//räkna hur många människor som tycker det är spam
 			$sql="SELECT count(id) as nr FROM ".PREFIX."spam WHERE spam_id=".$c['id']." AND type='".sql_safe($type)."';";
@@ -271,28 +271,35 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 				$sql="SELECT SUM(is_spam) as nr FROM ".PREFIX.sql_safe($type)." WHERE IP='".$c['IP']."' AND id!=".$c['id'].";";
 			$previous_spam=0;
 			if($ss=mysql_query($sql))
-				if($s=mysql_fetch_array($ss))
-					$previous_spam=$s['nr'];
+			{
+				if($ss && $s=$ss->fetch_assoc()) //  && $s != NULL && $s != FALSE && isset($s['nr']))
+				{
+					$previous_spam = ($s['nr'] != NULL ? $s['nr'] : 0);
+				}
+			}
 			
 			if($output)
 			{
 				if($c['user']!=NULL)
-					echo "<p>$previous_spam other spam from this user ('".user_get_link($c['user']).")</p>";
+					echo "<p>".$previous_spam." other spam from this user ('".user_get_link($c['user']).")</p>";
 				else
-					echo "<p>$previous_spam other spam from this IP ('".$c['IP']."')</p>";
+					echo "<p>".$previous_spam." other spam from this IP ('".$c['IP']."')</p>";
 			}
 			
 			//Kolla om det finns länkar eller dumma ord
 			$words = 0;  
-			$text = strtolower($c['text']); // lowercase it to speed up the loop
-			$myDict = array("http","<",">","://","penis","pill","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription", "hydroxy", "chloroquin", "corona", "virus", "pandemic"); 
+			$text = strtolower($c['text']).strtolower($c['subject']).strtolower($c['nick']); // lowercase it to speed up the loop, also check both text and subject
+			$myDict = array("http","<",">","://","penis","pill","drug","abuse","cymbalta","order","casino","impotence","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription", "hydroxy", "chloroquin", "corona", "virus", "pandemic","levitra"); 
+			$bad_words_found=array();
 			foreach($myDict as $word)
 			{
 				$count = substr_count($text, $word);
 				$words += $count;
+				if($count > 0)
+					$bad_words_found[]=$word;
 			}
 			if($output)
-				echo "<p>$words bad words</p>";
+				echo "<p>$words bad words (".implode(", ",$bad_words_found).")</p>";
 			
 			// Om subject börjar med "SITE_NAME |", lägg på 10 "fula ord"
 			$dont_start = SITE_NAME." |";

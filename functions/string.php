@@ -5,6 +5,7 @@ if(!function_exists("sql_safe"))
 	function sql_safe($str)
 	{
 		$str=mysql_real_escape_string($str);
+		$str = preg_replace('/\\x[a-f0-9][a-f0-9]/',"hex",$str); // Some weird things are going on on the internetz
 		return $str;
 	}
 }

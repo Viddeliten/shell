@@ -341,7 +341,7 @@ function feedback_recieve()
 				define('ERROR', "You are newt logged in as an admin");
 		}
 		
-		if(isset($_POST['feedback_size_change']))
+		if(isset($_POST['feedback_size_change']) && is_numeric($_POST['id']))
 		{
 			$id=$_POST['id'];
 			if($_SESSION[PREFIX.'user_id']==feedback_get_user($id) || $_SESSION[PREFIX."inloggad"]>=3)
@@ -706,6 +706,8 @@ function feedback_get_list_relevant($from, $to)
 
 function feedback_get_list_specific($id)
 {
+	if(!is_numeric($id))
+		return FALSE;
 	//Formel= plusones + dagar sedan accepterad
 	//ta inte med resolvade
 	//Visar de 20 mest "upptummade" feedback-texterna
@@ -967,6 +969,9 @@ function feedback_list_print($data, $id_expanded=NULL)
 
 function feedback_status_show($id, $accepted=NULL, $checked_in=NULL, $resolved=NULL, $inloggad=NULL, $div_id, $parent_div=NULL, $before_text="", $after_text="")
 {
+	if(!is_numeric($id))
+		return FALSE;
+
 	// echo "<br />feedback_status_show($id, $accepted, $checked_in, $resolved, $inloggad, $div_id, $parent_div";
 	if($parent_div==NULL)
 		$parent_div=$div_id;
@@ -1347,6 +1352,9 @@ function feedback_show_latest_short($antal=3, $length=150, $headline_size=2)
 
 function feedback_display_specific_headline($id, $div_id, $source_div=NULL, $expanded=FALSE, $display_user=TRUE, $div_prefix="")
 {
+	if(!is_numeric($id))
+		return FALSE;
+
 	// echo "<br />feedback_display_specific_headline($id, $div_id, $source_div, $expanded, $display_user, $div_prefix)";
 	
 	$div_prefix=str_replace(" ","_",$div_prefix);
@@ -1519,7 +1527,9 @@ function feedback_display_list($size, $nr, $headline, $headlinesize, $offset=0, 
 
 function feedback_display_list_checked_in($nr, $headline, $headlinesize, $display_user=TRUE)
 {
-	$sql="SELECT id, ".REL_STR." as rel
+	$sql="SELECT 
+		id, 
+		".REL_STR." as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND checked_in IS NOT NULL
@@ -1535,7 +1545,9 @@ function feedback_display_list_checked_in($nr, $headline, $headlinesize, $displa
 
 function feedback_display_list_resolved($nr, $headline, $headlinesize)
 {
-	$sql="SELECT id
+	$sql="SELECT 
+		id,
+		".REL_STR."	as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND resolved IS NOT NULL
@@ -1588,7 +1600,9 @@ function feedback_display_headline_list($sql, $headline, $headlinesize, $display
 
 function feedback_display_list_not_implemented($nr, $headline, $headlinesize)
 {
-	$sql="SELECT id
+	$sql="SELECT 
+		id, 
+		".REL_STR."	as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND not_implemented IS NOT NULL
@@ -1681,6 +1695,9 @@ function feedback_get_rel($id)
 
 function feedback_get_attached_feedbacks($id)
 {
+	if(!is_numeric($id))
+		return FALSE;
+
 	$sql="SELECT id,
 	".REL_STR."	as rel
 	FROM ".PREFIX."feedback 
@@ -2053,6 +2070,9 @@ function feedback_get_roles_global()
 
 function feedback_get_class($id)
 {
+	if(!is_numeric($id))
+		return FALSE;
+
 	if(feedback_get_is_resolved($id))
 		return "feedback_resolved";
 	if(feedback_get_is_checked_in($id))
@@ -2133,6 +2153,9 @@ function feedback_display_body($id, $hidden=FALSE)
 
 function feedback_get_author_link($feedback_id)
 {
+	if(!is_numeric($feedback_id))
+		return FALSE;
+
 	$user_id=feedback_get_user($feedback_id);
 	if($user_id!==NULL)
 	{
@@ -2201,6 +2224,9 @@ function feedback_get_checked_in()
 
 function feedback_get_main_parent($id)
 {
+	if(!is_numeric($id))
+		return FALSE;
+
 	$sql="SELECT merged_with FROM ".PREFIX."feedback WHERE id=".sql_safe($id).";";
 	if($ff=mysql_query($sql))
 	{
