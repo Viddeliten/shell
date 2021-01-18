@@ -608,7 +608,7 @@ function comment_display_author_text($comment_id)
 
 function comment_count($type, $id)
 {
-	$sql="SELECT id FROM ".PREFIX."comment WHERE comment_type='".$type."' AND comment_on='".$id."';";
+	$sql="SELECT id FROM ".PREFIX."comment WHERE comment_type='".$type."' AND comment_on='".$id."' AND is_spam < 1;";
 	$return=0;
 	if($cc=mysql_query($sql))
 	{
