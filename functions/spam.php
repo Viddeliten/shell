@@ -144,17 +144,14 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 {
 	spam_calculate(SPAM_NR_TO_CALC,"comment");
 	spam_calculate(SPAM_NR_TO_CALC,"feedback");
-	spam_calculate(SPAM_NR_TO_CALC,"FAQ");
     
     if(function_exists("spam_custom_calculate"))
         spam_custom_calculate(SPAM_NR_TO_CALC);
 	
 	spam_remove_old("comment", SPAM_REMOVE_TIME_SHORT, 2, 200);
 	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORT, 2, 200);
-	spam_remove_old("FAQ", SPAM_REMOVE_TIME_SHORT, 2, 200);
 	spam_remove_old("comment", SPAM_REMOVE_TIME_LONG, 1, 50);
 	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONG, 1, 50);
-	spam_remove_old("FAQ", SPAM_REMOVE_TIME_LONG, 1, 50);
 	
 	//Visa en lista på kommentarer med lägst poäng
 	echo "<h2>Comments</h2>";
@@ -199,6 +196,7 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 		echo "</form>";
 	}
 	//Visa en lista på FAQ med lägst poäng
+	/*
 	echo "<h2>Help!</h2>";
 	$sql="SELECT id, spam_score, is_spam, subject, text FROM ".PREFIX."FAQ WHERE is_spam>-02 AND is_spam<2 ORDER BY IFNULL(spam_score,0) ASC, created ASC LIMIT 0,".sql_safe($nr).";";
 	// echo "<br />DEBUG1018: $sql";
@@ -217,11 +215,18 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 		echo "<input type=\"submit\" name=\"this_is_not_spam\" value=\"Mark as not spam\">";
 		echo "</form>";
 	}
+	*/
 
 }
 
 function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 {
+	$subject = " '' as subject ";
+	if(!strcmp($type, "feedback"))
+	{
+		$subject = " subject ";
+	}
+	
 	//Räkna poäng för kommentarer
 	
 	//$nr med högst spam_score
@@ -230,13 +235,13 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 	if($specific_id!=NULL && !strcmp($type, "comment"))
 		$sql="SELECT id, spam_score, is_spam, ".sql_safe($type)." as text, user, IP FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if($specific_id!=NULL)
-		$sql="SELECT id, spam_score, is_spam, text, user, IP FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
+		$sql="SELECT id, spam_score, is_spam, text, user, IP, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if(!strcmp($type, "comment"))
 		$sql="SELECT id, user, IP, ".sql_safe($type)." as text FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 
             OR is_spam=1 OR is_spam=-1 
             ORDER BY IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
 	else
-		$sql="SELECT id, user, IP, text FROM ".PREFIX.sql_safe($type)." WHERE 
+		$sql="SELECT id, user, IP, text, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE 
             is_spam=0 
             OR is_spam=1 OR is_spam=-1 
             ORDER BY  IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
@@ -288,6 +293,15 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 			}
 			if($output)
 				echo "<p>$words bad words</p>";
+			
+			// Om subject börjar med "SITE_NAME |", lägg på 10 "fula ord"
+			$dont_start = SITE_NAME." |";
+			if(!strcmp(substr($c['subject'], 0, strlen($dont_start)), $dont_start))
+			{
+				$words += 10;
+				if($output)
+					echo "<p>Starts badly</p>";
+			}
 			
 			$points=$spam_clicks+$previous_spam*0.1+$words;
 			if($output)
@@ -348,8 +362,8 @@ function spam_remove_old($type, $time_str, $is_spam, $spam_score=NULL)
 		$created="added";
 	else if($type=="feedback")
 		$created="created";
-	else if($type=="FAQ")
-		$created="created";
+	// else if($type=="FAQ")
+		// $created="created";
 
 	$sql="DELETE FROM ".PREFIX.sql_safe($type)." 
 	WHERE is_spam>=".sql_safe($is_spam)." 
