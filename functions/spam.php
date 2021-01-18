@@ -265,16 +265,26 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 				echo "<p>$spam_clicks users consider this as spam</p>";
 				
 			//Kolla hur många andra från samma användare eller IP som är klassade som spam redan
-			if($c['user']!=NULL)
-				$sql="SELECT SUM(is_spam) as nr FROM ".PREFIX.sql_safe($type)." WHERE user='".$c['user']."' AND id!=".$c['id'].";";
-			else
-				$sql="SELECT SUM(is_spam) as nr FROM ".PREFIX.sql_safe($type)." WHERE IP='".$c['IP']."' AND id!=".$c['id'].";";
 			$previous_spam=0;
-			if($ss=mysql_query($sql))
+			
+			$types=array("comment", "feedback");
+			if(!in_array($type,$types))
+				$types[]=$type;
+			
+			foreach($types as $t)
 			{
-				if($ss && $s=$ss->fetch_assoc()) //  && $s != NULL && $s != FALSE && isset($s['nr']))
+				if($c['user']!=NULL)
+					$sql="SELECT SUM(is_spam) as nr FROM ".PREFIX.sql_safe($t)." WHERE user='".$c['user']."' AND id!=".$c['id'].";";
+				else
+					$sql="SELECT SUM(is_spam) as nr FROM ".PREFIX.sql_safe($t)." WHERE IP='".$c['IP']."' AND id!=".$c['id'].";";
+				// if($output)
+					// preprint($sql);
+				if($ss=mysql_query($sql))
 				{
-					$previous_spam = ($s['nr'] != NULL ? $s['nr'] : 0);
+					if($ss && $s=$ss->fetch_assoc()) //  && $s != NULL && $s != FALSE && isset($s['nr']))
+					{
+						$previous_spam += ($s['nr'] != NULL ? $s['nr'] : 0);
+					}
 				}
 			}
 			
@@ -294,6 +304,19 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 				"dating",
 				"online",
 				"shop",
+				"tablet",
+				"blogroll",
+				"all the internet people",
+				"finally something about",
+				"his site provides quality",
+				"his webpage presents helpful fact",
+				"here's a lot of folks",
+				"what a material!",
+				"was browsing on google for something else",
+				"kinda off topic",
+				"t's difficult to find high quality writing like yours",
+				"this particular topic",
+				"serial key",
 				"came here by searching",
 				"share your blog",
 				"knowledgeable people",
@@ -302,9 +325,12 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 				"your articles",
 				"very cool website",
 				"your rss",
+				"guos",
 				".com",
 				"aol",
-				"카","지","노",
+				"카","지","노","바","라","사","이","트","더","킹",
+				"п","л","д","н","в","м","я","г",
+				" | ","| comment |","| feedback |",
 				"i just wrote an extremely long comment but",
 				"we're a group of volunteers and",
 				"great site, stick with it!",
