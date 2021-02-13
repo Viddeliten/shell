@@ -161,6 +161,15 @@ function feedback_recieve()
 {
 	if(isset($_POST['postfeedback']) && $_POST['text']!="")
 	{
+        
+        // Just plain reject feedback with subject starting with site name and | becuase only spammers would do that
+		$forbidden_start=SITE_NAME." |";
+		if(!strcmp(substr( $_POST['subject'], 0, strlen($forbidden_start) ), $forbidden_start))
+		{
+			message_print_success(_("Thank you."));
+			return TRUE;
+		}
+		
 		/********************************************/
 		/*				Captcha check				*/
 		/********************************************/
@@ -179,6 +188,20 @@ function feedback_recieve()
 				
 			}
 			$IP=$_SERVER['REMOTE_ADDR'];
+            
+            // also plain reject if the user sends too many messages, but tell the user in case it was not a scammer
+            $c=array(
+                "id" => 0, // zero because we haven't put this in db already and it does not matter
+                "user" => $user, 
+                "IP" => $IP, 
+                "insert_time" => date("Y-m-d H:i:s") // just current time
+            );
+            if(spam_previous_messages($c) > 15)
+            {
+                message_print_error(_("Unknown error, please try again later!"));
+                return TRUE;
+            }
+
 			
 			$sql="INSERT INTO ".PREFIX."feedback SET
 			subject='".sql_safe($_POST['subject'])."',
@@ -219,6 +242,10 @@ function feedback_recieve()
 				WHERE id=$id;";
 				mysql_query($sql);
 			}
+			
+			// calculate spam score for this new feedback!
+			spam_calculate(0, "feedback", $id);
+
 		}
 	}
 		
@@ -330,7 +357,7 @@ function feedback_recieve()
 				define('ERROR', "You are newt logged in as an admin");
 		}
 		
-		if(isset($_POST['feedback_size_change']))
+		if(isset($_POST['feedback_size_change']) && is_numeric($_POST['id']))
 		{
 			$id=$_POST['id'];
 			if($_SESSION[PREFIX.'user_id']==feedback_get_user($id) || $_SESSION[PREFIX."inloggad"]>=3)
@@ -361,7 +388,8 @@ function feedback_recieve()
 function feedback_show_all($return_html=FALSE, $user_id=NULL)
 {
 	ob_start();
-	feedback_count_children();
+	
+	// I could not find a better place for this
 	feedback_count_comments();
 	
 	if(isset($_REQUEST['page']))
@@ -568,9 +596,6 @@ function feedback_navtabs($active="main")
 
 function feedback_show()
 {
-	feedback_count_children();
-	feedback_count_comments();
-
 	echo feedback_navtabs((isset($_GET['s'])? $_GET['s'] : "main"));
 }
 
@@ -697,6 +722,8 @@ function feedback_get_list_relevant($from, $to)
 
 function feedback_get_list_specific($id)
 {
+	if(!is_numeric($id))
+		return FALSE;
 	//Formel= plusones + dagar sedan accepterad
 	//ta inte med resolvade
 	//Visar de 20 mest "upptummade" feedback-texterna
@@ -958,6 +985,9 @@ function feedback_list_print($data, $id_expanded=NULL)
 
 function feedback_status_show($id, $accepted=NULL, $checked_in=NULL, $resolved=NULL, $inloggad=NULL, $div_id, $parent_div=NULL, $before_text="", $after_text="")
 {
+	if(!is_numeric($id))
+		return FALSE;
+
 	// echo "<br />feedback_status_show($id, $accepted, $checked_in, $resolved, $inloggad, $div_id, $parent_div";
 	if($parent_div==NULL)
 		$parent_div=$div_id;
@@ -1139,12 +1169,7 @@ function feedback_count_comments()
 	//Man får ju börja med att sätta allt till noll...
 	mysql_query("UPDATE ".PREFIX."feedback SET comments=0;");
 	
-	$sql="SELECT 
-		id 
-	FROM ".PREFIX."feedback 
-	WHERE resolved IS NULL 
-	AND checked_in IS NULL 
-	AND not_implemented IS NULL;";
+	$sql="SELECT id FROM ".PREFIX."feedback WHERE resolved IS NULL AND checked_in IS NULL AND not_implemented IS NULL AND is_spam < 1 AND (spam_score IS NULL OR spam_score < 1);";
 	 // echo "<br />DEBUG2309: $sql";
 	if($cc=mysql_query($sql))
 	{
@@ -1343,6 +1368,9 @@ function feedback_show_latest_short($antal=3, $length=150, $headline_size=2)
 
 function feedback_display_specific_headline($id, $div_id, $source_div=NULL, $expanded=FALSE, $display_user=TRUE, $div_prefix="")
 {
+	if(!is_numeric($id))
+		return FALSE;
+
 	// echo "<br />feedback_display_specific_headline($id, $div_id, $source_div, $expanded, $display_user, $div_prefix)";
 	
 	$div_prefix=str_replace(" ","_",$div_prefix);
@@ -1515,7 +1543,9 @@ function feedback_display_list($size, $nr, $headline, $headlinesize, $offset=0, 
 
 function feedback_display_list_checked_in($nr, $headline, $headlinesize, $display_user=TRUE)
 {
-	$sql="SELECT id, ".REL_STR." as rel
+	$sql="SELECT 
+		id, 
+		".REL_STR." as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND checked_in IS NOT NULL
@@ -1531,8 +1561,9 @@ function feedback_display_list_checked_in($nr, $headline, $headlinesize, $displa
 
 function feedback_display_list_resolved($nr, $headline, $headlinesize)
 {
-	$sql="SELECT id,
-	".REL_STR." as rel
+	$sql="SELECT 
+		id,
+		".REL_STR."	as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND resolved IS NOT NULL
@@ -1585,8 +1616,9 @@ function feedback_display_headline_list($sql, $headline, $headlinesize, $display
 
 function feedback_display_list_not_implemented($nr, $headline, $headlinesize)
 {
-	$sql="SELECT id,
-	".REL_STR." as rel
+	$sql="SELECT 
+		id, 
+		".REL_STR."	as rel
 	FROM ".PREFIX."feedback 
 	WHERE is_spam<1
 	AND not_implemented IS NOT NULL
@@ -1679,6 +1711,9 @@ function feedback_get_rel($id)
 
 function feedback_get_attached_feedbacks($id)
 {
+	if(!is_numeric($id))
+		return FALSE;
+
 	$sql="SELECT id,
 	".REL_STR."	as rel
 	FROM ".PREFIX."feedback 
@@ -2051,6 +2086,9 @@ function feedback_get_roles_global()
 
 function feedback_get_class($id)
 {
+	if(!is_numeric($id))
+		return FALSE;
+
 	if(feedback_get_is_resolved($id))
 		return "feedback_resolved";
 	if(feedback_get_is_checked_in($id))
@@ -2131,6 +2169,9 @@ function feedback_display_body($id, $hidden=FALSE)
 
 function feedback_get_author_link($feedback_id)
 {
+	if(!is_numeric($feedback_id))
+		return FALSE;
+
 	$user_id=feedback_get_user($feedback_id);
 	if($user_id!==NULL)
 	{
@@ -2199,6 +2240,9 @@ function feedback_get_checked_in()
 
 function feedback_get_main_parent($id)
 {
+	if(!is_numeric($id))
+		return FALSE;
+
 	$sql="SELECT merged_with FROM ".PREFIX."feedback WHERE id=".sql_safe($id).";";
 	if($ff=mysql_query($sql))
 	{
@@ -2223,9 +2267,6 @@ function feedback_update($feedback_id,$column, $new_data)
 
 function feedback_get_array($from, $to)
 {
-	feedback_count_children();
-	feedback_count_plusone();
-	feedback_count_children();
 	$r=array();
 	if($ff=feedback_get_list_relevant($from, $to))
 	{

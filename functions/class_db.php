@@ -311,11 +311,22 @@ if(!function_exists("mysql_query"))
 		if($connection->error!=NULL)
 		{
 			// Trigger a warning, because we expect to know about it if it does not go well
-			trigger_error("
-SQL Error! ".$connection->error, E_USER_WARNING);
+			trigger_error("SQL Error! ".$connection->error, E_USER_WARNING);
 		}
 		return $result;
 	}
+    
+    function mysql_set($table, $column, $new_value, $id)
+    {
+        $connection = static_db::getInstance();
+		$result = $connection->set($table, $column, $new_value, $id);
+		if($connection->error!=NULL)
+		{
+			// Trigger a warning, because we expect to know about it if it does not go well
+			trigger_error("SQL Set error! ".$connection->error, E_USER_WARNING);
+		}
+		return $result;
+    }
     
     function mysql_insert($query)
 	{
@@ -337,6 +348,9 @@ SQL Error! ".$connection->error, E_USER_WARNING);
     
     function mysql_fetch_array($result)
     {
+		if($result===NULL)
+			return NULL;
+		
         $assoc=$result->fetch_assoc();
         $return=array();
         $i=0;

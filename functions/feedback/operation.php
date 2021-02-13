@@ -37,7 +37,7 @@ $conn=db_connect(db_host, db_name, db_user, db_pass);
 /**
  * Operations that can be run safely even if user is not logged in or has admin
 **/
-if($_GET['operation']=="assign")
+if(isset($_GET['operation']) && !strcmp($_GET['operation'],"assign"))
 {
 	$feedback=new feedback($_GET['id']);
 	if(!$feedback->assign_role($_GET['role'], $_GET['user_id']))
@@ -117,12 +117,16 @@ else if(isset($_SESSION[PREFIX.'user_id']) && isset($_SESSION[PREFIX."inloggad"]
 			if(feedback_get_is_accepted($_GET['id']))
 				feedback_set_accepted($_GET['id']);
 			feedback_display_merge_form($_GET['id'], $_GET['div_id']);
+			// Since children has changed, recount them
+			feedback_count_children();
 		}
 		else if($_GET['operation']=="unmerge")
 		{
 			$sql="UPDATE ".PREFIX."feedback SET merged_with=NULL WHERE id=".sql_safe($_GET['id']).";";
 			mysql_query($sql);
 			feedback_display_merge_form($_GET['id'], $_GET['div_id']);
+			// Since children has changed, recount them
+			feedback_count_children();
 		}
 
 	}
