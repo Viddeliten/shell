@@ -2,9 +2,11 @@
 
 define('SPAM_POINTS',0);
 define('SPAM_NR_TO_CALC',1500);
-define('SPAM_NR_TO_ADMIN',20);
+define('SPAM_NR_TO_ADMIN',100);
 define('SPAM_REMOVE_TIME_SHORT',"1 week");
+define('SPAM_REMOVE_TIME_SHORTER',"1 day");
 define('SPAM_REMOVE_TIME_LONG',"3 month");
+define('SPAM_REMOVE_TIME_LONGER',"6 month");
 
 function spam_receive()
 {
@@ -17,6 +19,7 @@ function spam_receive()
 	
 	if(isset($_POST['this_is_spam']))
 	{
+        $marked_as_spam=array();
 		//KOlla om det är admin som säger
 		if(isset($_SESSION[PREFIX.'user_id']) && user_get_admin($_SESSION[PREFIX.'user_id'])>1)
 		{
@@ -26,11 +29,18 @@ function spam_receive()
 					SET is_spam=2 
 					WHERE id=".sql_safe($s_id).";";
 				
-				message_try_mysql($sql,
+				if(message_try_mysql($sql,
 					"085123", //Error code
-					sprintf(_("%s %s marked as spam"), $_POST['type'], $s_id)// success_message
-				);
+					NULL //sprintf(_("%s %s marked as spam"), $_POST['type'], $s_id)// success_message
+				))
+                {
+                    $marked_as_spam[]=$s_id;
+                }
 			}
+            if(!empty($marked_as_spam))
+            {
+                message_add_success_message(sprintf(_("%s %ss marked as spam: <br />%s"), count($marked_as_spam), $_POST['type'], implode(", ",$marked_as_spam)));
+            }
 		}
 		else
 		{
@@ -152,6 +162,11 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORT, 2, 200);
 	spam_remove_old("comment", SPAM_REMOVE_TIME_LONG, 1, 50);
 	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONG, 1, 50);
+	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONGER, 1, 20);
+	spam_remove_old("comment", SPAM_REMOVE_TIME_LONGER, 1, 20);
+
+	spam_remove_old("comment", SPAM_REMOVE_TIME_SHORTER, 3, 400); // They won't have 3, but this will make the shorter time span only care about the 400
+	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORTER, 3, 400);
 	
 	//Visa en lista på kommentarer med lägst poäng
 	echo "<h2>Comments</h2>";
@@ -233,15 +248,17 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 	
 	//Kommentarer
 	if($specific_id!=NULL && !strcmp($type, "comment"))
-		$sql="SELECT id, spam_score, is_spam, ".sql_safe($type)." as text, user, nick, url, IP, ".$subject.", comment_type, comment_on FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
+		$sql="SELECT id, spam_score, is_spam, ".sql_safe($type)." as text, user, nick, url, IP, ".$subject.", comment_type, comment_on, added as insert_time FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
+	else if($specific_id!=NULL && !strcmp($type, "comment"))
+		$sql="SELECT id, spam_score, is_spam, text, user, nick, url, IP, ".$subject.", added as insert_time FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if($specific_id!=NULL)
-		$sql="SELECT id, spam_score, is_spam, text, user, nick, url, IP, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
+		$sql="SELECT id, spam_score, is_spam, text, user, nick, url, IP, ".$subject.", created as insert_time FROM ".PREFIX.sql_safe($type)." WHERE id=".sql_safe($specific_id).";";
 	else if(!strcmp($type, "comment"))
-		$sql="SELECT id, user, nick, url, is_spam,  IP, ".sql_safe($type)." as text, ".$subject.", comment_type, comment_on FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 
+		$sql="SELECT id, user, nick, url, is_spam,  IP, ".sql_safe($type)." as text, ".$subject.", comment_type, comment_on, added as insert_time FROM ".PREFIX.sql_safe($type)." WHERE is_spam=0 
             OR is_spam=1 OR is_spam=-1 
             ORDER BY IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
 	else
-		$sql="SELECT id, user, nick, url, IP, is_spam, text, ".$subject." FROM ".PREFIX.sql_safe($type)." WHERE 
+		$sql="SELECT id, user, nick, url, IP, is_spam, text, ".$subject.", created as insert_time FROM ".PREFIX.sql_safe($type)." WHERE 
             is_spam=0 
             OR is_spam=1 OR is_spam=-1 
             ORDER BY  IF(spam_score IS NULL, 1, 0) DESC, spam_score ASC LIMIT 0,".sql_safe($nr).";";
@@ -264,7 +281,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 			if($output)
 				echo "<p>$spam_clicks users consider this as spam</p>";
 				
-			//Kolla hur många andra från samma användare eller IP som är klassade som spam redan
+			//Kolla hur många andra från samma användare eller IP som är klassade som spam redan och hur många meddelanden användaren skickat i samband med detta.
 			$previous_spam=0;
 			
 			$types=array("comment", "feedback");
@@ -277,8 +294,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 					$sql="SELECT SUM(is_spam) as nr FROM ".PREFIX.sql_safe($t)." WHERE user='".$c['user']."' AND id!=".$c['id'].";";
 				else
 					$sql="SELECT SUM(is_spam) as nr FROM ".PREFIX.sql_safe($t)." WHERE IP='".$c['IP']."' AND id!=".$c['id'].";";
-				// if($output)
-					// preprint($sql);
+
 				if($ss=mysql_query($sql))
 				{
 					if($ss && $s=$ss->fetch_assoc()) //  && $s != NULL && $s != FALSE && isset($s['nr']))
@@ -286,8 +302,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 						$previous_spam += ($s['nr'] != NULL ? $s['nr'] : 0);
 					}
 				}
-			}
-			
+            }
 			if($output)
 			{
 				if($c['user']!=NULL)
@@ -295,14 +310,35 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 				else
 					echo "<p>".$previous_spam." other spam from this IP ('".$c['IP']."')</p>";
 			}
+            
+            // Check how many previous messages the user has sent
+            $previous_messages=spam_previous_messages($c);            
+            
+            $previous_messages_spam_points=floor($previous_messages/5);
+            
+            //Skriv ut resultat
+			if($output)
+			{
+				if($c['user']!=NULL)
+					echo "<p>".$previous_messages." other messages from this user ('".user_get_link($c['user']).") during the same 2 hour period. +".$previous_messages_spam_points." spam points.</p>";
+				else
+					echo "<p>".$previous_messages." other messages from this IP ('".$c['IP']."') during the same 2 hour period. +".$previous_messages_spam_points." spam points.</p>";
+			}
+                
+			
 			
 			//Kolla om det finns länkar eller dumma ord
 			$words = 0;  
 			$text = strtolower($c['text']).strtolower($c['subject']).strtolower($c['nick']); // lowercase it to speed up the loop, also check both text and subject
 			$myDict = array("http","<",">","://","penis","pill","drug","abuse","cymbalta","xevil","blog","topic","adult","! bookmarked. ","hottest information","order","casino","impotence","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription", "hydroxy", "chloroquin", "corona", "virus", "pandemic","levitra",
 				"free",
+				"purchase",
+				"generic",
+				"doctor",
 				"dating",
 				"online",
+				"tadalafil",
+				"pharmac",
 				"shop",
 				"tadalafil",
 				"tablet",
@@ -365,7 +401,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 					echo "<p>Starts badly</p>";
 			}
 			
-			$points=$spam_clicks+$previous_spam*0.1+$words;
+			$points=$spam_clicks+$previous_spam*0.1+$previous_messages_spam_points+$words;
 			if($output)
 				echo "<p>Points: $points";
 			
@@ -453,6 +489,41 @@ function spam_remove_old($type, $time_str, $is_spam, $spam_score=NULL)
 function spam_get_link($id, $type)
 {
 	return SITE_URL."?p=admin&amp;s=individual_spam_score&amp;type=".$type."&amp;id=".$id;
+}
+
+function spam_previous_messages($c)
+{
+     $previous_messages=0;
+
+    // Kolla hur många feedback användaren skickat i samband med detta.
+    if($c['user']!=NULL)
+        $sql="SELECT COUNT(id) as nr FROM ".PREFIX."feedback WHERE user='".$c['user']."' AND id!=".$c['id']." AND created BETWEEN DATE_SUB('".$c['insert_time']."', INTERVAL 1 HOUR) AND DATE_ADD('".$c['insert_time']."', INTERVAL 1 HOUR);";
+    else
+        $sql="SELECT COUNT(id) as nr FROM ".PREFIX."feedback WHERE IP='".$c['IP']."' AND id!=".$c['id']." AND created BETWEEN DATE_SUB('".$c['insert_time']."', INTERVAL 1 HOUR) AND DATE_ADD('".$c['insert_time']."', INTERVAL 1 HOUR);";
+        
+    if($ss=mysql_query($sql))
+    {
+        if($ss && $s=$ss->fetch_assoc()) //  && $s != NULL && $s != FALSE && isset($s['nr']))
+        {
+            $previous_messages += ($s['nr'] != NULL ? $s['nr'] : 0);
+        }
+    }
+
+    // Kolla hur många comments användaren skickat i samband med detta.
+    if($c['user']!=NULL)
+        $sql="SELECT COUNT(id) as nr FROM ".PREFIX."comment WHERE user='".$c['user']."' AND id!=".$c['id']." AND added BETWEEN DATE_SUB('".$c['insert_time']."', INTERVAL 1 HOUR) AND DATE_ADD('".$c['insert_time']."', INTERVAL 1 HOUR);";
+    else
+        $sql="SELECT COUNT(id) as nr FROM ".PREFIX."comment WHERE IP='".$c['IP']."' AND id!=".$c['id']." AND added BETWEEN DATE_SUB('".$c['insert_time']."', INTERVAL 1 HOUR) AND DATE_ADD('".$c['insert_time']."', INTERVAL 1 HOUR);";
+        
+    if($ss=mysql_query($sql))
+    {
+        if($ss && $s=$ss->fetch_assoc()) //  && $s != NULL && $s != FALSE && isset($s['nr']))
+        {
+            $previous_messages += ($s['nr'] != NULL ? $s['nr'] : 0);
+        }
+    }
+            
+    return $previous_messages;
 }
 
 ?>

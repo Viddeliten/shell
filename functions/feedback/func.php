@@ -161,6 +161,8 @@ function feedback_recieve()
 {
 	if(isset($_POST['postfeedback']) && $_POST['text']!="")
 	{
+        
+        // Just plain reject feedback with subject starting with site name and | becuase only spammers would do that
 		$forbidden_start=SITE_NAME." |";
 		if(!strcmp(substr( $_POST['subject'], 0, strlen($forbidden_start) ), $forbidden_start))
 		{
@@ -186,6 +188,20 @@ function feedback_recieve()
 				
 			}
 			$IP=$_SERVER['REMOTE_ADDR'];
+            
+            // also plain reject if the user sends too many messages, but tell the user in case it was not a scammer
+            $c=array(
+                "id" => 0, // zero because we haven't put this in db already and it does not matter
+                "user" => $user, 
+                "IP" => $IP, 
+                "insert_time" => date("Y-m-d H:i:s") // just current time
+            );
+            if(spam_previous_messages($c) > 15)
+            {
+                message_print_error(_("Unknown error, please try again later!"));
+                return TRUE;
+            }
+
 			
 			$sql="INSERT INTO ".PREFIX."feedback SET
 			subject='".sql_safe($_POST['subject'])."',

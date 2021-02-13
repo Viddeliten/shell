@@ -66,6 +66,20 @@ function comment_receive()
 			}
 
 			$IP=$_SERVER['REMOTE_ADDR'];
+            
+            // plain reject if the user sends too many messages, but tell the user in case it was not a scammer
+            $c=array(
+                "id" => 0, // zero because we haven't put this in db already and it does not matter
+                "user" => $user, 
+                "IP" => $IP, 
+                "insert_time" => date("Y-m-d H:i:s") // just current time
+            );
+            if(spam_previous_messages($c) > 15)
+            {
+                message_print_error(_("Unknown error, please try again later!"));
+                return TRUE;
+            }
+
 				
 			//Lägg till en kommentar
 			$sql="INSERT INTO ".PREFIX."comment SET

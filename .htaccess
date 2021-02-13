@@ -18,4 +18,4 @@ RewriteRule ^([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$	index.php?p=$1&s=$2
 RewriteRule ^([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$	index.php?p=$1&s=$2&id=$3&param1=$4&param2=$5&param3=$6			[QSA,L]
 
 php_value upload_max_filesize 5M
-php_value post_max_size 64M
+php_value post_max_size 1024M
