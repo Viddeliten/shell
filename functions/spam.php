@@ -4,6 +4,7 @@ define('SPAM_POINTS',0);
 define('SPAM_NR_TO_CALC',1500);
 define('SPAM_NR_TO_ADMIN',100);
 define('SPAM_REMOVE_TIME_SHORT',"1 week");
+define('SPAM_REMOVE_TIME_SHORTER',"1 day");
 define('SPAM_REMOVE_TIME_LONG',"3 month");
 define('SPAM_REMOVE_TIME_LONGER',"6 month");
 
@@ -163,6 +164,9 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONG, 1, 50);
 	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONGER, 1, 20);
 	spam_remove_old("comment", SPAM_REMOVE_TIME_LONGER, 1, 20);
+
+	spam_remove_old("comment", SPAM_REMOVE_TIME_SHORTER, 3, 400); // They won't have 3, but this will make the shorter time span only care about the 400
+	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORTER, 3, 400);
 	
 	//Visa en lista på kommentarer med lägst poäng
 	echo "<h2>Comments</h2>";
