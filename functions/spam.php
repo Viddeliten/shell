@@ -265,7 +265,8 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 	// echo "<br />DEBUG0904: $sql";
 	if($cc=mysql_query($sql))
 	{
-        message_print_message(sprintf("Checking %s %s items for spam...", mysql_affected_rows(), $type));
+        if($output)
+            message_print_message(sprintf("Checking %s %s items for spam...", mysql_affected_rows(), $type));
         
 		while($c=mysql_fetch_assoc($cc))
 		{
@@ -470,7 +471,7 @@ function spam_remove_old($type, $time_str, $is_spam, $spam_score=NULL)
 	mysql_query($sql);
     $nr=mysql_affected_rows();
     if($nr>0)
-        message_print_message(sprintf(_("Removed %s %s messages marked as spam (%s)."), $nr, $type, $is_spam));
+        message_print_message(sprintf(_("Removed %s %s messages marked as spam (%s) and created before %s."), $nr, $type, $is_spam, date("Y-m-d", strtotime("- ".$time_str))));
 
 	if($spam_score!==NULL)
 	{
@@ -482,7 +483,7 @@ function spam_remove_old($type, $time_str, $is_spam, $spam_score=NULL)
 		mysql_query($sql);
 		$nr=mysql_affected_rows();
 		if($nr>0)
-			message_print_message(sprintf(_("Removed %s %s messages with spam score >= %s."), $nr, $type, $spam_score));
+			message_print_message(sprintf(_("Removed %s %s messages with spam score >= %s and created before %s."), $nr, $type, $spam_score, date("Y-m-d", strtotime("- ".$time_str))));
 	}
 }
 
