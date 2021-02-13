@@ -2,9 +2,10 @@
 
 define('SPAM_POINTS',0);
 define('SPAM_NR_TO_CALC',1500);
-define('SPAM_NR_TO_ADMIN',20);
+define('SPAM_NR_TO_ADMIN',100);
 define('SPAM_REMOVE_TIME_SHORT',"1 week");
 define('SPAM_REMOVE_TIME_LONG',"3 month");
+define('SPAM_REMOVE_TIME_LONGER',"6 month");
 
 function spam_receive()
 {
@@ -17,6 +18,7 @@ function spam_receive()
 	
 	if(isset($_POST['this_is_spam']))
 	{
+        $marked_as_spam=array();
 		//KOlla om det är admin som säger
 		if(isset($_SESSION[PREFIX.'user_id']) && user_get_admin($_SESSION[PREFIX.'user_id'])>1)
 		{
@@ -26,11 +28,18 @@ function spam_receive()
 					SET is_spam=2 
 					WHERE id=".sql_safe($s_id).";";
 				
-				message_try_mysql($sql,
+				if(message_try_mysql($sql,
 					"085123", //Error code
-					sprintf(_("%s %s marked as spam"), $_POST['type'], $s_id)// success_message
-				);
+					NULL //sprintf(_("%s %s marked as spam"), $_POST['type'], $s_id)// success_message
+				))
+                {
+                    $marked_as_spam[]=$s_id;
+                }
 			}
+            if(!empty($marked_as_spam))
+            {
+                message_add_success_message(sprintf(_("%s %ss marked as spam: <br />%s"), count($marked_as_spam), $_POST['type'], implode(", ",$marked_as_spam)));
+            }
 		}
 		else
 		{
@@ -152,6 +161,8 @@ function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORT, 2, 200);
 	spam_remove_old("comment", SPAM_REMOVE_TIME_LONG, 1, 50);
 	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONG, 1, 50);
+	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONGER, 1, 20);
+	spam_remove_old("comment", SPAM_REMOVE_TIME_LONGER, 1, 20);
 	
 	//Visa en lista på kommentarer med lägst poäng
 	echo "<h2>Comments</h2>";
