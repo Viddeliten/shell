@@ -5,6 +5,7 @@ if(!function_exists("sql_safe"))
 	function sql_safe($str)
 	{
 		$str=mysql_real_escape_string($str);
+		$str = preg_replace('/\\x[a-f0-9][a-f0-9]/',"hex",$str); // Some weird things are going on on the internetz
 		return $str;
 	}
 }
@@ -186,7 +187,7 @@ function string_url_is_tumblr($url)
  **		$send_cookie		- If we should send current cookie to the target. Default: FALSE
  * Returns: Body of url
  ***/
-function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_URL, $send_cookie=FALSE)
+function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_URL, $send_cookie=FALSE, &$redirected_url = NULL)
 {
     $handle = curl_init();
 	
@@ -220,6 +221,7 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
     $response = curl_exec($handle);
     $hlength  = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
     $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+    $redirected_url = curl_getinfo($handle, CURLINFO_EFFECTIVE_URL );
     $body     = substr($response, $hlength);
 
     // If HTTP response is not 200, throw exception

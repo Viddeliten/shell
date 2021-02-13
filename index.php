@@ -171,7 +171,6 @@ if(defined('PINGDOM_SCRIPT'))
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 
 	<script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/"; ?>functions/functions.js?v=<?php echo date("YmdHis"); ?>"></script>
-	<script src="//viddewebb.se/_commons/js/basic.js"></script>
 
 	<?php if(file_exists(CUSTOM_CONTENT_PATH.'/functions/java.js')) { ?>
 		<script src="<?php echo str_ireplace("http:","",str_ireplace("https:","",SITE_URL))."/".CUSTOM_CONTENT_PATH; ?>/functions/java.js?v=<?php echo time(); ?>"></script> <?php } else echo "<!--".CUSTOM_CONTENT_PATH.'/functions/java.js does not exist -->'; ?>
