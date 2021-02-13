@@ -304,6 +304,7 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 				"dating",
 				"online",
 				"shop",
+				"tadalafil",
 				"tablet",
 				"blogroll",
 				"all the internet people",
