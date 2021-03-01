@@ -49,6 +49,13 @@ function comment_receive()
 			return TRUE;
 		}
 		
+		// If the math box is filled out. Tell the user everything is fine and skip inserting it. Because it will be a spammer that entered it, I think you'll find.
+		if(!isset($_POST['comment']) || $_POST['comment'] == NULL || $_POST['comment']=="")
+		{
+			message_add_success_message(_("Thanks! Everything is fine and dandy."));
+			return TRUE;
+		}
+		
 		if(!is_numeric($_POST['id']))
 		{
 			message_add_error(sprintf(_("Unable to find instance to comment on. Invalid id '%s'"), $_POST['id']));
@@ -191,6 +198,8 @@ function comment_form_show($id, $type, $beforetext)
 		echo "<br /><label for=\"email\">Email:</label> <input type=\"text\" name=\"email\" class=\"form-control\">";
 		echo "<br /><label for=\"url\">Website:</label> <input type=\"text\" name=\"url\" class=\"form-control\">";
 		echo "<br /><label for=\"flattrID\">Flattr ID:</label> <input type=\"text\" name=\"flattrID\" class=\"form-control\"></p>";
+        // Man kanske vill erkänna att man är en robot också
+		echo "<p class=\"hidden\"><label for=\"math_text\">1+2</label> <input type=\"text\" id=\"math_text\" name=\"math\" class=\"form-control\"></p>";
 	}
 	?>
 

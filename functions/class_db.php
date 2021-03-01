@@ -327,6 +327,35 @@ if(!function_exists("mysql_query"))
 		}
 		return $result;
     }
+
+    function mysql_get($column, $table, $id)
+    {
+        $connection = static_db::getInstance();
+		$result = $connection->get($column, $table, $id);
+		if($connection->error!=NULL)
+		{
+			// Trigger a warning, because we expect to know about it if it does not go well
+			trigger_error("SQL Set error! ".$connection->error, E_USER_WARNING);
+		}
+		return $result;
+    }
+    
+    
+    function mysql_get_first($query) //wrap because this is what I usually do
+    {
+        return mysql_select_first($query);
+    }
+    function mysql_select_first($query)
+    {
+        $connection = static_db::getInstance();
+		$result = $connection->select_first($query);
+		if($connection->error!=NULL)
+		{
+			// Trigger a warning, because we expect to know about it if it does not go well
+			trigger_error("SQL Set error! ".$connection->error, E_USER_WARNING);
+		}
+		return $result;
+    }
     
     function mysql_insert($query)
 	{
