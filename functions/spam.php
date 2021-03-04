@@ -331,8 +331,14 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 			//Kolla om det finns länkar eller dumma ord
 			$words = 0;  
 			$text = strtolower($c['text']).strtolower($c['subject']).strtolower($c['nick']); // lowercase it to speed up the loop, also check both text and subject
-			$myDict = array("http","<",">","://","penis","pill","drug","abuse","cymbalta","xevil","blog","topic","adult","! bookmarked. ","hottest information","order","casino","impotence","sale","cheap","viagra","cialis", "buy", "tramadol", "kamagra", "xanax", "prescription", "hydroxy", "chloroquin", "corona", "virus", "pandemic","levitra",
+			$myDict = array("http","<",">","://","penis","pill","drug","abuse","cymbalta","xevil","blog","topic","adult","! bookmarked. ","hottest information","order","casino","impotence","sale","cheap",
+                "viagra",
+                "cialis",
+                "dapoxetine",
+                "buy", "tramadol", "kamagra", "xanax", 
+                "prescription", "hydroxy", "chloroquin", "corona", "virus", "pandemic","levitra",
 				"free",
+				" mg",
 				"purchase",
 				"generic",
 				"doctor",
@@ -342,9 +348,11 @@ function spam_calculate($nr, $type, $specific_id=NULL, $output=0)
 				"pharmac",
 				"shop",
 				"tadalafil",
+				"unprescribed",
 				"tablet",
 				"blogroll",
 				"all the internet people",
+				"thank you for post",
 				"finally something about",
 				"his site provides quality",
 				"his webpage presents helpful fact",
