@@ -17,7 +17,7 @@ class preference
     
     function  __construct($preference_handle, $user_id)
     {
-        this->$db = new db_class();
+        $this->$db = new db_class();
     }
     
 }
