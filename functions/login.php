@@ -47,7 +47,7 @@ function login_captcha_check()
 	}
 	else
 	{
-		trigger_error("response ok: ".print_r($response, 1), E_USER_WARNING);
+		// trigger_error("response ok: ".print_r($response, 1), E_USER_WARNING);
 		return TRUE;
 	}
 }

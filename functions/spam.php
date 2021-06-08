@@ -2,7 +2,7 @@
 
 define('SPAM_POINTS',0);
 define('SPAM_NR_TO_CALC',1500);
-define('SPAM_NR_TO_ADMIN',100);
+define('SPAM_NR_TO_ADMIN',400);
 define('SPAM_REMOVE_TIME_SHORT',"1 week");
 define('SPAM_REMOVE_TIME_SHORTER',"1 day");
 define('SPAM_REMOVE_TIME_LONG',"3 month");
