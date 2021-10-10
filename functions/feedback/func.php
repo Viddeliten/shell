@@ -594,9 +594,15 @@ function feedback_navtabs($active="main")
 	return html_nav_tabs($tabs, $active);
 }
 
-function feedback_show()
+function feedback_show($id = NULL)
 {
-	echo feedback_navtabs((isset($_GET['s'])? $_GET['s'] : "main"));
+	if($id === NULL)
+		echo feedback_navtabs((isset($_GET['s'])? $_GET['s'] : "main"));
+	else
+	{	
+		$ff=feedback_get_list_specific($id);
+		feedback_list_print($ff);
+	}
 }
 
 function feedback_search_show()

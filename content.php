@@ -88,7 +88,7 @@ else if(isset($_REQUEST['p']))
 		if(!$show_feedback)
 			message_print_error(_("Nothing to see here..."));
 		else
-			feedback_show();
+			feedback_show((isset($_GET['id']) ? $_GET['id'] : NULL));
 	}
 	else if(!strcmp($_GET['p'],"news"))
 	{
