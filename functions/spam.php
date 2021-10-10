@@ -152,21 +152,33 @@ function spam_show_clicker($id, $type)
 
 function spam_admin_list($nr=SPAM_NR_TO_ADMIN)
 {
+	if(login_check_logged_in_mini()<=1)
+		return NULL;
+	
 	spam_calculate(SPAM_NR_TO_CALC,"comment");
 	spam_calculate(SPAM_NR_TO_CALC,"feedback");
     
     if(function_exists("spam_custom_calculate"))
         spam_custom_calculate(SPAM_NR_TO_CALC);
 	
-	spam_remove_old("comment", SPAM_REMOVE_TIME_SHORT, 2, 200);
-	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORT, 2, 200);
-	spam_remove_old("comment", SPAM_REMOVE_TIME_LONG, 1, 50);
-	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONG, 1, 50);
-	spam_remove_old("feedback", SPAM_REMOVE_TIME_LONGER, 1, 20);
-	spam_remove_old("comment", SPAM_REMOVE_TIME_LONGER, 1, 20);
+	// ONLY remove old if admin wants us to!!!
+	if(isset($_REQUEST["spam_remove_old_by_admin"]))
+	{
+		spam_remove_old("comment", SPAM_REMOVE_TIME_SHORT, 2, 200);
+		spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORT, 2, 200);
+		spam_remove_old("comment", SPAM_REMOVE_TIME_LONG, 1, 50);
+		spam_remove_old("feedback", SPAM_REMOVE_TIME_LONG, 1, 50);
+		spam_remove_old("feedback", SPAM_REMOVE_TIME_LONGER, 1, 20);
+		spam_remove_old("comment", SPAM_REMOVE_TIME_LONGER, 1, 20);
 
-	spam_remove_old("comment", SPAM_REMOVE_TIME_SHORTER, 3, 400); // They won't have 3, but this will make the shorter time span only care about the 400
-	spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORTER, 3, 400);
+		spam_remove_old("comment", SPAM_REMOVE_TIME_SHORTER, 3, 400); // They won't have 3, but this will make the shorter time span only care about the 400
+		spam_remove_old("feedback", SPAM_REMOVE_TIME_SHORTER, 3, 400);
+	}
+	?>
+	<form method="post">
+		<input type="submit" name="spam_remove_old_by_admin" value="Remove old, aggressively" onclick="return confirm('<?= sprintf(_("Are you sure you want to do this?      Everything older than %s with more than 50 spam score will be removed, among other things."), SPAM_REMOVE_TIME_LONG) ?>')">
+	</form>
+	<?php
 	
 	//Visa en lista på kommentarer med lägst poäng
 	echo "<h2>Comments</h2>";
