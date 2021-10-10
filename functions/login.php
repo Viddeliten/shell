@@ -122,7 +122,7 @@ function login_check($oauth_success_user_id=NULL, $identifying_id=NULL, $oauth_n
 			$_SESSION[PREFIX.'logged_in_with']=($oauth_name!=NULL ? $oauth_name : NULL);
 			$_SESSION[PREFIX.'inloggad']=$user['level'];
 			$_SESSION[PREFIX."HTTP_USER_AGENT"] = md5($_SERVER['HTTP_USER_AGENT']);
-			setcookie("login",md5($_SESSION[PREFIX.'user_id']),time()+(60*15));
+			// setcookie("login",md5($_SESSION[PREFIX.'user_id']),time()+(60*15));
 			
 			//Uppdatera senast inloggning
 			$sql="UPDATE ".PREFIX."user set lastlogin=now(), inactive=NULL WHERE id='".$user['id']."'";
@@ -164,7 +164,7 @@ function login_check($oauth_success_user_id=NULL, $identifying_id=NULL, $oauth_n
 							if($_SESSION[PREFIX."HTTP_USER_AGENT"] ==md5($_SERVER['HTTP_USER_AGENT']))
 							{
 								$_SESSION[PREFIX.'inloggad']=$u['level'];
-								setcookie("login",md5($_SESSION[PREFIX.'user_id']),time()+(60*15));
+								// setcookie("login",md5($_SESSION[PREFIX.'user_id']),time()+(60*15));
 								mysql_query("UPDATE ".PREFIX."user set lastlogin='".date("YmdHis")."', inactive=NULL WHERE id='".$u['id']."'");
 								return $_SESSION[PREFIX.'inloggad'];
 							}

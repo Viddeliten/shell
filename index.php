@@ -1,4 +1,4 @@
-<?php
+<?php session_start(); 
 
 header( 'X-FRAME-OPTIONS: deny' );
 
@@ -11,7 +11,7 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
 }
 ?><!DOCTYPE html>
 <html lang="en">
-<?php session_start(); ?>
+
 <?php setlocale(LC_NUMERIC, 'en_US'); ?>
   <head>
     <meta charset="utf-8">
