@@ -236,7 +236,7 @@ function html_row_uneven($lg_sizes, $elements, $element_class=NULL, $row_class=N
 
 		$col_xs_size=12; //Always make it full columns on mobile for now
 
-		$return.= html_tag("div", $elements[$key], "col-lg-".$col_lg_size." col-md-".$col_md_size." col-sm-".$col_sm_size." col-xs-".$col_xs_size, false, NULL, $html_format_text);
+		$return.= html_tag("div", $elements[$key], "col-lg-".$col_lg_size." col-md-".$col_md_size." col-sm-".$col_sm_size." col-xs-".$col_xs_size." ".$element_class, false, NULL, $html_format_text);
 	}
 	$return.='</div>';
 	return $return;
@@ -495,9 +495,13 @@ function html_button($button_text, $class="btn btn-default", $onclick=NULL, $but
 			.'</button>';
 }
 
-function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE, $action=NULL)
+function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE, $action=NULL, $form_id=NULL)
 {
-    $r='<form method="'.$method.'" '.($action!=NULL ? 'action="'.$action.'"' : '').'>';
+    $r='<form method="'.$method.'" '.
+		($action!=NULL ? ' action="'.$action.'" ' : '').' '.
+		($form_id!=NULL ? ' id="'.$form_id.'" ' : '').
+		($multipart!=NULL ? ' enctype="multipart/form-data" ' : '').
+		'>';
     if(!empty($inputs))
     {
 		if($all_inline)
@@ -884,7 +888,7 @@ function html_table_from_array($array, $headlines=NULL, $silent_columns=array(),
 	return $r;
 }
 
-function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1, $return_html=FALSE, $base_link=NULL)
+function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1, $return_html=FALSE, $base_link=NULL, $just_number_ends = false)
 {
 	ob_start();
 	
@@ -892,6 +896,9 @@ function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1, 
 		$pnr=$_REQUEST[$page_nr_name];
 	else
 		$pnr=$first_page_number;
+	
+	if($pnr>$total_pages)
+		$pnr=$total_pages+1;
 
 	echo '<div class="row center">
 		<nav aria-label="'._("Page navigation").'">
@@ -899,7 +906,10 @@ function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1, 
 	
 	// if we are further along than 5 pages in, put a link to first page
 	if($pnr-5>$first_page_number)
-		echo '<li class="page-item"> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $first_page_number).'" aria-label="First"><span aria-hidden="true">|&laquo;</span></a></li>';
+		echo '<li class="page-item">
+			<a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $first_page_number).'" aria-label="First">'.
+				($just_number_ends ? $first_page_number : $first_page_number.' <span aria-hidden="true">|&laquo;</span>').
+			'</a></li>';
 	
 	if($pnr<$first_page_number)
 		echo '<li class="disabled page-item"> <a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
@@ -929,11 +939,13 @@ function html_pagination_row($page_nr_name, $total_pages, $first_page_number=1, 
 	if($pnr<$total_pages)
 		echo '<li> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
 	else 
-		echo '<li class="disabled"> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $pnr+1).'" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
-	
+		echo '<li class="disabled"> <a class="page-link"  aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';	
 	
 	if($i<$total_pages)
-		echo '<li> <a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $total_pages).'" aria-label="Next"><span aria-hidden="true">&raquo;|</span></a></li>';	
+		echo '<li> 
+			<a class="page-link" href="'.add_get_to_current_URL($page_nr_name, $total_pages).'" aria-label="Next">
+				'.($just_number_ends ? $total_pages : '<span aria-hidden="true">&raquo;| '.$total_pages.'</span>').
+			'</a></li>';	
 	
 	echo '
 		  </ul>

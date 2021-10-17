@@ -574,3 +574,16 @@ border-radius: 30px;
 	border: 1px solid darkgray;
 	padding: 0.5 em;
 }
+
+.status-success
+{
+	background-color: green;
+	color: white;
+	padding: 0.2em;
+}
+.status-fail
+{
+	background-color: red;
+	color: white;
+	padding: 0.2em;
+}
