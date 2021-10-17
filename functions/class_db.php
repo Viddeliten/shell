@@ -357,6 +357,18 @@ if(!function_exists("mysql_query"))
 		return $result;
     }
     
+	function mysql_select($query)
+    {
+        $connection = static_db::getInstance();
+		$result = $connection->select($query);
+		if($connection->error!=NULL)
+		{
+			// Trigger a warning, because we expect to know about it if it does not go well
+			trigger_error("SQL Set error! ".$connection->error, E_USER_WARNING);
+		}
+		return $result;
+    }
+    
     function mysql_insert($query)
 	{
         $connection = static_db::getInstance();
