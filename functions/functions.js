@@ -18,6 +18,35 @@ function showhide(id)
    }
 }
 
+/**
+ * Toggles visibility for all elements with a given class
+ **/
+function showhideByClass(className)
+{
+   // Find the elements
+   if(document.getElementsByClassName)
+   {
+      var obj = document.getElementsByClassName(className);
+   }
+
+   // If there is no objects to handle, just exit
+   if(0 == obj.length)
+	   return 0;
+
+	// Toggle the visibility for the found elements
+	for (const item of obj) {
+		if(item.style.display == 'none' || item.classList.contains('hidden'))
+		   {
+			  item.style.display = '';
+			  // also remove class 'hidden' if present
+			  item.classList.remove("hidden");
+		   } else
+		   {
+			  item.style.display = 'none';
+		   }
+	};
+}
+
 function toggleshow(id)
 {
    if(document.getElementById)
