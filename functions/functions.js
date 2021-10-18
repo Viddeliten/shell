@@ -58,7 +58,53 @@ function toggleshow(id)
       var obj = document.all(id);
    }
 
+   // remove any style hiding it
    obj.style.display = '';
+   // also remove class 'hidden' if present
+   obj.classList.remove("hidden");
+}
+
+function setFullScreen(id)
+{
+   if(document.getElementById)
+   {
+      var element = document.getElementById(id);
+   }
+   else if(document.all)
+   {
+      var element = document.all(id);
+   }
+
+   element.requestFullscreen();
+   
+   if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    } else if (element.msRequestFullscreen) {
+      element.msRequestFullscreen();
+    }
+}
+function closeFullScreen()
+{
+	if (
+		document.fullscreenElement ||
+		document.webkitFullscreenElement ||
+		document.mozFullScreenElement ||
+		document.msFullscreenElement
+	) {
+		if (document.exitFullscreen) {
+			document.exitFullscreen();
+		} else if (document.mozCancelFullScreen) {
+			document.mozCancelFullScreen();
+		} else if (document.webkitExitFullscreen) {
+			document.webkitExitFullscreen();
+		} else if (document.msExitFullscreen) {
+			document.msExitFullscreen();
+		}
+	}
 }
 
 function togglehide(id)
