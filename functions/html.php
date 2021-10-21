@@ -176,6 +176,21 @@ function html_card_from_array($array, $div_class="", $div_id=NULL)
     */
 }
 
+/**
+ * A small edit button that when clicked will toggle visibility of all elements of a certain class
+ * 
+ **/
+function html_button_edit($toggle_show_class = "edit_form_part")
+{
+	// Button with a pencil that toggles visibility of all elements of class $toggle_show_class
+	$button = html_button(html_tag("span", "", "glyphicon glyphicon-pencil"), "btn btn-default", "showhideByClass('".$toggle_show_class."')", TRUE);
+	
+	$html = $button;
+
+	return $html;
+}
+
+
 function html_link_register($text, $class=NULL)
 {
 	return html_link(SITE_URL."/?reg", $text, $class);

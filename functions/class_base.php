@@ -108,6 +108,23 @@ class base_class
 			
 		$this->data=$this->db->get_from_array($this->db_table, $criteria, ($this->id!=NULL ? TRUE : FALSE));
 	}
+	
+	protected function save_uploaded_image($uploaded, $bildurl = NULL, $absolute_path_image, $absolute_path_thumb)
+	{
+		if(is_uploaded_file($uploaded['tmp_name']))
+		{
+			ini_set('post_max_size', 1024*1024*1024);
+			ini_set('upload_max_filesize', 512*1024*1024);
+			ini_set('memory_limit', 1024*1024*1024);
+			return image::save_uploaded_file($uploaded, $absolute_path_image, $absolute_path_thumb);
+		}
+		else if($bildurl!=NULL)
+		{
+			//echo "Bild-url!!!";
+			// image_save_url_to_file($bildurl, "desc", PREFIX."story", $id);					
+			return image::save_url_to_file($bildurl, $absolute_path_image, $absolute_path_thumb);
+		}
+	}
 }
 
 ?>
