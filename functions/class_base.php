@@ -99,6 +99,10 @@ class base_class
 		$this->id=$id;
 		$this->reload();
 	}
+	public function unset_id()
+	{
+		$this->set_id();
+	}
 
 	protected function reload()
 	{
