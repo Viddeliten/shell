@@ -196,7 +196,7 @@ class db_class
 			$this->$column=$result[0][$column];
 			return $result[0][$column];
 		}
-		echo "Function db_class->get failed. ".print_r($result,1);
+		// echo "Function db_class->get failed. ".print_r($result,1);
 		return NULL;
 	}
     public function set($table, $column, $new_value, $id)
