@@ -42,14 +42,15 @@ class base_class
 
 	public function insert_from_arr($values, $success_message=NULL, $fail_message=NULL)
 	{
-		$vals=array();
-		foreach($values as $key => $val)
-		{
-			$vals[]="`".sql_safe($key)."`='".sql_safe($val)."'";
-		}
-		$sql="INSERT INTO ".sql_safe($this->db_table)." SET ".implode(", ",$vals).";";
+		$result = $this->db->insert_from_array($this->db_table, $values);
+		// $vals=array();
+		// foreach($values as $key => $val)
+		// {
+			// $vals[]="`".sql_safe($key)."`='".sql_safe($val)."'";
+		// }
+		// $sql="INSERT INTO ".sql_safe($this->db_table)." SET ".implode(", ",$vals).";";
 		// echo str_replace("\n","<br />",prestr($sql,"base_class->insert_from_arr"));
-		$result = $this->db->insert($sql);
+		// $result = $this->db->insert($sql);
 		// echo str_replace("\n","<br />",prestr($result,"base_class->insert_from_arr result"));
 		if(!$result)
 		{
@@ -66,16 +67,7 @@ class base_class
 	
 	public function update_from_arr($values)
 	{
-		$vals=array();
-		foreach($values as $key => $val)
-		{
-			$vals[]="`".sql_safe($key)."`='".sql_safe($val)."'";
-		}
-		$sql="UPDATE ".sql_safe($this->db_table)." SET ".implode(", ",$vals)."
-			WHERE id=".sql_safe($this->id).";";
-		// echo str_replace("\n","<br />",prestr($sql,"base_class->update_from_arr"));
-		$result = $this->db->query($sql);
-		// echo str_replace("\n","<br />",prestr($result,"base_class->update_from_arr result"));
+		$result = $this->db->update_from_array($this->db_table, $values, $this->id);
 		$this->reload();
 		return $result;
 	}
@@ -115,7 +107,7 @@ class base_class
 	
 	protected function save_uploaded_image($uploaded, $bildurl = NULL, $absolute_path_image, $absolute_path_thumb)
 	{
-		if(is_uploaded_file($uploaded['tmp_name']))
+		if(isset($uploaded['tmp_name']) && is_uploaded_file($uploaded['tmp_name']))
 		{
 			ini_set('post_max_size', 1024*1024*1024);
 			ini_set('upload_max_filesize', 512*1024*1024);
