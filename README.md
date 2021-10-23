@@ -26,13 +26,35 @@ RewriteRule ^([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$	index.php?
 ### Mod rewrite on nginx ###
 Add the following to your location / block in nginx config file for the site to get it to work the same as .htaccess does in apache!
 
-                # Some mod rewrites for Shell
-               rewrite ^/([^/.]+)/?$ /index.php?p=$1 last;
-               rewrite ^/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2 last;
-               rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3 last;
-               rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3&param1=$4 last;
-               rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3&param1=$4&param2=$5 last;
-               rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3&param1=$4&param2=$5&param3=$6 last;
+# Translations with gettext
+You can have as many languages on your website as you like. I only set up for swedish and english.
+
+Config file contains a setting DEFAULT_LANGUAGE which defines what language is shown before user makes any changes
+NOTE: language setting needs to reside in config file, globals can contain translations and must be included after language setup.
+
+The instructions below assumes you are a bit familiar with editing in POEditor
+## for swedish translation:
+In root, outside of custom_content:
+
+Generate pot-file that can be merged with po-file to generate mo-file (2 commands):
+```bash
+xgettext --from-code=UTF-8 -o texts-sv.pot *.php														*/
+find . -iname "*.php" | xargs xgettext --from-code=UTF-8 -k_e -k_x -k__ -o custom_content/translations/default.pot
+```
+Download .po and .pot, update from POT file, upload .po
+
+Then to merge from shell translations, do (1 command):
+```bash
+msgcat sample-translations/sv_SE/LC_MESSAGES/sv_SE.po custom_content/translations/sv_SE/LC_MESSAGES/sv_SE.po -o custom_content/translations/sv_SE/LC_MESSAGES/sv_SE.po --use-first
+```
+
+# Some mod rewrites for Shell
+rewrite ^/([^/.]+)/?$ /index.php?p=$1 last;
+rewrite ^/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2 last;
+rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3 last;
+rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3&param1=$4 last;
+rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3&param1=$4&param2=$5 last;
+rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3&param1=$4&param2=$5&param3=$6 last;
 
 
 

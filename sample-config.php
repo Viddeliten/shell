@@ -1,24 +1,14 @@
 <?php
 
+if(!defined('ABS_PATH'))
+	define('ABS_PATH',"/var/www/catalog_name");
+
 /************************************************************************************************************/
-/*	for swedish translation:																				*/
-/* --------------------------																				*/
-/* In root, outside of custom_content,																		*/
-/* generate pot-file that can be merged with po-file to generate mo-file (2 commands):						*/
-/*	xgettext --from-code=UTF-8 -o texts-sv.pot *.php														*/
-/*	find . -iname "*.php" | xargs xgettext --from-code=UTF-8 -k_e -k_x -k__ -o custom_content/translations/default.pot
-/*																											*/
-/*	Download po and pot, update from POT file, upload po													*/
-/*																											*/
-/* Then to merge from shell translations, do (1 command):													*/
-/*	msgcat sample-translations/sv_SE/LC_MESSAGES/sv_SE.po custom_content/translations/sv_SE/LC_MESSAGES/sv_SE.po -o custom_content/translations/sv_SE/LC_MESSAGES/sv_SE.po --use-first
+/*	Language																								*/
 /************************************************************************************************************/
 // NOTE: language setting needs to reside in config file, globals can contain translations and must be included after language setup.
 // define('DEFAULT_LANGUAGE', 'sv_SE'); //Swedish
 define('DEFAULT_LANGUAGE', 'en_GB');	//Brittish
-
-if(!defined('ABS_PATH'))
-	define('ABS_PATH',"/var/www/catalog_name");
 
 /********************************/
 /*		Other constants			*/
