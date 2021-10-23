@@ -24,6 +24,11 @@
 	display: inline-block;
 }
 
+.hidden
+{
+    display: none;
+}
+
 .navbar-brand img {
     display: inline;
 	margin-top: -0.9em;
@@ -573,4 +578,25 @@ border-radius: 30px;
 	background-color: lightgray;
 	border: 1px solid darkgray;
 	padding: 0.5 em;
+}
+
+.page-item img 
+{
+    width: 2em;
+}
+
+.page-item.icon .page-link
+{
+	min-width: 4em;
+}
+.page-item.icon svg
+{
+    width: 1.5em;
+    height: 1.5em;
+    margin-top: 0.2em;
+}
+
+.page-item.icon svg.inactive
+{
+	fill: gray;
 }

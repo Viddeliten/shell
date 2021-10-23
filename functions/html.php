@@ -1,7 +1,9 @@
 <?php
-/*	This file contains functions for printing various html elements according to style guides for bootstrap.
-	The thought behind having this file is to only have to change html creating in one place when bootstrap updates	
-	ALL the functions just returns html in strings so they can be echoed or used in other ways. */
+/**
+ * This file contains functions for printing various html elements according to style guides for bootstrap.
+ * The thought behind having this file is to only have to change html creating in one place when bootstrap updates	
+ * ALL the functions just returns html in strings so they can be echoed or used in other ways. 
+ */
 	
 function html_tag($tag_type, $text, $class=NULL, $get_link_titles=false, $div_id=NULL, $html_format_text=TRUE)
 {
@@ -44,11 +46,11 @@ function html_tag_text_ref($tag_type, &$text, $class=NULL, $get_link_titles=fals
 	return '<'.$tag_type.($class==NULL ? "":' class="'.$class.'"').($div_id==NULL ? "":' id="'.$div_id.'"').'>'.$text.'</'.$tag_type.'>';
 }
 
-function html_link($url, $text, $class=NULL, $target="_self")
+function html_link($url, $text, $class=NULL, $target="_self", $onclick=NULL)
 {
 	$the_text=str_ireplace("\n","<br />",$text);
 	$the_text=str_ireplace("<br /><br />","</p></p>",$the_text);
-	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class.'"').' target="'.$target.'">'.$the_text.'</a>';
+	return '<a href="'.$url.'"'.($class==NULL ? "":' class="'.$class.'"').' target="'.$target.'" '.($onclick ==NULL ? "" : 'onclick="'.$onclick.'"').'>'.$the_text.'</a>';
 }
 
 /**
@@ -495,18 +497,18 @@ function html_button($button_text, $class="btn btn-default", $onclick=NULL, $but
 			.'</button>';
 }
 
-function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE, $action=NULL)
+function html_form($method, $inputs_array, $multipart=FALSE, $all_inline=FALSE, $action=NULL)
 {
     $r='<form method="'.$method.'" '.($action!=NULL ? 'action="'.$action.'"' : '').'>';
-    if(!empty($inputs))
+    if(!empty($inputs_array))
     {
 		if($all_inline)
 		{
-			$r.=html_row(1, count($inputs), $inputs);
+			$r.=html_row(1, count($inputs_array), $inputs_array);
 		}
 		else
 		{
-			foreach($inputs as $i)
+			foreach($inputs_array as $i)
 			{
 				$r.=$i;
 			}
@@ -1255,5 +1257,41 @@ function html_comments_short_list($comments, $max_nr=5, $length=150, $ul_class="
 	return 	html_tag("ul", $html, $ul_class);
 }
 
+/**
+ * html for selecting list or cards (loc) preference
+ */
+function html_preference_list_or_cards($form_id="preference_loc", $default = "list")
+{
+    $loc_preference= new preference("list_or_cards", login_get_user());
+    $selected_loc = $loc_preference->get();
+    
+    if(!$selected_loc)
+        $selected_loc=$default;
+    
+    // $list_button = html_img(SITE_URL.'/open-iconic/svg/justify-left.svg', "view as list");
+    $list_button = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8" alt="view as list" height="200px" width="200px" class="'.($selected_loc != "list" ? "inactive" : "").'"><path d="M0 0v1h8v-1h-8zm0 2v1h8v-1h-8zm0 2v1h8v-1h-8zm0 2v1h6v-1h-6z" /></svg>';
+    
+	// $list_button = '<img src="'.SITE_URL.'/open-iconic/svg/justify-left.svg" class="inactive" />';
+    $list_button = html_link("#", $list_button, "page-link", NULL, "");
+    
+    // $grid_button =  html_img(SITE_URL.'/open-iconic/svg/grid-three-up.svg', "view as grid");
+    $grid_button =  '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8" class="'.($selected_loc != "grid" ? "inactive" : "").'"><path d="M0 0v2h2v-2h-2zm3 0v2h2v-2h-2zm3 0v2h2v-2h-2zm-6 3v2h2v-2h-2zm3 0v2h2v-2h-2zm3 0v2h2v-2h-2zm-6 3v2h2v-2h-2zm3 0v2h2v-2h-2zm3 0v2h2v-2h-2z" /></svg>';
+    $grid_button = html_link("#", $grid_button, "page-link");
+    
+    $list = html_list(array($list_button, $grid_button), "pagination pagination-lg", "page-item icon", "ul");
+        
+	$inputs[] = html_form_input($form_id."_loc_hidden", "", "text", "preference_list_or_cards", $selected_loc);
+	
+    return $list.html_form("post", $inputs);
+    
+    // return html_row(1,2,array($list_button, $grid_button));
+}
 
+function html_headline_with_loc($headlinesize, $headline, $form_id="preference_loc", $default = "list")
+{
+    $lg_sizes = array(11,1);
+    $elements = array(  html_tag("h".$headlinesize, $headline),
+                                  html_preference_list_or_cards($form_id, $default));
+    return html_row_uneven($lg_sizes, $elements); //, $element_class=NULL, $row_class=NULL, $html_format_text=TRUE)
+}
 ?>

@@ -1577,7 +1577,7 @@ function feedback_display_headline_list_from_array($feedback_array, $headline, $
 {
 	if(!empty($feedback_array))
 	{
-		echo html_tag("h".$headlinesize, $headline);
+		echo html_headline_with_loc($headlinesize, $headline, "loc_feedback_".string_slugify($headline));
 		echo "<div class=\"row\">";
 			echo "<div class=\"col-lg-12\">";
 			

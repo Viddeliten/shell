@@ -1,5 +1,50 @@
 <?php
 
+/**
+ * Block of things to be done before any output, because there is cookies and stuff
+ */
+// All requires need to be required first, of course
+require_once("config.php"); 
+
+require_once("functions/include.php");
+include_all_in_path("functions");
+
+login_receive();
+
+// Standard preferences (put custom preferences in receive.php referenced below)
+$preference_loc = new preference("list_or_cards", login_get_user()); // List or cards, if user prefer to look at lists or cards when looking at content
+$loc = $preference_loc->get();
+
+//Custom receive file, put your custom preferences in this!
+if(file_exists(CUSTOM_CONTENT_PATH."/receive.php"))
+    require_once(CUSTOM_CONTENT_PATH."/receive.php");
+
+feedback_recieve();
+comment_receive();
+user_receive();
+version_receive(); 
+news_receive(); 
+usermessage_receive();
+notice_receive();
+privmess_receive();
+spam_receive();
+item::receive();
+
+if(isset($_SESSION[PREFIX.'user_id']))
+    usermessage_check_messages($_SESSION[PREFIX.'user_id']);
+    
+language_setup();
+
+if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
+    require_once(CUSTOM_CONTENT_PATH."/globals.php");
+
+if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
+    require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
+
+
+/***********************************************************************/
+
+
 header( 'X-FRAME-OPTIONS: deny' );
 
 //Check for api call first
@@ -19,18 +64,9 @@ if(isset($_REQUEST['p']) && isset($_REQUEST['s']) && !strcmp(strtolower($_REQUES
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	 <meta name="author" content="">
-	<?php require_once("config.php"); 
+	<?php 
 
-	require_once("functions/include.php");
-	include_all_in_path("functions");
 
-	language_setup();
-
-	if(file_exists(CUSTOM_CONTENT_PATH."/globals.php"))
-		require_once(CUSTOM_CONTENT_PATH."/globals.php");
-
-	if(file_exists(CUSTOM_CONTENT_PATH."/functions/includer.php"))
-		require_once(CUSTOM_CONTENT_PATH."/functions/includer.php");
 
 	$connection=db_connect(db_host, db_name, db_user, db_pass);
 	
@@ -93,27 +129,7 @@ else
    
   <?php  
 
-  login_receive();
   
-  
-  //Include custom content
-  if(file_exists(CUSTOM_CONTENT_PATH."/receive.php"))
-	  require_once(CUSTOM_CONTENT_PATH."/receive.php");
-  
-  feedback_recieve();
-  comment_receive();
-  user_receive();
-  version_receive(); 
-  news_receive(); 
-  usermessage_receive();
-  notice_receive();
-  privmess_receive();
-  spam_receive();
-  item::receive();
-
-  if(isset($_SESSION[PREFIX.'user_id']))
-	usermessage_check_messages($_SESSION[PREFIX.'user_id']);
-
 	if(defined('HEADER_CONTENT'))
 		echo HEADER_CONTENT;
 ?>
