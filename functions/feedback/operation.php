@@ -41,7 +41,7 @@ if(isset($_GET['operation']) && !strcmp($_GET['operation'],"assign"))
 {
 	$feedback=new feedback($_GET['id']);
 	if(!$feedback->assign_role($_GET['role'], $_GET['user_id']))
-		preprint($feedback->db->error);
+		preprint($feedback->get_db_error());
 	feedback_assigned_show($_GET['id']);
 }
 /**
