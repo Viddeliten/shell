@@ -86,7 +86,7 @@ function usermessage_receive()
 
 function usermessage_get_emails_last_hour()
 {
-	$sql="SELECT COUNT(id) as nr FROM messages_to_users_sent WHERE adress LIKE '%@%' AND time > NOW() - INTERVAL 1 HOUR;";
+	$sql="SELECT COUNT(id) as nr FROM ".PREFIX."messages_to_users_sent WHERE adress LIKE '%@%' AND time > NOW() - INTERVAL 1 HOUR;";
 	if($nn=mysql_query($sql))
 	{
 		if($n=mysql_fetch_assoc($nn))
