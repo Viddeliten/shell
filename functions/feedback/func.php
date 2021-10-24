@@ -609,9 +609,9 @@ function feedback_search_show()
 {
 	?>
 	<div class="row">
-	<div class="col-lg-12 well">
+	<div class="well feedback-search">
 	<h3><?php echo _("Search existing feedbacks"); ?></h3> 
-	<form action="?p=feedback" class="form-inline">
+	<form action="?p=feedback">
 		<input type="hidden" name="p" value="feedback">
 		<div class="form-group">
 		<input type="text" name="search" value="<?php if(isset($_GET['search'])) echo $_GET['search']; ?>" class="form-control">
