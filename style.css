@@ -24,20 +24,15 @@ img.glyph
   /* stroke-linejoin: round; */
 /* } */
 
-/* @media (min-width: 1000px) { */
-@media (min-width: 700px) and (max-width: 1200px) { 
-    .navbar-collapse.collapse {
-        display: none !important;
-    }
-    .navbar-collapse.collapse.in {
-        display: block !important;
-    }
-    .navbar-header .collapse, .navbar-toggle {
-        display:block !important;
-    }
-    .navbar-header {
-        float:none;
-    }
+/* .table-condensed tbody tr td, .table-condensed>tbody>tr>th, .table-condensed>tfoot>tr>td, .table-condensed>tfoot>tr>th, .table-condensed>thead>tr>td, .table-condensed>thead>tr>th { */
+.table-condensed td, .table-condensed th
+{
+    padding: 5px;
+}
+
+.table-condensed
+{
+    font-size: 81%;
 }
 
 .inline
