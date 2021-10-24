@@ -100,8 +100,11 @@ function language_save_selected($language)
 	//Save in db
 }
 
-function language_get_choice()
+function language_get_choice($return_proper_code = false)
 {
+	if($return_proper_code && isset($_SESSION['language']))
+		return $_SESSION['language'];
+	
 	if(isset($_SESSION['language']) && !strcmp($_SESSION['language'],"sv_SE"))
 		return "se";
 	else
