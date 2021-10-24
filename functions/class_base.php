@@ -121,6 +121,11 @@ class base_class
 			return image::save_url_to_file($bildurl, $absolute_path_image, $absolute_path_thumb);
 		}
 	}
+	
+	public function get_db_error()
+	{
+		return $this->db->error;
+	}
 }
 
 ?>
