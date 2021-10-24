@@ -180,7 +180,7 @@ function feedback_recieve()
 			//Check login
 			if(login_check_logged_in_mini()>0)
 			{
-				$user="'".sql_safe($_SESSION[PREFIX.'user_id'])."'";
+				$user=sql_safe($_SESSION[PREFIX.'user_id']);
 			}
 			else
 			{
