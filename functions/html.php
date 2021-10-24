@@ -388,7 +388,7 @@ function html_form_radio($label, $id, $name, $options, $selected=NULL, $onclick=
 		$r.='<div class="radio">'.
 		  '<label>'.
 			'<input type="radio" name="'.$name.'" id="'.$id."_".$value.'" value="'.$value.'" '.
-			($selected==$value ? ' checked="checked" ' : '').
+			($selected==$value ? ' checked ' : '').
 			(isset($onclick[$value]) ? 'onclick="'.$onclick[$value].'"' : '').
 			'>'.
 			$option_label.
@@ -413,8 +413,10 @@ function html_form_textarea($input_id, $label, $name, $value="", $placeholder=NU
 }
 
 /**
-/*	NOTE: this is not a droplist, but it kind of looks like one!
-**/
+ * Searchable droplist
+ *	NOTE: this is not a droplist, but it kind of looks like one!
+ * options need to have value as index and members 'label' and 'onclick', OR it can just be an array value => label
+ **/
 function html_form_droplist_searchable($input_id, $label, $name, $options, $selected="", $onchange=NULL, $class=NULL)
 {
 	if($label!==NULL && $label!="")
@@ -427,6 +429,17 @@ function html_form_droplist_searchable($input_id, $label, $name, $options, $sele
 	$option_list="";
 	foreach($options as $value => $content)
 	{
+		if(!is_array($content))
+		{
+			$t = array();
+			$t['label'] = $content;
+			$t['onclick'] = "";
+			$content = $t;
+		}
+		
+		$content['onclick'] .= ";document.getElementById('".$input_id."').value='".$value."';document.getElementById('".$input_id."_selected_label').innerHTML='".$content['label']."';
+		";
+		
 		$extra_class="";
 		if(!strcmp($selected, $value))
 		{
@@ -436,14 +449,14 @@ function html_form_droplist_searchable($input_id, $label, $name, $options, $sele
 		$option_list.='<a class="dropdown-item '.$extra_class.'" href="#" id="'.$input_id.'_option_'.$value.'" value="'.$value.'" onclick="'.$content['onclick'].'">'.$content['label'].'</a>';
 	}
 	
-	// $return.=html_form_input($input_id, $label, "text", $name."_searchfield", "", NULL, "droplistSearch");
+	$return.=html_form_input($input_id, "", "hidden", $name, $selected, NULL, "droplistSearch");
 	
 	// $return.= $return.html_form_droplist($input_id."_droplist", NULL, $name, $options, $selected, $onchange, $class);
 	
 	$return.='
 	<div class="dropdown">
   <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    '.$selected_label.'
+    <span id="'.$input_id.'_selected_label">'.$selected_label.'</span>
   </button>
   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="'.$input_id.'_droplist">
 	'.html_form_input($input_id, NULL, "text", $name."_searchfield", "", _("Search"), "droplistSearch").'
