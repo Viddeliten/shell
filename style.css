@@ -3,6 +3,27 @@
 	overflow-wrap: break-word;
 }
 
+.hidden
+{
+	display: none;
+}
+
+img.glyph
+{
+    width: 1.5em;
+    height: 1.5em;
+    max-width: 1.5em;
+}
+
+/* Vidde can continue trying to make this look good an other day */
+/* .glyph path */
+/* { */
+  /* fill: none; */
+  /* stroke: #646464; */
+  /* stroke-width: 0.1px; */
+  /* stroke-linejoin: round; */
+/* } */
+
 /* @media (min-width: 1000px) { */
 @media (min-width: 700px) and (max-width: 1200px) { 
     .navbar-collapse.collapse {

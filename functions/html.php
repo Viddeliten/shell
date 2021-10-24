@@ -182,8 +182,10 @@ function html_card_from_array($array, $div_class="", $div_id=NULL)
  **/
 function html_button_edit($toggle_show_class = "edit_form_part")
 {
+	// $pen_symbol = html_tag("span", "", "glyphicon glyphicon-pencil");
+	$pen_symbol = html_glyph("pencil");
 	// Button with a pencil that toggles visibility of all elements of class $toggle_show_class
-	$button = html_button(html_tag("span", "", "glyphicon glyphicon-pencil"), "btn btn-default", "showhideByClass('".$toggle_show_class."')", TRUE);
+	$button = html_button($pen_symbol, "btn btn-default", "showhideByClass('".$toggle_show_class."')", TRUE);
 	
 	$html = $button;
 
@@ -1255,7 +1257,11 @@ function html_glyph($icon_name, $height=NULL, $greyed_out=FALSE)
 {
 	// return '<span class="glyphicon glyphicon-'.$symbol.'"></span>';
 	// return '<img src="'.SITE_URL.'/open-iconic/svg/'.$icon_name.'.svg" alt="'.str_replace("-", " ", $icon_name).'">';
-	return html_img(SITE_URL.'/open-iconic/svg/'.$icon_name.'.svg', str_replace("-", " ", $icon_name), $height, NULL, ($greyed_out ? " disabled" : ""));
+	
+	return html_img(SITE_URL.'/open-iconic/svg/'.$icon_name.'.svg', str_replace("-", " ", $icon_name), $height, NULL, ($greyed_out ? " disabled" : "")." glyph");
+	
+	// $glyph = str_replace("\n", "", file_get_contents(ABS_PATH.'/open-iconic/svg/'.$icon_name.'.svg'));
+	// return html_tag("span", $glyph, "glyph");
 }
 
 function html_comment_user_box($user_id)
