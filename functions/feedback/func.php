@@ -83,7 +83,7 @@ class feedback extends base_class
 	
 	private function get_roles()
 	{
-		$roles=$this->db->get_from_array("feedback_role", array("feedback_id" => $this->id));
+		$roles=$this->db->get_from_array(PREFIX."feedback_role", array("feedback_id" => $this->id));
 		if(empty($roles))
 			return array();
 		$r=array();
@@ -152,7 +152,7 @@ class feedback extends base_class
 		}
 		
 		if($allowed)
-			return $this->db->upsert_from_array("feedback_role", array("feedback_id" => $this->id, "user_id" => $user_id, "role" => $role));
+			return $this->db->upsert_from_array(PREFIX."feedback_role", array("feedback_id" => $this->id, "user_id" => $user_id, "role" => $role));
 		return FALSE;
 	}
 }
