@@ -53,30 +53,36 @@ function search_search($search_string)
 	//News
 	$news=news_search_get($search_string);
 	// preprint($news, "NEWS");
-	foreach($news as $key => $val)
+	if(!empty($news))
 	{
-		$results[]=array( "title"	=>	$val['headline'],
-						"author"	=>	$val['author'],
-						"type"	=>	"News",
-						"description"	=>	substr(string_remove_tags($val['text']), 0, 100),
-						"url"	=>	news_get_link_url($val['id']),
-						"sort_value"	=> $key
-						);
+		foreach($news as $key => $val)
+		{
+			$results[]=array( "title"	=>	$val['headline'],
+							"author"	=>	$val['author'],
+							"type"	=>	"News",
+							"description"	=>	substr(string_remove_tags($val['text']), 0, 100),
+							"url"	=>	news_get_link_url($val['id']),
+							"sort_value"	=> $key
+							);
+		}
 	}
 	
 	//user's profiles
 	$columns=array("username", "description");
 	$user_profiles=search_general("user", $columns, $search_string);
 
-	foreach($user_profiles as $key => $val)
+	if(!empty($user_profiles))
 	{
-		$results[]=array( "title"	=>	$val['username'],
-						"author"	=>	NULL,
-						"type"	=>	"User",
-						"description"	=>	substr(string_remove_tags($val['description']), 0, 100),
-						"url"	=>	user_get_link_url($val['id']),
-						"sort_value"	=> $key
-						);
+		foreach($user_profiles as $key => $val)
+		{
+			$results[]=array( "title"	=>	$val['username'],
+							"author"	=>	NULL,
+							"type"	=>	"User",
+							"description"	=>	substr(string_remove_tags($val['description']), 0, 100),
+							"url"	=>	user_get_link_url($val['id']),
+							"sort_value"	=> $key
+							);
+		}
 	}
 	
 	//Custom search results
