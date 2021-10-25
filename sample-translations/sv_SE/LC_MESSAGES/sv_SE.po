@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: texts-sv\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-23 09:05+0200\n"
-"PO-Revision-Date: 2021-10-23 09:20+0200\n"
+"POT-Creation-Date: 2021-10-25 20:42+0200\n"
+"PO-Revision-Date: 2021-10-25 20:46+0200\n"
 "Last-Translator: Johanna Julén <johanna.julen@loopia.se>\n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -40,15 +40,42 @@ msgstr "Inget kommando"
 msgid "There is no action here"
 msgstr "Inget är utfört här"
 
-#: functions/display.php:8 functions/display.php:44
-#: functions/feedback/func.php:429 functions/html.php:1019 content.php:8
+#: orig_html.php:460 functions/html.php:741
+msgid "Update"
+msgstr "Uppdatera"
+
+#: orig_html.php:534 functions/html.php:841
+msgid "Empty array"
+msgstr "Tom array"
+
+#: orig_html.php:641 functions/html.php:974
+msgid "current"
+msgstr "nuvarande"
+
+#: orig_html.php:692 functions/display.php:40 functions/html.php:1035
+msgid "Home"
+msgstr "Hem"
+
+#: orig_html.php:704 functions/display.php:8 functions/display.php:44
+#: functions/feedback/func.php:429 functions/html.php:1047 content.php:8
 #: content.php:10
 msgid "Feedback"
 msgstr "Förbättringsförslag"
 
-#: functions/display.php:40 functions/html.php:1007
-msgid "Home"
-msgstr "Hem"
+#: orig_html.php:759 orig_html.php:760 functions/feedback/func.php:618
+#: functions/html.php:477 functions/html.php:1103 functions/html.php:1104
+msgid "Search"
+msgstr "Sök"
+
+#: orig_html.php:816 functions/html.php:1192
+#, php-format
+msgid "Hide %s"
+msgstr "Göm %s"
+
+#: orig_html.php:822 functions/html.php:1208
+#, php-format
+msgid "Show %s"
+msgstr "Visa %s"
 
 #: functions/display.php:42
 msgid "About"
@@ -377,12 +404,12 @@ msgstr "Text:"
 msgid "The news content"
 msgstr "Nyhetsinnehållet"
 
-#: functions/news.php:130 functions/news.php:252
+#: functions/news.php:87 functions/news.php:218
 #, php-format
 msgid "Published by %s at %s"
 msgstr "Publicerad av %s %s"
 
-#: functions/news.php:255
+#: functions/news.php:221
 msgid "... Keep reading"
 msgstr "... Fortsätt läsa"
 
@@ -501,11 +528,6 @@ msgstr "Tilldelad till mig"
 #: functions/feedback/func.php:613
 msgid "Search existing feedbacks"
 msgstr "Sök i existerande förbättringsförslag"
-
-#: functions/feedback/func.php:618 functions/html.php:449
-#: functions/html.php:1075 functions/html.php:1076
-msgid "Search"
-msgstr "Sök"
 
 #: functions/feedback/func.php:630
 msgid "Add feedback"
@@ -774,35 +796,13 @@ msgstr "Öppnat"
 msgid "Receiver"
 msgstr "Mottagare"
 
-#: functions/html.php:670
+#: functions/html.php:698
 msgid "No value"
 msgstr "Inget värde"
 
-#: functions/html.php:713
-msgid "Update"
-msgstr "Uppdatera"
-
-#: functions/html.php:813
-msgid "Empty array"
-msgstr "Tom array"
-
-#: functions/html.php:919
+#: functions/html.php:947
 msgid "Page navigation"
 msgstr "Sidnavigering"
-
-#: functions/html.php:946
-msgid "current"
-msgstr "nuvarande"
-
-#: functions/html.php:1164
-#, php-format
-msgid "Hide %s"
-msgstr "Göm %s"
-
-#: functions/html.php:1180
-#, php-format
-msgid "Show %s"
-msgstr "Visa %s"
 
 #: functions/comment/func.php:48
 msgid "Thanks! Everything is fine."
@@ -1232,6 +1232,18 @@ msgstr "Med vänliga hälsningar"
 msgid "Presented by Vidde Webb"
 msgstr "Presenteras av Vidde Webb"
 
+#: config.php:67 sample-config.php:63
+msgid "Welcome, new member!"
+msgstr "Välkommen som ny medlem!"
+
+#: config.php:68 sample-config.php:64
+msgid "Example template"
+msgstr "Exempelmall"
+
+#: config.php:69 sample-config.php:65
+msgid "Insert your selling text here.<br>It should be snappy."
+msgstr "Ange din säljande text här.<br>Den bör vara kort och medryckande."
+
 #: content.php:66 content.php:95
 #, php-format
 msgid "News for %s"
@@ -1258,18 +1270,6 @@ msgstr "Aktiva användare"
 #: content.php:152
 msgid "Unknown page"
 msgstr "Sidan kunde inte hittas"
-
-#: sample-config.php:63
-msgid "Welcome, new member!"
-msgstr "Välkommen som ny medlem!"
-
-#: sample-config.php:64
-msgid "Example template"
-msgstr "Exempelmall"
-
-#: sample-config.php:65
-msgid "Insert your selling text here.<br>It should be snappy."
-msgstr "Ange din säljande text här.<br>Den bör vara kort och medryckande."
 
 #: sample-custom_content/functions/flattr.php:16
 msgid "I am a creator, does this mean you will pay me?"
