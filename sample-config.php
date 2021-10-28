@@ -1,5 +1,9 @@
 <?php
 
+// Handy to activate on dev:
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+
 if(!defined('ABS_PATH'))
 	define('ABS_PATH',"/var/www/catalog_name");
 
