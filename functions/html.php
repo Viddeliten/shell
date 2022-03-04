@@ -835,11 +835,16 @@ function html_table_from_single_array($array, $headlines=NULL, $silent_columns=a
 	return $r;
 }
 
+/**
+ * returns html for a table from the array in parameter
+ **/
 function html_table_from_array($array, $headlines=NULL, $silent_columns=array(), $size_table=array(), $class=NULL, $linked_columns=array())
 {
     if(empty($array))
         return _("Empty array");
-	if(!isset($array[0]))
+
+	// If the first key is not numeric, the user likely entered an array of just one group. I don't like this fix, but changing it may break something
+	if(!is_numeric(array_key_first($array)))
 		$array=array($array);
     
 	$r='<table class="table table-striped table-condensed'.($class?" ".$class:"").'">';
