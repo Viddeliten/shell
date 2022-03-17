@@ -81,11 +81,14 @@ class db_class
 	public function get_from_array($table, $values, $just_first=FALSE, $extra_columns=array())
 	{
 		$requirements=array();
-        $values=$this->prepare_array_for_query($values);
-		foreach($values as $key => $val)
-		{
-			$requirements[]='`'.sql_safe($key)."`".$val."";
-		}
+        if(!empty($values))
+        {
+            $values=$this->prepare_array_for_query($values);
+            foreach($values as $key => $val)
+            {
+                $requirements[]='`'.sql_safe($key)."`".$val."";
+            }
+        }
 		
 		$extra="";
 		if(!empty($extra_columns))
@@ -95,7 +98,7 @@ class db_class
 				$extra.=", ".sql_safe($val)." as '".sql_safe($name)."'";
 			}
 		}
-		$sql="SELECT *".$extra." FROM ".sql_safe($table)." WHERE ".implode(" AND ",$requirements).";";
+		$sql="SELECT *".$extra." FROM ".sql_safe($table).(!empty($requirements) ? " WHERE ".implode(" AND ",$requirements) :"").";";
 			
 		if($just_first)
 			return $this->select_first($sql);
