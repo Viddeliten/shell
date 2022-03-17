@@ -38,7 +38,8 @@ define("db_name", "");
 
 /********************************************************************************************/
 /*		Globals for captcha																	*/
-/*	Go to https://www.google.com/recaptcha/intro/index.html and get these codes	(v2)		*/
+/*	Go to https://www.google.com/recaptcha/admin and get these codes	(v2)		        */
+/* Docs: https://developers.google.com/recaptcha/intro                                      */
 /********************************************************************************************/
 define("ReCaptcha_privatekey",""); // Secret key
 define("ReCaptcha_publickey",""); // Site key
