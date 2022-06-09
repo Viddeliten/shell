@@ -71,7 +71,7 @@ class feedback extends base_class
 {
 	function __construct($id=NULL, $criteria=NULL)
 	{
-		parent::__construct("feedback", $id, NULL, $criteria);
+		parent::__construct(PREFIX."feedback", $id, NULL, $criteria);
 	}
 	
 	protected function reload()
@@ -1377,7 +1377,7 @@ function feedback_display_specific_headline($id, $div_id, $source_div=NULL, $exp
 	if(!is_numeric($id))
 		return FALSE;
 
-	// echo "<br />feedback_display_specific_headline($id, $div_id, $source_div, $expanded, $display_user, $div_prefix)";
+	// echo "<br />".PREFIX." feedback_display_specific_headline($id, $div_id, $source_div, $expanded, $display_user, $div_prefix)";
 	
 	$div_prefix=str_replace(" ","_",$div_prefix);
 	$div_prefix=str_replace("ö","o",$div_prefix);
@@ -1453,12 +1453,13 @@ function feedback_display_specific_headline($id, $div_id, $source_div=NULL, $exp
 				if($expanded)
 				{
 					feedback_display_body($id);
+                    
 					//Visa status och sådär
-					feedback_display_bottom($id, $source_div);
+                    feedback_display_bottom($id, $source_div);
 					
 					//Bottom with comments
 					// echo '<div class="panel-footer">';
-						comments_show_comments_and_replies($id, "feedback");
+                    comments_show_comments_and_replies($id, "feedback");
 					// echo '</div><!-- panel-footer884 -->';
 				}
 			echo "</div>";
@@ -2003,6 +2004,7 @@ function feedback_display_bottom($feedback_id, $parent_div_id, $id_expanded=NULL
 						echo '</li>';
 					}
 			echo '</ul>';
+            
     $contents = ob_get_contents();
 	ob_end_clean();
 	
@@ -2068,7 +2070,7 @@ function feedback_assigned_show($feedback_id, $return_html=FALSE)
 		}
 	}
 	echo '</div>';
-	
+    
 	$contents = ob_get_contents();
 	ob_end_clean();
 	
