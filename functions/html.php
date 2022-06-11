@@ -545,6 +545,10 @@ function html_form($method, $inputs, $multipart=FALSE, $all_inline=FALSE, $actio
 		($form_id!=NULL ? ' id="'.$form_id.'" ' : '').
 		($multipart!=NULL ? ' enctype="multipart/form-data" ' : '').
 		'>';
+        
+    if(!is_array($inputs))
+        $inputs = array($inputs);
+    
     if(!empty($inputs))
     {
 		if($all_inline)
@@ -709,7 +713,7 @@ function html_form_from_db_table($table_name, $id=NULL, $skip_members=NULL, $db_
 			
 			// TODO: more types!
 		}	
-		
+        
 		if(isset($custom_labels[$column['Field']]))
 			$label=$custom_labels[$column['Field']];
 		else
