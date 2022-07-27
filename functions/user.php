@@ -109,6 +109,8 @@ function user_get_all($type, $limit=NULL, $order_by="RAND()")
 	$sql="SELECT id FROM ".PREFIX."user";
 	if(!strcmp($type,"active"))
 		$sql.=" WHERE lastlogin IS NOT NULL AND inactive IS NULL";
+	else if(!strcmp($type,"admin"))
+		$sql.=" WHERE level > 1 AND lastlogin IS NOT NULL AND inactive IS NULL";
 	$sql.=" ORDER BY ".$order_by;
 	if($limit!==NULL)
 		$sql.=" LIMIT 0,".sql_safe($limit);

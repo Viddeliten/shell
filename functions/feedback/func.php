@@ -636,7 +636,7 @@ function feedback_form_show()
 		echo "<div class=\"form-group\"><label for=\"nick\">"._("Name").":</label> <input type=\"text\" name=\"nick\" class=\"form-control\"></div>";
 		echo "<div class=\"form-group\"><label for=\"email\">"._("Email").":</label> <input type=\"text\" name=\"email\" class=\"form-control\"></div>";
 		echo "<div class=\"form-group\"><label for=\"url\">"._("Website").":</label> <input type=\"text\" name=\"url\" class=\"form-control\"></div>";
-		echo "<div class=\"form-group\"><label for=\"flattrID\">"._("Flattr ID").":</label> <input type=\"text\" name=\"flattrID\" class=\"form-control\"></div>";
+		// echo "<div class=\"form-group\"><label for=\"flattrID\">"._("Flattr ID").":</label> <input type=\"text\" name=\"flattrID\" class=\"form-control\"></div>";
 	}
 	echo "<div class=\"form-group\"><label for=\"subject\">"._("Subject").":</label> <input type=\"text\" name=\"subject\" class=\"form-control\"></div>";
 	echo "<div class=\"form-group\"><label for=\"text\">"._("Your Feedback").":</label><textarea name=\"text\" class=\"form-control\"></textarea></div>";
@@ -883,7 +883,7 @@ function feedback_list_print_bs4($data, $id_expanded=NULL)
             $headline="Feedback #".$d['id'];
         
         // flattr_button_conditional($user_id, $type, $link, $title, $description, $static_button=TRUE, $return_html=FALSE)
-        $flattr_button=flattr_button_conditional($d['user'], "feedback", feedback_get_url($d['id']), $headline, $d['text'], TRUE, TRUE);
+        $flattr_button=""; //flattr_button_conditional($d['user'], "feedback", feedback_get_url($d['id']), $headline, $d['text'], TRUE, TRUE); (no flattr currently)
         $plusone_button=html_tag("span",html_form("post",array( '<input type="submit" name="feedback_plusone" value="+'.($d['plusones']+1).'">',
 								                                '<input type="hidden" name="id" value="'.$d['id'].'">'),
                                                     "inline"
@@ -1340,7 +1340,8 @@ function feedback_show_latest_short($antal=3, $length=150, $headline_size=2)
 				// echo "<a href=\"$link\">".date("Y-m-d H:i:s",strtotime($f['created']))."</a>";
 				feedback_display_author_text($f['user'], $f['nick'], $f['url'], $f['id'], $f['created']);
 							
-				//Eventuell Flattr-knapp
+				//Eventuell Flattr-knapp (disabled until further notice
+				/**
 				if($f['user']!=NULL && flattr_get_flattr_choice($f['user'],"feedback"))
 					$flattrID=flattr_get_flattrID($f['user']);
 				else if($f['flattrID']!=NULL)
@@ -1351,12 +1352,12 @@ function feedback_show_latest_short($antal=3, $length=150, $headline_size=2)
 				$text=str_replace("<br /><br />","<br />",$text);	
 				if($flattrID)
 				{
-					echo "sadsad<br />";
 					if($f['subject']!=NULL && $f['subject']!="")
 						flattr_button_show($flattrID, $link , $f['subject']." - feedback on ".SITE_URL, $text, 'compact', 'en_GB');
 					else
 						flattr_button_show($flattrID, $link , "Feedback ".$f['id']." - feedback on ".SITE_URL, $text, 'compact', 'en_GB');
 				}
+				**/
 			echo "</div>";
 				
 			// echo "<br />DEBUG 1252: $flattrID";
@@ -1379,10 +1380,14 @@ function feedback_display_specific_headline($id, $div_id, $source_div=NULL, $exp
 
 	// echo "<br />".PREFIX." feedback_display_specific_headline($id, $div_id, $source_div, $expanded, $display_user, $div_prefix)";
 	
-	$div_prefix=str_replace(" ","_",$div_prefix);
-	$div_prefix=str_replace("ö","o",$div_prefix);
-	$div_prefix=str_replace("å","a",$div_prefix);
-	$div_prefix=str_replace("ä","a",$div_prefix);
+	// Slugify the div prefix
+	if($div_prefix != "")
+	{
+		$div_prefix=str_replace(" ","_",$div_prefix);
+		$div_prefix=str_replace("ö","o",$div_prefix);
+		$div_prefix=str_replace("å","a",$div_prefix);
+		$div_prefix=str_replace("ä","a",$div_prefix);
+	}
 	
 	if($div_id==NULL && $source_div==NULL)
 		$div_id=$div_prefix."_feedback_post_".$id;
@@ -1399,59 +1404,45 @@ function feedback_display_specific_headline($id, $div_id, $source_div=NULL, $exp
 	FROM ".PREFIX."feedback
 	WHERE id=".sql_safe($id).";";
 	// echo $sql;
-	if($data=mysql_query($sql))
+	$d = mysql_get_first($sql);
+	
+	if(!empty($d)) 
 	{
-		if($d=mysql_fetch_array($data)) 
-		{
-			if($d['not_implemented']!=NULL)
-				$extra_class="feedback_not_implemented";
-			else if($d['resolved']!=NULL)
-				$extra_class="feedback_resolved";
-			else if($d['checked_in']!=NULL)
-				$extra_class="feedback_checked_in";
-			else if($d['accepted']!=NULL)
-				$extra_class="feedback_accepted";
-			else
-				$extra_class="new";
+		if($d['not_implemented']!=NULL)
+			$extra_class="feedback_not_implemented";
+		else if($d['resolved']!=NULL)
+			$extra_class="feedback_resolved";
+		else if($d['checked_in']!=NULL)
+			$extra_class="feedback_checked_in";
+		else if($d['accepted']!=NULL)
+			$extra_class="feedback_accepted";
+		else
+			$extra_class="new";
+		
+		if($expanded)
+			$click_operation="colapse";
+		else
+			$click_operation="expand";			
 			
-			if($expanded)
-				$click_operation="colapse";
-			else
-				$click_operation="expand";			
-				
-			echo "<div class=\"feedback_list_line\" id=\"".$div_id."\">
-				<div class=\"row $extra_class\">
-					<div class=\"col-sm-8 feedback_headline\">";
-						if($display_user)
-							echo "<a href=\"#\" onclick=\"feedback_operation('".$click_operation."', ".$id.", '".$div_id."', '".$source_div."&amp;div_prefix=".$div_prefix."'); return false;\">";
-						else
-							echo '<a href="'.SITE_URL.'/?p=feedback&id='.$id.'">';
-						echo "<strong>";
-						if($d['subject']!="")
-							echo $d['subject'];
-						else
-							echo substr($d['text'],0,128);
-						echo "</strong>";
-						echo "</a>
-					</div>";
-					
+		echo "<div class=\"feedback_list_line\" id=\"".$div_id."\">
+			<div class=\"row $extra_class\">
+				<div class=\"col-sm-8 feedback_headline\">";
 					if($display_user)
-					{
-						echo "<div class=\"col-sm-2 feedback_author\">
-							".feedback_get_author_link($id)."
-						</div>";
-						$next_with=2;
-					}
+						echo "<a href=\"#\" onclick=\"feedback_operation('".$click_operation."', ".$id.", '".$div_id."', '".$source_div."&amp;div_prefix=".$div_prefix."'); return false;\">";
 					else
-						$next_with=4;
-					echo "<div class=\"col-sm-".$next_with." small smalldate feedback_time\">
-						<a href=\"".SITE_URL."?p=feedback&amp;id=".$id."\">".date("Y-m-d H:i" , strtotime($d['created']))."</a>
-					</div>
+						echo '<a href="'.SITE_URL.'/?p=feedback&id='.$id.'">';
+					echo "<strong>";
+					if($d['subject']!="")
+						echo $d['subject'];
+					else
+						echo substr($d['text'],0,128);
+					echo "</strong>";
+					echo "</a>
 				</div>";
 				
-				//Display body
-				if($expanded)
+				if($display_user)
 				{
+<<<<<<< HEAD
 					feedback_display_body($id);
                     
 					//Visa status och sådär
@@ -1461,9 +1452,33 @@ function feedback_display_specific_headline($id, $div_id, $source_div=NULL, $exp
 					// echo '<div class="panel-footer">';
                     comments_show_comments_and_replies($id, "feedback");
 					// echo '</div><!-- panel-footer884 -->';
+=======
+					echo "<div class=\"col-sm-2 feedback_author\">
+						".feedback_get_author_link($id)."
+					</div>";
+					$next_with=2;
+>>>>>>> No longere showing flattr buttons on feedbacks, only allowing admins to be implementers and testers due to performance issues
 				}
-			echo "</div>";
-		}
+				else
+					$next_with=4;
+				echo "<div class=\"col-sm-".$next_with." small smalldate feedback_time\">
+					<a href=\"".SITE_URL."?p=feedback&amp;id=".$id."\">".date("Y-m-d H:i" , strtotime($d['created']))."</a>
+				</div>
+			</div>";
+			
+			//Display body
+			if($expanded)
+			{
+				feedback_display_body($id);
+				//Visa status och sådär
+				feedback_display_bottom($id, $source_div);
+				
+				//Bottom with comments
+				// echo '<div class="panel-footer">';
+					comments_show_comments_and_replies($id, "feedback");
+				// echo '</div><!-- panel-footer884 -->';
+			}
+		echo "</div>";
 	}
 }
 
@@ -2019,12 +2034,12 @@ function feedback_assigned_show($feedback_id, $return_html=FALSE)
 	ob_start();
 
 	$roles=feedback_get_roles_global();
-
+	
 	$div_id='feedback_'.$feedback_id.'_assigned';
 	echo '<div id="'.$div_id.'">';
 
 	$feedback=new feedback($feedback_id);
-
+	
 	foreach($roles as $role => $role_content)
 	{
 		$role_access=$feedback->user_role_access($role);
@@ -2046,7 +2061,7 @@ function feedback_assigned_show($feedback_id, $return_html=FALSE)
 			$onchange="";
 			$options=array();
 			if($role_access>=5)
-				$user_ids=user_get_all("active", NULL, "level DESC");
+				$user_ids=user_get_all("admin", NULL, "level DESC"); // We could get ALL users, but if a lot sign up, it slows the site down. Set all devs to level 2, and they will be available as implementers
 			else
 			{
 				// If user has level 3 they can select themselves
@@ -2143,21 +2158,23 @@ function feedback_display_body($id, $hidden=FALSE)
 							echo "</form>";
 						echo "</div>";
 					echo "</div>";
-                    echo "<div class=\"col-md-4  col-lg-12 right\" id=\"feedback_".$id."_flattr\">";
+					
+					// Flattr is disabled until further notice
+                    /* echo "<div class=\"col-md-4  col-lg-12 right\" id=\"feedback_".$id."_flattr\">";
 						//Eventuellt Flattr-knapp
 						// echo "<p>Eventuellt Flattr-knapp</p>";
 						if($d['user']!=NULL)
 						{
-							if(flattr_get_flattr_choice($d['user'],"feedback"))
-							{
-								flattr_button_show(flattr_get_flattrID($d['user']), SITE_URL."?p=feedback&amp;id=".$id , feedback_get_title($id)." - a feedback post on ".SITE_NAME, $d['text'], 'compact', 'en_GB');
-							}
+							// if(flattr_get_flattr_choice($d['user'],"feedback"))
+							// {
+								// flattr_button_show(flattr_get_flattrID($d['user']), SITE_URL."?p=feedback&amp;id=".$id , feedback_get_title($id)." - a feedback post on ".SITE_NAME, $d['text'], 'compact', 'en_GB');
+							// }
 						}
-						else if($d['flattrID']!=NULL)
-						{
-							flattr_button_show($d['flattrID'], SITE_URL."?p=feedback&amp;id=".$d['id'] , feedback_get_title($id)." - a feedback post on ".SITE_NAME, $d['text'], 'compact', 'en_GB');
-						}
-					echo "</div>";
+						// else if($d['flattrID']!=NULL)
+						// {
+							// flattr_button_show($d['flattrID'], SITE_URL."?p=feedback&amp;id=".$d['id'] , feedback_get_title($id)." - a feedback post on ".SITE_NAME, $d['text'], 'compact', 'en_GB');
+						// }
+					echo "</div>"; */
 					
 					echo "<div class=\"col-md-4 col-lg-12 right\">";
 						//Kolla om det är användarens feedback.
