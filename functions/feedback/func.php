@@ -1442,22 +1442,10 @@ function feedback_display_specific_headline($id, $div_id, $source_div=NULL, $exp
 				
 				if($display_user)
 				{
-<<<<<<< HEAD
-					feedback_display_body($id);
-                    
-					//Visa status och sådär
-                    feedback_display_bottom($id, $source_div);
-					
-					//Bottom with comments
-					// echo '<div class="panel-footer">';
-                    comments_show_comments_and_replies($id, "feedback");
-					// echo '</div><!-- panel-footer884 -->';
-=======
 					echo "<div class=\"col-sm-2 feedback_author\">
 						".feedback_get_author_link($id)."
 					</div>";
 					$next_with=2;
->>>>>>> No longere showing flattr buttons on feedbacks, only allowing admins to be implementers and testers due to performance issues
 				}
 				else
 					$next_with=4;

@@ -141,7 +141,6 @@ if(isset($_GET['operation']) && isset($_GET['id']))
 
 	if($_GET['operation']=="expand")
 	{
-
 		feedback_display_specific_headline($_GET['id'], $_GET['div_id'], $_GET['parent'], TRUE);
 	}
 	else if($_GET['operation']=="colapse")
