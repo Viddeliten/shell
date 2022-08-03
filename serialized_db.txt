@@ -62,8 +62,8 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 `comment`.`id` AS `new_comment_id`,
 `comment`.`comment_type` AS `type_commented_on`,
 `user_thing`.`id` AS `id_commented_on`,
-`user_thing`.`id` AS `affected_user_id` from (`comment` join `user` `user_thing` on(`user_thing`.`id` = `comment`.`comment_on`)) where `comment`.`comment_type` = 'user' and `comment`.`added` > current_timestamp() - interval 24 hour)";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:4;a:4:{s:4:"View";s:24:"comment_related_to_users";s:11:"Create View";s:1883:"
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_related_to_users` AS (select `comment`.`added` AS `time`,
+`user_thing`.`id` AS `affected_user_id` from (`comment` join `user` `user_thing` on(`user_thing`.`id` = `comment`.`comment_on`)) where `comment`.`comment_type` = 'user' and `comment`.`added` > current_timestamp() - interval 24 hour)";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:4;a:4:{s:4:"View";s:24:"comment_related_to_user";s:11:"Create View";s:1883:"
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_related_to_user` AS (select `comment`.`added` AS `time`,
 `comment`.`id` AS `new_comment_id`,
 `comment`.`comment_type` AS `type_commented_on`,
 `user_thing`.`id` AS `id_commented_on`,
@@ -79,12 +79,12 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 `comment`.`id` AS `new_comment_id`,
 `comment`.`comment_type` AS `type_commented_on`,
 `user_thing`.`id` AS `id_commented_on`,
-`user_thing`.`id` AS `affected_user_id` from (`comment` join `user` `user_thing` on(`user_thing`.`id` = `comment`.`comment_on`)) where `comment`.`comment_type` = 'user') union (select `comment_related_to_users_custom`.`time` AS `time`,
-`comment_related_to_users_custom`.`new_comment_id` AS `new_comment_id`,
-`comment_related_to_users_custom`.`type_commented_on` AS `type_commented_on`,
-`comment_related_to_users_custom`.`id_commented_on` AS `id_commented_on`,
-`comment_related_to_users_custom`.`affected_user_id` AS `affected_user_id` from `comment_related_to_users_custom`)";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:5;a:4:{s:4:"View";s:31:"comment_related_to_users_custom";s:11:"Create View";s:461:"
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_related_to_users_custom` AS (select `comment`.`added` AS `time`,
+`user_thing`.`id` AS `affected_user_id` from (`comment` join `user` `user_thing` on(`user_thing`.`id` = `comment`.`comment_on`)) where `comment`.`comment_type` = 'user') union (select `comment_related_to_user_custom`.`time` AS `time`,
+`comment_related_to_user_custom`.`new_comment_id` AS `new_comment_id`,
+`comment_related_to_user_custom`.`type_commented_on` AS `type_commented_on`,
+`comment_related_to_user_custom`.`id_commented_on` AS `id_commented_on`,
+`comment_related_to_user_custom`.`affected_user_id` AS `affected_user_id` from `comment_related_to_user_custom`)";s:20:"character_set_client";s:4:"utf8";s:20:"collation_connection";s:15:"utf8_general_ci";}i:5;a:4:{s:4:"View";s:31:"comment_related_to_user_custom";s:11:"Create View";s:461:"
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `comment_related_to_user_custom` AS (select `comment`.`added` AS `time`,
 `comment`.`id` AS `new_comment_id`,
 `comment`.`comment_type` AS `type_commented_on`,
 `user_thing`.`id` AS `id_commented_on`,

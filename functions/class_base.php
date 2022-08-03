@@ -105,8 +105,13 @@ class base_class
 		$this->data=$this->db->get_from_array($this->db_table, $criteria, ($this->id!=NULL ? TRUE : FALSE));
 	}
 	
-	protected function save_uploaded_image($uploaded, $bildurl = NULL, $absolute_path_image, $absolute_path_thumb)
+	protected function save_uploaded_image($uploaded, $bildurl = NULL, $absolute_path_image = NULL, $absolute_path_thumb = NULL)
 	{
+        if($absolute_path_image == NULL || $absolute_path_thumb == NULL)
+        {
+            return false;
+        }
+        
 		if(isset($uploaded['tmp_name']) && is_uploaded_file($uploaded['tmp_name']))
 		{
 			ini_set('post_max_size', 1024*1024*1024);

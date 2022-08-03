@@ -8,10 +8,19 @@ class comment extends base_class
 {
 	function __construct($id=NULL, $criteria=NULL)
 	{
-		parent::__construct(PREFIX."comment", $id, NULL, $criteria);
-		
-		if(isset($criteria['comment_related_to_user']))
-			$this->get_comment_related_to_user($criteria['comment_related_to_user']);
+        // If comment_related_to_user is set, move it to a variable and remove it from criteria, because there is no column with this name
+        if(isset($criteria['comment_related_to_user']))
+        {
+            $comment_related_to_user = $criteria['comment_related_to_user'];
+            unset($criteria['comment_related_to_user']);
+        }
+    
+        // Create by parent
+        parent::__construct(PREFIX."comment", $id, NULL, $criteria);
+        
+        // Now set this data if related to user was set
+        if(isset($comment_related_to_user))
+			$this->get_comment_related_to_user($comment_related_to_user);
 	}
 	
 	private function get_comment_related_to_user($user_id, $only_unseen=TRUE)
@@ -19,14 +28,14 @@ class comment extends base_class
 		$query="SELECT
 		".PREFIX."comment.*,
 		access_log.id as access_log_id
-		FROM comment_related_to_users
-		INNER JOIN ".PREFIX."comment ON ".PREFIX."comment.id=comment_related_to_users.new_comment_id
+		FROM comment_related_to_user
+		INNER JOIN ".PREFIX."comment ON ".PREFIX."comment.id=comment_related_to_user.new_comment_id
 		LEFT JOIN ".PREFIX."access_log access_log 
 			ON access_log.user_id=".sql_safe($user_id)." 
 			AND ".PREFIX."comment.comment_type = access_log.table 
 			AND access_log.table_id=".PREFIX."comment.comment_on
 			AND access_log.time>".PREFIX."comment.added
-        WHERE comment_related_to_users.affected_user_id=".sql_safe($user_id)."
+        WHERE comment_related_to_user.affected_user_id=".sql_safe($user_id)."
 		AND ".PREFIX."comment.is_spam<0
 		GROUP BY ".PREFIX."comment.id
 		HAVING access_log_id IS NULL
@@ -223,7 +232,7 @@ function comment_html_list_users_latest($user_id, $only_last_24_hours=TRUE, $lim
 		$table="comment_for_alert";
 	}
 	else
-		$table="comment_related_to_users";
+		$table="comment_related_to_user";
 	
 	$sql="SELECT new_comment_id, type_commented_on, id_commented_on FROM ".PREFIX.$table." WHERE affected_user_id=".sql_safe($user_id)." 
     ORDER BY `time`ASC LIMIT ".sql_safe($offset).", ".sql_safe($limit).";";

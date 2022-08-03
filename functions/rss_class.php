@@ -6,7 +6,7 @@ class RSS
 	private $feed_link;
 	private $description;
 	  
-	public function RSS($db_connection, $type, $feed_link, $description)
+	public function __construct($db_connection, $type, $feed_link, $description)
 	{
 		// DEFINE ('LINK', $db_connection); // Don't know why this would be needed, and naturally it creates a warning in log
 		$this->type = $type;
