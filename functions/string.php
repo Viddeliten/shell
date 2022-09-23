@@ -300,8 +300,10 @@ function string_get_images_from_url($url)
 				
 			if(!in_array_r($img_src, $new_images))
 			{
-				$size=getimagesize($img_src);
-				$new_images[]=array('src' => $img_src, 'alt' => $img_alt, 'size' => ($size[0]*$size[1]));
+                // Try and see size of the image and only add it if we can
+				$size=@getimagesize($img_src);
+                if($size)
+                    $new_images[]=array('src' => $img_src, 'alt' => $img_alt, 'size' => ($size[0]*$size[1]));
 			}
 		}
 	}
