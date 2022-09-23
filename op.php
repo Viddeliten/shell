@@ -8,10 +8,12 @@ This is a more general files than the ones in the operation folder.
 And it includes op.php in custom content if it exists, wich saves the time of copying include code.
 Also, the call url will be shorter. */
 
-define('ROOT_PATH',"./");
+if(!defined('ROOT_PATH'))
+    define('ROOT_PATH',"./");
 // define('FUNC_PATH',"../dev.common.viddewebb.se/");
 require_once(ROOT_PATH."operation/op_includer.php");
-$connection=db_connect(db_host, db_name, db_user, db_pass);
+if(!isset($connection))
+    $connection=db_connect(db_host, db_name, db_user, db_pass);
 
 // preprint($_REQUEST);
 
