@@ -247,10 +247,12 @@ class db_class
             $updates[]='`'.sql_safe($key)."`".$val;
 		}
 
-		$sql="INSERT INTO ".sql_safe($table)." (`".implode("`,`",$keys)."`) VALUES ('".implode("','",$vals)."')
+		$sql="INSERT INTO ".sql_safe($table)." 
+        (`".implode("`,`",$keys)."`) 
+        VALUES (".preg_replace("/=/", "", implode(",",$values_prepared)).")
 		ON DUPLICATE KEY UPDATE
 		".implode(", ",$updates).";";
-		
+        		
 		$result=$this->query($sql);
 		if(!$result)
 			return $result;
