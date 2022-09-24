@@ -78,7 +78,7 @@ class db_class
         return $array;
     }
     
-	public function get_from_array($table, $values, $just_first=FALSE, $extra_columns=array())
+	public function get_from_array($table, $values, $just_first=FALSE, $extra_columns=array(), $limit_from = 0, $limit_to = NULL)
 	{
 		$requirements=array();
         if(!empty($values))
@@ -98,7 +98,12 @@ class db_class
 				$extra.=", ".sql_safe($val)." as '".sql_safe($name)."'";
 			}
 		}
-		$sql="SELECT *".$extra." FROM ".sql_safe($table).(!empty($requirements) ? " WHERE ".implode(" AND ",$requirements) :"").";";
+		$sql="SELECT *".$extra." FROM ".sql_safe($table).(!empty($requirements) ? " WHERE ".implode(" AND ",$requirements) :"");
+        
+        if($limit_to !== NULL)
+        {
+           $sql.= sprintf(" LIMIT %s, %s ", $limit_from, $limit_to); 
+        }
 			
 		if($just_first)
 			return $this->select_first($sql);
