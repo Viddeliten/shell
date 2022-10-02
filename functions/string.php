@@ -357,9 +357,9 @@ function string_get_images_from_url($url)
 			if(substr($img_src,0,2)=="//")
 				$img_src="https:".$img_src;
 			
-			//If first char is "/", then add type url
+			//If first char is "/", then add url before it
 			if(substr($img_src,0,1)=="/")
-				$img_src=$cc_link['main_site_url'].$img_src;
+				$img_src=$url.$img_src;
 			$img_alt="image";
 
 			if(!in_array_r($img_src, $images) && !in_array_r($img_src, $new_images) && (strcmp($cc_link['name'],"TSR") || stristr($img_src, "w-600")))
