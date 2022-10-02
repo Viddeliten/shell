@@ -161,7 +161,7 @@ class db_class
     public function del($id, $table)
     { 
 		$query="DELETE FROM `".$table."` WHERE id=".$id.";";
-		$result= $this->query($query);
+		$result=$this->query($query);
 		return $result;
 	}
     
