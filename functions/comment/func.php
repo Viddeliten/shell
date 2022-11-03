@@ -534,7 +534,7 @@ function comment_get_link($id, $link_id=NULL)
 	
 	return html_link($url, $text);
 }
-function comment_get_link_url($id, $link_id=NULL, &$linktitle)
+function comment_get_link_url($id, $link_id=NULL, &$linktitle = NULL)
 {
 	require_once(ABS_PATH."/functions/feedback/func.php");
 	

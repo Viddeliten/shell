@@ -384,6 +384,12 @@ if(!function_exists("mysql_query"))
 		return $connection->upsert_from_array($table, $values);
 	}
     
+    function mysql_update_from_array($table, $values, $id)
+	{
+        $connection = static_db::getInstance();
+		return $connection->update_from_array($table, $values, $id);
+	}
+    
     function mysql_error()
     {
         $connection = static_db::getInstance();
