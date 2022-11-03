@@ -193,7 +193,7 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
 	
 	// $useragent = "Mozilla/".mt_rand(1,5).".0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/".mt_rand(1,66).".0.3359.139 Safari/537.36";
 	// In case cron is running this, some pages don't like bots and this is what I had in my access log :)
-	$useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36";
+	$useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36";
 	if(isset($_SERVER['HTTP_USER_AGENT']))
 		$useragent = $_SERVER['HTTP_USER_AGENT'];
 	if(string_url_is_tumblr($url))
@@ -228,6 +228,9 @@ function string_curlurl($url, $zipped=FALSE, $follow_redirects=3, $referer=SITE_
     if ($httpCode == 0) {
 		throw new Exception(curl_error($handle));
 	}
+	else if($httpCode == 403) {
+        // echo $body;
+    }
 	else if($httpCode == 404) {
         throw new Exception("Host not found");
 	}
@@ -244,7 +247,6 @@ function string_get_images_from_url($url)
 	try
 	{
 		$html = string_curlurl($url, TRUE); // Using curl and gzip in case the site is zipped (like TSR fex)
-		// echo $html;
 	} catch (Exception $e) {
 		message_trigger_warning(2491613, $url, $e); // Trigger warning for log
 		return NULL;
@@ -286,11 +288,18 @@ function string_get_images_from_url($url)
 	// Find all images in img tags
 	foreach($xpath->query('//img') as $item) 
 	{
+		// preprint($item, "item");
 		$img_src =  $item->getAttribute('src');
+		
+		// Some sites (like TSR) put the image in data-source instead!
+		$img_data_src =  $item->getAttribute('data-src');
+		if($img_src == "" && $img_data_src != "")
+			$img_src = $img_data_src;
+
 		$img_alt = $item->getAttribute('alt');
 		if(!stristr($img_src,"avatar") && !stristr($img_src, "logo.png") && !stristr($img_src, "mariadb-badge") && !stristr($img_src, "icon") && !stristr($img_src, "magnifyglass.gif"))
 		{
-			//If first char is "/", the add type url
+			//If first char is "/", then add type url
 			if(substr($img_src,0,2)=="//")
 				$img_src="https:".$img_src;
 			
@@ -300,10 +309,16 @@ function string_get_images_from_url($url)
 				
 			if(!in_array_r($img_src, $new_images))
 			{
-				$size=getimagesize($img_src);
-				$new_images[]=array('src' => $img_src, 'alt' => $img_alt, 'size' => ($size[0]*$size[1]));
+                // Try and see size of the image and only add it if we can
+				$size=@getimagesize($img_src);
+                if($size)
+                    $new_images[]=array('src' => $img_src, 'alt' => $img_alt, 'size' => ($size[0]*$size[1]));
+				// else
+					// preprint($img_src, "no size");
 			}
 		}
+		// else
+			// preprint($img_src, "Not");
 	}
 	// Wixsite hides images in code like "src":"\/\/static.wixstatic.com\/media\/81457a_670d51090f0e46aab578dfdaa22a8db8~mv2.jpg"
 	if(stristr($url,"wixsite.com"))
@@ -331,6 +346,27 @@ function string_get_images_from_url($url)
 		}
 	}
 	
+	// Find all <meta property="og:image" content="imgurl"  // Tumblr has this on my page at least (apparently it is some kind of web standard)
+	foreach($xpath->query('//meta') as $item) 
+	{				
+		$property=$item->getAttribute('property');
+		if(!strcmp($property,"og:image"))
+		{
+			$img_src =  $item->getAttribute('content');
+			//If first char is "/", the add type url
+			if(substr($img_src,0,2)=="//")
+				$img_src="https:".$img_src;
+			
+			//If first char is "/", then add url before it
+			if(substr($img_src,0,1)=="/")
+				$img_src=$url.$img_src;
+			$img_alt="image";
+
+			if(!in_array_r($img_src, $images) && !in_array_r($img_src, $new_images) && (strcmp($cc_link['name'],"TSR") || stristr($img_src, "w-600")))
+				$new_images[]=array('src' => $img_src, 'alt' => $img_alt, 'checked' => NULL);
+		}
+	}
+
 	//Sort by size
 	string_array_multisort($new_images, "size", SORT_DESC);
 	return $new_images;
