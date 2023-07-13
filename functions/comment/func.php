@@ -557,6 +557,8 @@ function comment_get_link_url($id, $link_id=NULL, &$linktitle = NULL)
 			// echo "<br />DEBUG2056: ".$c['comment_type'];
 			if(!strcmp($c['comment_type'],"comment"))
 			{
+                // TODO: What was $text supposed to be??? Setting it to empty string now
+                $text ="";
 				$return=comment_get_link_url($c['comment_on'], $id, $text);
 				$linktitle=sprintf(_("Reply to %s"),strtolower($text));
 				return $return;
