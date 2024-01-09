@@ -1,6 +1,25 @@
 # shell
 shell website including login and feedback system
 
+## Running locally with docker
+
+ - Create a file .env based on .env.example. ABS_PATH should be '/var/www/html'
+ - Add your domain to your local hosts file
+ - run:
+```
+docker compose build
+docker compose up
+```
+ - visit the domain you set in .env file
+ - For phpmyadmin: http://127.0.0.1:8082
+ 
+### Files related to the Docker setup 
+ .env.example 
+ Dockerfile
+ config/
+ docker-compose.yml
+ wordpress-entrypoint.sh
+
 ## How to use
 1. Put all the files in your web root for the site you are creating.
 2. Rename the sample files and directory and edit them
@@ -55,7 +74,6 @@ rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3 last;
 rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3&param1=$4 last;
 rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3&param1=$4&param2=$5 last;
 rewrite ^/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/([^/.]+)/?$ /index.php?p=$1&s=$2&id=$3&param1=$4&param2=$5&param3=$6 last;
-
 
 
 (to be continued)
