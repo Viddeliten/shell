@@ -1,0 +1,80 @@
+version: "3.1"
+
+services:
+
+  nginx:
+    image: nginx:1.25
+    container_name: ${APP_NAME}-nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - "./config/nginx/:/etc/nginx/templates/"
+      - ./:/var/www/html:rw,cached
+    environment:
+      - "NGINX_ENVSUBST_TEMPLATE_SUFFIX=.conf"
+      - "DOMAIN=${DOMAIN}"
+    depends_on:
+      - wordpress
+    restart: always
+
+# Wordpress is maybe not the right image we want for this project?
+  wordpress:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${APP_NAME}-wordpress
+    volumes:
+      - ./:/var/www/html:rw,cached
+      - ./config/php.ini:/usr/local/etc/php/conf.d/php.ini
+    depends_on:
+      - mariadb
+    restart: always
+
+  mariadb:
+    image: mariadb:11.1
+    container_name: ${APP_NAME}-mariadb
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    environment:
+      MYSQL_USER: "${DB_USER}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_DATABASE: "${DB_NAME}"
+      MARIADB_AUTO_UPGRADE: yes
+    volumes:
+      - ./.data/db:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: ${APP_NAME}-phpmyadmin
+    volumes:
+      - ./config/phpmyadmin.ini:/usr/local/etc/php/conf.d/phpmyadmin.ini
+    environment:
+      PMA_HOST: "${DB_HOST}"
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ""
+      # "${DB_PASSWORD}"
+    ports:
+      - '8082:80'
+    links:
+      - mariadb:mysql
+
+  ## Shell do not use npm or composer atm
+  # npm:
+  #   image: node:18.18.0
+  #   container_name: ${APP_NAME}-npm
+  #   volumes:
+  #     - ./web/app/themes/${BUILD_THEME}:/app:rw,cached
+  #   working_dir: "/app"
+  #   user: "1000:1000"
+  #   command: bash -c "npm update && npm install"
+
+  # composer:
+  #   image: composer:latest
+  #   container_name: ${APP_NAME}-composer
+  #   working_dir: /var/www/html
+  #   restart: 'no'
+  #   volumes:
+  #     - ./:/var/www/html:rw,cached
+  #   command: bash -c "composer update && composer install"
