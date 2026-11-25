@@ -5,7 +5,7 @@
 // ini_set('display_errors', 1);
 
 if(!defined('ABS_PATH'))
-	define('ABS_PATH',"/var/www/catalog_name");
+	define('ABS_PATH',__DIR__);
 
 /************************************************************************************************************/
 /*	Language																								*/
@@ -19,8 +19,8 @@ define('DEFAULT_LANGUAGE', 'en_GB');	//Brittish
 /********************************/
 define('PREFIX',"");
 define('CONTACT_EMAIL','your@email.se');
-define('SITE_URL','https://your.site.se');
-define('SITE_NAME','Example Site');
+define('SITE_URL',getenv('SITE_URL') ?: 'https://your.site.se');
+define('SITE_NAME',getenv('SITE_NAME') ?: 'Example Site');
 
 define('USER_MESSAGE_MAIL_SENDING', FALSE); //Set this to true if you have tested and want to send emails by user message
 
@@ -31,10 +31,10 @@ define('DEBUG_PRINTS', TRUE); //Change to false to disable the preprint function
 /********************************/
 define("granted_db_user", "");
 define("granted_db_pass", "");
-define("db_user", "");
-define("db_pass", "");
-define("db_host", "localhost"); //If database is on same server as web files, leave this line as it is.
-define("db_name", "");
+define("db_user", getenv('DB_USER') ?: "");
+define("db_pass", getenv('DB_PASSWORD') ?: "");
+define("db_host", getenv('DB_HOST') ?: "localhost"); //If database is on same server as web files, leave this line as it is.
+define("db_name", getenv('DB_NAME') ?: "");
 
 /********************************************************************************************/
 /*		Globals for captcha																	*/

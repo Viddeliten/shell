@@ -1,6 +1,17 @@
 # shell
 shell website including login and feedback system
 
+## Run locally with Docker
+1. Install Docker Desktop.
+2. From the project root, run `docker compose up --build`.
+3. Open http://localhost:8080.
+
+On first start, the app container creates the ignored `config.php` from
+`sample-config.php`. Docker supplies the local site URL and database settings.
+The MariaDB database starts empty; import your application's schema and data
+before using features that require them. Stop the containers with
+`docker compose down`; add `-v` to also delete the local database volume.
+
 ## How to use
 1. Put all the files in your web root for the site you are creating.
 2. Rename the sample files and directory and edit them
