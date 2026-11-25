@@ -7,8 +7,19 @@
 # this does not work everywhere:
 #Header set X-FRAME-OPTIONS "deny"
 
-RewriteEngine On 
+RewriteEngine On
 Options +FollowSymLinks
+
+# Anti-scraper (Nov 2026): a residential-proxy bot opens /?id=N&language=xx from
+# thousands of IPs with no Referer and no session cookie. Real visitors clicking a
+# link have a Referer or a PHPSESSID cookie; search engines are allowed by UA.
+# Blocked requests get the static blocked.html (no PHP), which has a link to continue.
+ErrorDocument 403 /blocked.html
+RewriteCond %{QUERY_STRING} (^|&)id=[0-9]+
+RewriteCond %{HTTP_REFERER} ^$
+RewriteCond %{HTTP_COOKIE} !PHPSESSID
+RewriteCond %{HTTP_USER_AGENT} !(Googlebot|bingbot|DuckDuckBot|Applebot|YandexBot|facebookexternalhit|Twitterbot|Slackbot|Discordbot) [NC]
+RewriteRule ^(index\.php)?$ - [F,L]
 RewriteRule ^favicon.ico custom_content/favicon.ico [L]
 
 RewriteRule ^([^/.]+)/?$			index.php?p=$1				[QSA,L]
