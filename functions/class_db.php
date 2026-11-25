@@ -15,7 +15,7 @@ class db_class
     function __construct($db_server=NULL, $db_database=NULL, $db_username=NULL, $db_password=NULL)
     {
         $this->connection = new mysqli(
-          "p:".($db_server!=NULL ? $db_server : db_host), 
+          ($db_server!=NULL ? $db_server : db_host), 
           ($db_username!=NULL ? $db_username : db_user), 
           ($db_password!=NULL ? $db_password : db_pass), 
           ($db_database!=NULL ? $db_database : db_name)
