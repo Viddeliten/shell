@@ -4,3 +4,4 @@ translations/
 db_update/
 sample-custom_content/serialized_db.txt
 v0_mission_files
+.env
