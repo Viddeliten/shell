@@ -39,17 +39,7 @@ function language_setup($override_language=NULL)
 				$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
 			else
 			{
-				ini_set('default_socket_timeout', 1);
-				$l=unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip='.$_SERVER['REMOTE_ADDR']));
-				ini_set('default_socket_timeout', 30);
-				if(empty($l))
-					$lang = "";
-				else if(!strcmp($l['geoplugin_countryCode'],"SE"))
-					$lang="sv";
-				else if(!strcmp($l['geoplugin_countryCode'],"GB"))
-					$lang="en";
-				else
-					$language=DEFAULT_LANGUAGE;
+				$language=DEFAULT_LANGUAGE;
 			}
 			
 			if(!isset($language))

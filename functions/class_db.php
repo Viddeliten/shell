@@ -11,6 +11,7 @@ class db_class
     public $affected_rows;
 
     private $connection;
+	private static $shared = null; // shared instance for static mysql_* functions
     
     function __construct($db_server=NULL, $db_database=NULL, $db_username=NULL, $db_password=NULL)
     {
@@ -27,6 +28,17 @@ class db_class
 		}
         $this->connection->set_charset("utf8");
     }
+
+	/**
+	 * Get the shared instance of the database connection
+	 * @return db_class
+	 */
+	public static function shared()
+	{
+		if (self::$shared === null)
+			self::$shared = new db_class();
+		return self::$shared;
+	}
     
     public function insert($query)
     { 

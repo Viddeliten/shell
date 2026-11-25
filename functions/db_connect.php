@@ -14,7 +14,7 @@ function db_connect($db_host, $db_name, $db_user, $db_pass)
         return $conn;
     }
     else
-        return new db_class($db_host, $db_name, $db_user, $db_pass);
+		return db_class::shared();
 }
 
 function db_close($conn)

@@ -11,10 +11,8 @@ class base_class
 	
 	function __construct($db_table_name, $id=NULL, $db_connection=NULL, $criteria=NULL)
 	{
-		if($db_connection!=NULL)
-			$this->db=$db_connection;
-		else
-			$this->db=new db_class();
+		// If a db connection is provided, use it. Otherwise, use the shared instance of db_class.
+		$this->db = ($db_connection != NULL ? $db_connection : db_class::shared());
 
 		$this->db_table=$db_table_name;
 		
